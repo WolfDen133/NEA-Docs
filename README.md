@@ -3,4 +3,4 @@ Documentation for my NEA
 
 ## Contence
 
-[Problem Identification](https://github.com/wolfden133/NEA-Docs/Analysis/Problem Identification.md)
+[Problem Identification](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Problem%20Identification.md)
