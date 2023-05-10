@@ -1,3 +1,0 @@
-The intended clients for this software would be frequent users of their computers. This is because the software will be a generalisation of all there most used softwares, combined into one. The software will be largely communication based so it will be mostly targeted at people who communicate alot using there technology.
-However, the stake holders would be the general user base of the internet, there are also people that could want a solution like this for there educational or coperate needs.
-I want the software to be as easily accessable to all types of ranges, so implimenting acceessibility settings would be ideal for this software. 
