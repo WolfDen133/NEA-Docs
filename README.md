@@ -12,3 +12,5 @@ In the content below I will be discussing every section of my project, and will 
 - [Client Interviews](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md)
 - [Research](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md)
 - [Proposal](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Proposal.md)
+
+> Copywrite Reuben Yates 2023, Frome College
