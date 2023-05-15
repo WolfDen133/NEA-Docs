@@ -1,4 +1,7 @@
-﻿[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
+> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
+> 
+> [ [<- Research](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md)  |  [Requirements ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Requirements.md) ] - (4/6)
+
  # My proposal
 
 ## My initial proposal from my given research:
@@ -14,5 +17,5 @@ It will have a text based, audio based, and video based communication, while als
 > - Limited application settings, given the time constraints and project complexity, I might not be able to incorperate as many customizability settings as other platforms. 
 > - Native packets, my solution will probibly use web requests rather than native in-built packets.
 
-[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
+> [ [<- Research](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md)  |  [Requirements ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Requirements.md) ] - (4/6)
 
