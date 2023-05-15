@@ -45,4 +45,5 @@ These days there is no easy way to manage all your communication needs right the
 > > Focusing strictly on inputs and outputs, the software is going to need the ability to process keyboard and mouse inputs, be able to communicate with servers over the web, and will need to access any other peripherals that the user needs for his or hers use-cases, such as voice chats, you would need to be access audio devices.
 > > This is a lot of data, and my application needs to be able to handle this amount off data efficiently and quickly.
 > > Using the steps above and implementing features will be a challenge, however I will try to use the most efficient approach in any situation that I am presented with.
+
 [<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
