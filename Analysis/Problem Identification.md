@@ -1,5 +1,7 @@
 [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
+
 [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Interviews ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md) ] (1/6)
+
 # Problem Identification
 
 In the 21st century, we are ever more interconnected with each other through technology.
