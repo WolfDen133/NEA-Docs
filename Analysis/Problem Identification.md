@@ -1,4 +1,5 @@
-﻿# Problem Identification
+[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
+# Problem Identification
 
 In the 21st century, we are ever more interconnected with each other through technology.
 There are many applications and services dedicated to communication & social aspects of peoples lives. However, the vast majority of these are just that, and nothing more. This is the problem. Say for instance, a creator is working on a project with his or her team, and they make a few updates to there work; normally they would have to upload it to a file sharing/hosting service and then send a link back. But why not just have it in the same app? Or how about the gaming community, they want an easy way to send game credits, mods or even have a community drop box for shared files. They might even want to have there hosting service right at there fingertips. But I've never seen anything like that.
@@ -44,3 +45,4 @@ These days there is no easy way to manage all your communication needs right the
 > > Focusing strictly on inputs and outputs, the software is going to need the ability to process keyboard and mouse inputs, be able to communicate with servers over the web, and will need to access any other peripherals that the user needs for his or hers use-cases, such as voice chats, you would need to be access audio devices.
 > > This is a lot of data, and my application needs to be able to handle this amount off data efficiently and quickly.
 > > Using the steps above and implementing features will be a challenge, however I will try to use the most efficient approach in any situation that I am presented with.
+[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
