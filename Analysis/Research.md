@@ -3,11 +3,10 @@
 
 ## Existing similar solutions
 
-> ### Discord
-> 
-> #### Overview 
+> ### [Discord](https://discord.com/)
 > [![Discord](https://i.imgur.com/NrDFX2I.png)](https://www.discord.com/)
 > 
+> #### Overview
 > Starting us off is discord. I as a developer use discord a lot, for general communication, sharing code, freelance programming and more, so I thought it would be a good candidate to evaluate.
 > Using the screenshot above we can see that the discord window is constructed of three main parts with an optional forth.
 > At the top left, along the "Server Navigator" bar, there is a home button to take you to your overview, a create and search button for servers and the user's subscribed servers.
@@ -24,9 +23,10 @@
 > - Discords user system is also very good, with the use of Usernames and tags (a 4 digit code), so multiple users can have the same username if they wish, but they still have a way to uniquely identify each-other.
 > - I also like discord nitro, which gives the users some perks, like custom themes, bigger upload sizes, custom emojis etc. If i can execute this well, it will be a really good way of generating revenue from my app.
 
-> ### Snapchat
-> [![Discord](https://i.imgur.com/o8Vyx1Z.png)](https://snapchat.com/)
+> ### [Snapchat](https://snapchat.com/)
+> [![Snapchat](https://i.imgur.com/o8Vyx1Z.png)](https://snapchat.com/)
 > 
+> #### Overview
 > Secondly I want to evaluate snapchat. Snapchat is a mobile communication platform, that encourages users to send photos or 'snaps' to each-other, so that they dont have to communicate what there doing, they can just show there friends what there doing. Snapchat also has a text chat feature built in for text based communication. It also has group-chats for multiple users to communicate much like discord, but unlike discord, it has stories so that users can post a public snap to all there friends if they wish to view it.
 > Snapchat also deletes messages after either depending on the users choice, after 24 hours or after the chat is left. With the optional feature of tapping on a message or attachment sent in chat to save it permanently. Snapchat's user system is more alike a traditional user system of having a username to identify each user, with them having to have a unique username, per user. It also has public stories, which are like public & sponsored posts for the whole world to see, with the addition of an infinite scroll snap viewer alike tiktok or instagram reels.
 > Snapchat includes 'SnapMaps', which is a way for enabled users to locate each-other in real time, and has the ability to post to SnapMaps, so if users want to see random snaps from a certain place they can. The final thing I will go over is snapchat's payed subscriptions. Snapchat incorporates a feature called SnapChat+ which allows a lot more customisation features of the general apps appearance, along with some ability perks, such as restoring snap-streaks (how many days in a row that you & a specific user have snapped each-other), and various other things.
@@ -37,4 +37,4 @@
 > - I also like the idea of confidentiality that there app offers, automatically deleting old messages and content if its not needed, however I will make this optional in my app. (This also helps out with server/db space :)).
 > - And snapchat's + feature is a really clever adoption, while giving users more customisable, while giving payed users more features. The inventive is always there to buy it. I may want to adopt this into my app, however I want to keep the communication as fair as possible.
 
-﻿[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
+[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
