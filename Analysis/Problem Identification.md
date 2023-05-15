@@ -1,4 +1,4 @@
-[<- Read me](https://github.com/WolfDen133/NEA-Docs/) | [Interviews ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md)
+[ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Interviews ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md) ]
 # Problem Identification
 
 In the 21st century, we are ever more interconnected with each other through technology.
@@ -46,4 +46,4 @@ These days there is no easy way to manage all your communication needs right the
 > > This is a lot of data, and my application needs to be able to handle this amount off data efficiently and quickly.
 > > Using the steps above and implementing features will be a challenge, however I will try to use the most efficient approach in any situation that I am presented with.
 
-[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/) | [Interviews ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md)
+[ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Interviews ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md) ]
