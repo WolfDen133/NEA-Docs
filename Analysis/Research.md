@@ -1,4 +1,5 @@
-﻿# Research
+﻿[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
+ # Research
 
 ## Existing similar solutions
 
@@ -35,3 +36,5 @@
 > - Group chat's are a really good way of including multiple people in different circumstances, and a good way for different types of users to connect, so I would like to incorporate this into my app. 
 > - I also like the idea of confidentiality that there app offers, automatically deleting old messages and content if its not needed, however I will make this optional in my app. (This also helps out with server/db space :)).
 > - And snapchat's + feature is a really clever adoption, while giving users more customisable, while giving payed users more features. The inventive is always there to buy it. I may want to adopt this into my app, however I want to keep the communication as fair as possible.
+
+﻿[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
