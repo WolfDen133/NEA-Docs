@@ -1,3 +1,5 @@
+> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
+
 # NEA-Docs
 Documentation for my NEA
 
