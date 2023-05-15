@@ -1,4 +1,5 @@
-﻿# My proposal
+﻿[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
+ # My proposal
 
 ## My initial proposal from my given research:
 
@@ -12,4 +13,6 @@ It will have a text based, audio based, and video based communication, while als
 > - Incorporating native services, I will have to use web-view & iFrame for services
 > - Limited application settings, given the time constraints and project complexity, I might not be able to incorperate as many customizability settings as other platforms. 
 > - Native packets, my solution will probibly use web requests rather than native in-built packets.
+
+[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
 
