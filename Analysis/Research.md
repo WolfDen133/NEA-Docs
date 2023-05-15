@@ -1,4 +1,7 @@
-﻿[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
+> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
+> 
+> [ [<- Interviews](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md)  |  [Proposal ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Proposal.md) ] - (3/6)
+
  # Research
 
 ## Existing similar solutions
@@ -37,4 +40,5 @@
 > - I also like the idea of confidentiality that there app offers, automatically deleting old messages and content if its not needed, however I will make this optional in my app. (This also helps out with server/db space :)).
 > - And snapchat's + feature is a really clever adoption, while giving users more customisable, while giving payed users more features. The inventive is always there to buy it. I may want to adopt this into my app, however I want to keep the communication as fair as possible.
 
-[<- Back To Readme](https://github.com/WolfDen133/NEA-Docs/)
+
+> [ [<- Interviews](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md)  |  [Proposal ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Proposal.md) ] - (3/6)
