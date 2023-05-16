@@ -20,7 +20,7 @@ The app will be called Communable.
 
 > ### Firther feedback from stake-holders 
 > This is an email I wrote to my clients in the [interviews](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md).
-> `Dear Valued Clients,
+> ```Dear Valued Clients,
 >
 >I hope this email finds you well. I wanted to take a moment to thank you for your interest in our upcoming app. Your feedback and support will be invaluable to us as we work on developing and improving the platform.
 >
@@ -34,7 +34,7 @@ The app will be called Communable.
 >
 >Best regards,
 >
->Reuben Yates, Communable CEO.`
+>Reuben Yates, Communable CEO.```
 
 > [ [<- Research](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md)  |  [Requirements ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Requirements.md) ] - (4/6)
 
