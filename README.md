@@ -13,4 +13,4 @@ In the content below I will be discussing every section of my project, and will 
 - [Research](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md)
 - [Proposal](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Proposal.md)
 
-> Copywrite Reuben Yates 2023, Frome College
+> © Reuben Yates 2023, Frome College
