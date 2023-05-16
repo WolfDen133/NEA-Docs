@@ -20,21 +20,29 @@ The app will be called Communable.
 
 > ### Firther feedback from stake-holders 
 > This is an email I wrote to my clients in the [interviews](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md).
-> ```Dear Valued Clients,
+> ```
+> Dear Valued Clients,
 >
->I hope this email finds you well. I wanted to take a moment to thank you for your interest in our upcoming app. Your feedback and support will be invaluable to us as we work on developing and improving the platform.
+> I wanted to take a moment to thank you for your interest
+> in our upcoming app. Your feedback and support will be invaluable to us as we work on developing
+> and improving the platform.
 >
->Our goal is to create a mainstream form of communication that integrates with your other online services, such as online shops and other social platforms. Our app will provide a seamless experience for all your communication needs.
+> Our goal is to create a mainstream form of communication that integrates with your other online
+> services, such as online shops and other social platforms. Our app will provide a seamless experience
+> for all your communication needs.
 >
->As we work on developing the app, we are considering introducing a small paid subscription that will include some exclusive perks. However, I want to emphasize that the core features of the app will remain free for all users.
+> As we work on developing the app, we are considering introducing a small paid subscription that will
+> include some exclusive perks. However, I want to emphasize that the core features of the app will
+> remain free for all users.
 >
->We would love to hear your feedback and any ideas you may have for the project. Your input is crucial to us as we strive to create the best possible experience for our users.
+> We would love to hear your feedback and any ideas you may have for the project. Your input is crucial
+> to us as we strive to create the best possible experience for our users.
 >
->Thank you again for your support and interest. We look forward to continuing to work with you.
+> Thank you again for your support and interest. We look forward to continuing to work with you.
 >
->Best regards,
+> Best regards,
 >
->Reuben Yates, Communable CEO.```
+> Reuben Yates, Communable CEO.```
 
 > [ [<- Research](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md)  |  [Requirements ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Requirements.md) ] - (4/6)
 
