@@ -42,7 +42,8 @@ The app will be called Communable.
 >
 > Best regards,
 >
-> Reuben Yates, Communable CEO.```
+> Reuben Yates, Communable CEO.
+> ```
 
 > [ [<- Research](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md)  |  [Requirements ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Requirements.md) ] - (4/6)
 
