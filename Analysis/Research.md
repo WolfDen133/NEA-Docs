@@ -1,6 +1,6 @@
 > [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
 > 
-> [ [<- Interviews](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md)  |  [Proposal ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Proposal.md) ] - (3/6)
+> [ [<- Interviews](Interviews.md)  |  [Proposal ->](Proposal.md) ] - (3/6)
 
  # Research
 
@@ -41,4 +41,4 @@
 > - And snapchat's + feature is a really clever adoption, while giving users more customisable, while giving payed users more features. The inventive is always there to buy it. I may want to adopt this into my app, however I want to keep the communication as fair as possible.
 
 
-> [ [<- Interviews](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md)  |  [Proposal ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Proposal.md) ] - (3/6)
+> [ [<- Interviews](Interviews.md)  |  [Proposal ->](Proposal.md) ] - (3/6)

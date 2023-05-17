@@ -1,6 +1,6 @@
 > [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
 > 
-> [ [<- Problem Identification](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Problem%20Identification.md)  |  [Research ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md) ] - (2/6)
+> [ [<- Problem Identification](Problem%20Identification.md)  |  [Research ->](Research.md) ] - (2/6)
 
  # Interviews and user data
  When creating a communication app, the number one thing to keep in mind is the user base. They are the people who will be using the application day in day out.
@@ -109,4 +109,4 @@
 > 8. `Yes`
 > 9. `Yes, `
 
-> [ [<- Problem Identification](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Problem%20Identification.md)  |  [Research ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md) ] - (2/6)
+> [ [<- Problem Identification](Problem%20Identification.md)  |  [Research ->](Research.md) ] - (2/6)

@@ -1,6 +1,6 @@
-> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
+﻿> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
 > 
-> [ [<- Research](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md)  |  [Requirements ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Requirements.md) ] - (4/6)
+> [ [<- Research](Research.md)  |  [Requirements ->](Requirements.md) ] - (4/6)
 
  # My proposal
 
@@ -19,7 +19,7 @@ The app will be called Communable.
 > - Native packets, my solution will probibly use web requests rather than native in-built packets.
 
 > ### Firther feedback from stake-holders 
-> This is an email I wrote to my clients in the [interviews](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md).
+> This is an email I wrote to my clients in the [interviews](Interviews.md).
 > ```
 > Dear Valued Clients,
 >
@@ -45,5 +45,5 @@ The app will be called Communable.
 > Reuben Yates, Communable CEO.
 > ```
 
-> [ [<- Research](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md)  |  [Requirements ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Requirements.md) ] - (4/6)
+> [ [<- Research](Research.md)  |  [Requirements ->](Requirements.md) ] - (4/6)
 

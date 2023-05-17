@@ -8,9 +8,11 @@ In the content below I will be discussing every section of my project, and will 
 
 ## Contents
 ### Analysis
-- [Problem Identification](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Problem%20Identification.md)
-- [Client Interviews](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md)
-- [Research](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Research.md)
-- [Proposal](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Proposal.md)
+- [Problem Identification](Analysis/Problem%20Identification.md)
+- [Client Interviews](Analysis/Interviews.md)
+- [Research](Analysis/Research.md)
+- [Proposal](Analysis/Proposal.md)
+- [Requirements](Analysis/Requirements.md)
+- [Success Criteria](Analysis/Success%20Critetia.md)
 
 > © Reuben Yates 2023, Frome College

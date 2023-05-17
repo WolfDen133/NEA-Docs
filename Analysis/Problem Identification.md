@@ -1,6 +1,6 @@
 > [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
 > 
-> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Interviews ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md) ] - (1/6)
+> [ [<- Read me](../README.md)  |  [Interviews ->](Interviews.md) ] - (1/6)
 
 # Problem Identification
 
@@ -49,4 +49,4 @@ These days there is no easy way to manage all your communication needs right the
 > > This is a lot of data, and my application needs to be able to handle this amount off data efficiently and quickly.
 > > Using the steps above and implementing features will be a challenge, however I will try to use the most efficient approach in any situation that I am presented with.
 
-[ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Interviews ->](https://github.com/WolfDen133/NEA-Docs/blob/main/Analysis/Interviews.md) ] - (1/6)
+[ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Interviews ->](Interviews.md) ] - (1/6)
