@@ -17,9 +17,10 @@
 > ### Stakeholder requirements
 > 
 > #### Design
-> | Requirement | Explanation |
->  --- | ---
-> |A simple and easy to use ui for signing in, signing up and a simple clean "home page" | So that no matter where the user lands, it is always easy to use my app|
-> |A eligant, lightweight, efficent design | So that the app is not taxing on user's performace|
-> |Accessablility settings and different themes | So users can customize there environment to suit there style|
+> | Requirement                                                                           | Explanation
+> --- | ---
+> | A simple and easy to use ui for signing in, signing up and a simple clean "home page" | So that no matter where the user lands, it is always easy to use my app  
+> | A eligant, lightweight, efficent design                                               | So that the app is not taxing on user's performace                       
+> | Accessablility settings and different themes                                          | So users can customize there environment to suit there style             
+> | An easy to find help page                                                             | For if users get stuck or find a problem                                 
 > 
