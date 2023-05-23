@@ -44,6 +44,39 @@ The app will be called Communable.
 >
 > Reuben Yates, Communable CEO.
 > ```
-
+> #### Client 1
+> 
+> ```
+> Dear Reuben Yates,
+>
+> Thank you for reaching out to me and expressing your gratitude for my interest in your upcoming app.
+> I'm excited to hear about your plans and the potential it holds for a seamless communication
+> experience.
+> 
+> It's great to know that you value user feedback and support during the development process.
+> I believe that involving users in shaping the platform leads to a more user-friendly and 
+> successful product.
+> 
+> The idea of integrating your app with other online services, such as online shops and social 
+> platforms, sounds promising. It's always convenient to have a centralized platform that can 
+> cater to various communication needs.
+> 
+> Regarding the introduction of a small paid subscription, I appreciate your transparency in 
+> ensuring that the core features of the app will remain free for all users. It's important to
+> strike a balance between sustainability and accessibility, and I'm open to exploring the 
+> exclusive perks that the paid subscription may offer.
+>
+> I'm thrilled to have the opportunity to contribute my feedback and ideas to your project. 
+> I believe that user input plays a crucial role in creating the best possible experience for
+> everyone. Please consider me an active participant, ready to provide suggestions and insights
+> to help refine the app.
+>
+> Once again, thank you for your appreciation and for considering my involvement. I look forward
+> to witnessing the progress of your app and continuing our collaboration.
+>
+> Best regards,
+>
+> Mateusz Lukasz Burzynski
+> ```
 > [ [<- Research](Research.md)  |  [Requirements ->](Requirements.md) ] - (4/6)
 
