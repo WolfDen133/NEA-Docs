@@ -12,6 +12,11 @@ It will incorporate a backend for keeping a user database, and will have a front
 It will have a text based, audio based, and video based communication, while also being an easy way to pull all your info up anywhere you need.
 The app will be called Communable.
 
+I will create this app using asp.net, with a asp.net backend for messages, user & client features database. 
+All front end code will be custom css styling and written in html, while incorporating js for dynamic web page features.
+I will attempt to use sockets for live updates so the front end and backend can communicate in real time.
+I will use electron to build an easy to use dedicated app for mobile, desktop and linux.
+
 > ### Limitations
 > 
 > - Incorporating native services, I will have to use web-view & iFrame for services
@@ -78,5 +83,7 @@ The app will be called Communable.
 >
 > Mateusz Lukasz Burzynski
 > ```
+> 
+> #### Client 2 
 > [ [<- Research](Research.md)  |  [Requirements ->](Requirements.md) ] - (4/6)
 

@@ -23,4 +23,14 @@
 > | A eligant, lightweight, efficent design                                               | So that the app is not taxing on user's performace                       
 > | Accessablility settings and different themes                                          | So users can customize there environment to suit there style             
 > | An easy to find help page                                                             | For if users get stuck or find a problem                                 
+>
 > 
+> #### Functionality 
+> 
+> | Requirement | Explanation                                                                                          |
+> --------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------
+> |To have a functioning chat communication functionality | One of the main aims of this program is to be a main stream communications app                       |
+> |To have the ability to add and incoperate the users own services | The users want and need a way to pull everything together                                            |
+> |To easily be able to create group-chats and servers | Users want an easy way to manage there services for a given subject all in one place                 |
+> |To easily pull up a users information and details related to there services | Users want an easy way of finding eachother on there different platforms                             |
+> |To have a place where you can access all your related services all in one place | Its clear from the client interviews they want an easier way of incoperating all there apps in one place |
