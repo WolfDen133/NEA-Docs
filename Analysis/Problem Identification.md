@@ -4,49 +4,39 @@
 
 # Problem Identification
 
-In the 21st century, we are ever more interconnected with each other through technology.
-There are many applications and services dedicated to communication & social aspects of peoples lives. However, the vast majority of these are just that, and nothing more. This is the problem. Say for instance, a creator is working on a project with his or her team, and they make a few updates to there work; normally they would have to upload it to a file sharing/hosting service and then send a link back. But why not just have it in the same app? Or how about the gaming community, they want an easy way to send game credits, mods or even have a community drop box for shared files. They might even want to have there hosting service right at there fingertips. But I've never seen anything like that.
+In the world of gaming, where players seek thrilling adventures and immersive experiences, the creation of a 2D platformer game holds great promise. This genre captivates players with its dynamic gameplay, challenging obstacles, and pursuit mechanics that keep hearts pounding. Leveraging the computational power of modern technology, developers can bring to life a captivating world where players navigate through levels, evading the relentless pursuit of non-player characters. This computational solution allows for the seamless integration of visually stunning graphics, responsive controls, and intelligent artificial intelligence, offering an exhilarating gaming experience. In this article, we will explore the various aspects of developing a 2D platformer game, from understanding the stakeholders and the suitability of a computational solution, to breaking down the challenges, and finally, the abstraction required to create a captivating and well-balanced gaming experience. So, let's embark on this thrilling journey into the world of a 2D platformer game, where danger lurks around every corner and the pursuit never ends.
 
-These days there is no easy way to manage all your communication needs right there. So why not? I believe that company's focus on one spastic suit or need, and focus all there efforts in providing that specific service in the best way they can, but they dont necessarily think about how they could link it to other services. Having a easy to use, application to bring all of your communication needs together and further integrate your services of choice, would be very beneficial to users who are actively using there technology, who don't want to be switching tabs all the time. To have a communication app with built in support would not only solve these problems, but it would serve its part in cooperate or educational needs, having all the users connected means all types of people can connect through the studies. Even teachers could use it.
+> ## Stakeholders
+> The intended players for this game would be avid gamers who enjoy platformer games and are looking for a challenging and thrilling experience. The game will primarily target individuals who enjoy the excitement of running through levels and being pursued by non-player characters. However, the stakeholders would be the broader gaming community, as there are also players who would be interested in this type of 2D platformer game.
+>
+>To ensure accessibility, the game should be designed to cater to players of various skill levels and ages. Implementing adjustable difficulty settings would be ideal to accommodate both casual and hardcore gamers. Making the controls intuitive and user-friendly would also enhance the gaming experience for all players, regardless of their level of expertise.
 
-> ### Stakeholders
+> ## Why is it suited to a computational solution
+> A computational solution is well-suited for creating a 2D platformer game because computers offer powerful processing capabilities, allowing for complex and dynamic gameplay mechanics. The ability to manipulate and render graphics in real-time, calculate physics interactions, and handle player input makes computers the ideal platform for developing and running a game of this nature.
 > 
-> The intended clients for this software would be frequent users of their computers. This is because the software will be a generalisation of all there most used software's, combined into one. The software will be largely communication based so it will be mostly targeted at people who communicate a lot using there technology.
-> However, the stake holders would be the general user base of the internet, there are also people that could want a solution like this for there educational or cooperate needs.
->
-> I want the software to be as easily accessible to all types of ranges, so implementing accessibility settings would be ideal for this software. Making it accessible to all types of ages would bring more people together, by there interests and hobbies, finding suggested servers or other users that occupy the same interests, rather than being brought together by the same age.
-> Any user that can operate a computer is intended to use this software, so making it as user friendly as possible will be the best option.
+> Furthermore, a computational solution enables developers to implement sophisticated artificial intelligence algorithms to control the non-player character's behavior, creating a challenging and engaging experience for players. The game can leverage the computational power of modern hardware to deliver smooth animations, realistic physics simulations, and immersive audiovisual effects.
 
-> ### Why is it suited to a computational solution
+> ## What a computational solution would lend
+> > ### Problem recognition:
+> > The challenge in creating a 2D platformer game with a pursuit dynamic lies in ensuring the gameplay remains exciting and balanced. This involves designing intricate levels, implementing responsive controls, and fine-tuning the behavior of the non-player character to provide an appropriate level of challenge without becoming frustratingly difficult.
 >
-> Well, computers are the most diverse machines we have on the planet, and all types of people use them all the time. Having a application that brings a large amount of functionality into one place, while also being a central hub for communication would suit a computational solution extremely well.
->
-> Simply put, there is no other way to do it. My app focuses on bringing all a users wants and needs together, an non-computational alternative doesnt exist. Controlling different aspects of services and communication apps can be clunky when clicking between different applications, but an easy to use app would be perfect.
-
-> ### What a computational solution would lend:
->
-> > #### Problem recognition:
-> > The problem with combining all the needs of a user into one application, would be access of a wide range of functionality. And making it fast and efficient enough for the user to deem the application worth using. Once this has been overcome, another thing to consider would be future proofing for any custom needs a user wants.
->
-> > #### Problem decomposition
+> > ### Problem decomposition
+> > Breaking down the problem into smaller steps helps address the main challenge:
 > >
-> > The initial problem is a large issue, but can be decompiled and solved using smaller steps:
-> > - Creating an app that has a free easy to use app for communication in any situation
-> > - Creating a space inside said app that can have 3rd party services such as a file share, or hosting website
-> > - Creating an easy way for users to add these services any anything else they would want
-> > - Pull it together using a accessibility friendly UI for any user to use.
-> > 
-> > Once these steps have been completed in the development process, the problem would be easy to overcome and user happiness & satisfaction would be achieved.
+> > - Designing visually appealing and diverse levels that offer a balance between difficulty and enjoyment.
+> > - Implementing smooth and responsive player controls to provide a satisfying platforming experience.
+> > - Developing an intelligent and adaptive non-player character with pursuit mechanics that add tension and excitement to the gameplay.
+> > - Incorporating checkpoints, power-ups, and collectibles to enhance replayability and strategic decision-making.
+> > - By addressing these individual components, the overall challenge of creating an engaging and balanced 2D platformer game can be effectively tackled.
+
+> ## All together now
+> While each step presents its own unique challenges, integrating them harmoniously into a cohesive game experience requires careful consideration. Balancing level design, player controls, non-player character behavior, and additional gameplay elements is essential to ensure the game remains enjoyable and immersive.
+
+> ## Abstraction
+> In developing the game, focus should be placed on creating a robust underlying framework that allows for seamless gameplay mechanics. This includes handling player input, managing character animations, detecting collisions, and processing enemy behavior.
 >
-> > #### All together now
-> > On their own these steps are easy to execute, however when pulled together, it can be a challenge to create everything to the extent I want. This is something I will have to think about in my development section.
-> > However, using these steps as a guide to construct something bigger would be the easiest way to bring the whole application together, and I will use these steps to create something with maximum functionality while maintaining efficiency.
-> 
-> > #### Abstraction
-> > With this application, I need to focus on creating a fundamental framework, to then build on and add features.
-> > A communication application, requires a lot of expandable data, databases for users, databases for chats and easy ways of accessing these without brining up unnecessary data.
-> > Focusing strictly on inputs and outputs, the software is going to need the ability to process keyboard and mouse inputs, be able to communicate with servers over the web, and will need to access any other peripherals that the user needs for his or hers use-cases, such as voice chats, you would need to be access audio devices.
-> > This is a lot of data, and my application needs to be able to handle this amount off data efficiently and quickly.
-> > Using the steps above and implementing features will be a challenge, however I will try to use the most efficient approach in any situation that I am presented with.
+> Efficient data management is crucial for storing level data, player progress, and non-player character attributes. Implementing optimized algorithms and data structures will help deliver smooth performance and minimize processing overhead.
+>
+> Moreover, the game should be designed with scalability in mind, allowing for the addition of new levels, enemies, and gameplay features as the project evolves. By considering these factors and employing efficient computational techniques, the development of a captivating and challenging 2D platformer game can be realized.
 
 [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Interviews ->](Interviews.md) ] - (1/6)
