@@ -1,4 +1,4 @@
-> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
+> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Project](https://github.com/WolfDen133/NEA-Game) ]
 > 
 > [ [<- Problem Identification](Problem%20Identification.md)  |  [Research ->](Research.md) ] - (2/6)
 

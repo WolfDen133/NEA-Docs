@@ -1,15 +1,17 @@
-﻿> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
+﻿> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Project](https://github.com/WolfDen133/NEA-Game) ]
 >
 > [ [<- Requirements](Requirements.md)  |  [Next Section ->](../README.md) ] - (6/6)
 
 # Success criteria
 
-Criteria | Evidance
---- | ---
-A main chat area | A screen shot of a working 2 way chat system
-A way to easily pull up any personal information | A screen shot showing a section of the chat bar, that has a button for pulling up any neefded infomation
-An easy way to add seperate services to the app | A screen where you can add remove or edit premade or custom services
-An easy way to have dedicated servers for spasific peoples needs | A screenshot of a server creation screen where users can create either public or private servers
-A profile window for each user that displays all public information about a user | A screenshot of a profile screen with an example user
-An easy way to create an account | A screen shot that displays login & register screens
-An easy way to change your account details | A screenshot of a settings menu containing account details
+| Criteria                                                             | Evidence                                                                                                          |
+|----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| A main gameplay area                                                 | A screenshot of the game showing the player character and the level design                                        |
+| A way to easily access player information during gameplay            | A screenshot showing a HUD element displaying player stats and information                                        |
+| An easy way to add new power-ups or abilities to the game            | A screenshot of a power-up selection screen where players can choose and activate different abilities             |
+| An easy way to navigate through different levels or stages           | A screenshot of a level selection menu where players can choose the desired level or stage to play                |
+| A player profile screen displaying game progress and achievements    | A screenshot of a player profile screen showing game statistics, unlocked achievements, and progress              |
+| An easy way to start a new game or continue from the last checkpoint | A screenshot of a game menu with options to start a new game or continue from the last saved checkpoint           |
+| An easy way to adjust game settings and controls                     | A screenshot of a settings menu where players can customize game options, including graphics, audio, and controls |
+
+> [ [<- Requirements](Requirements.md)  |  [Next Section ->](../README.md) ] - (6/6)

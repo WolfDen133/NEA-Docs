@@ -1,35 +1,7 @@
-﻿> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Backend](https://github.com/WolfDen133/NEA-Backend) | [Frontend](https://github.com/WolfDen133/NEA-Frontend) ]
+﻿> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Project](https://github.com/WolfDen133/NEA-Game) ]
 > 
 > [ [<- Research](Research.md)  |  [Requirements ->](Requirements.md) ] - (4/6)
 
-# My Proposal
-
-## My Initial Proposal Based on the Research:
-
-My application will be a 2D side scroller/platformer game where players are pursued by an NPC throughout the levels. The game will incorporate elements inspired by games like Extreme Pamplona and Cuphead. Players will navigate through challenging levels, avoiding obstacles, and using various mechanics to escape from the relentless NPC chasing them. The game will provide a thrilling and intense gameplay experience.
-
-The game will be developed using the raylib framework in C#. Raylib is a simple and easy-to-use game development library that provides powerful features for creating 2D games. It will allow us to build a visually appealing and interactive game with smooth animations and responsive controls.
-
-For the backend, I will utilize C# to manage the game logic, including the NPC's behavior, level progression, and player interactions. The frontend will consist of the game's graphical user interface (GUI) and will be developed using raylib's rendering capabilities. This will enable us to create visually stunning levels, character animations, and special effects.
-
-To ensure an immersive gaming experience, I will focus on creating dynamic sound effects and background music using raylib's audio capabilities. These audio elements will enhance the gameplay and contribute to the overall atmosphere of the game.
-
-While the initial version of the game will be developed for desktop platforms, such as Windows, Mac, and Linux, we will explore the possibility of porting it to other platforms, including mobile devices, using raylib's multi-platform support.
-
-> ### Limitations
->
-> - The game will be limited to platforms supported by raylib and its dependencies.
-> - Customizability options may be limited compared to more extensive game development frameworks.
-> - Native integration with other services may require additional development efforts.
-
-> ### Firther feedback from stake-holders 
-> This is an email I wrote to my clients in the [interviews](Interviews.md).
-> ```
->
-Here's the response in raw-text Markdown syntax:
-
-vbnet
-Copy code
 # My Proposal
 
 ## My Initial Proposal Based on the Research:
@@ -70,11 +42,21 @@ While the initial version of the game will be developed for desktop platforms, s
 > 
 > Your continued feedback and ideas are highly appreciated as we strive to deliver the best possible gaming experience. We look forward to keeping you updated on our progress and involving you in the development process.
 > 
-> Thank you once again for your support and interest. We are excited about this project and are committed to
+> Thank you once again for your support and interest. We are excited about this project and are committed to providing any firther updates to the project.
+> 
+> Yours, Reuben Yates.
 > ```
 > #### Client 1
 > 
 > ```
+> Dear Reuben Yates,
+> 
+> Thank you for reaching out and expressing your gratitude for our interest in your upcoming game. We are thrilled to hear about your plans and the exciting gameplay experience you aim to deliver. The choice of using the raylib framework in C# for game development, with its visually appealing 2D capabilities and multi-platform support, shows great promise. We look forward to experiencing the smooth animations, responsive controls, and captivating visuals that raylib offers. The integration of dynamic sound effects and background music using raylib's audio capabilities will undoubtedly enhance the immersion and overall atmosphere of the game.
+>
+> We appreciate your commitment to seeking continued feedback and ideas from stakeholders like us. As avid gamers, we are excited to contribute to the development process and provide our insights to help shape the best possible gaming experience. Thank you for keeping us informed and involved in your project. We eagerly anticipate further updates and are genuinely excited about the progress.
+>
+> Best regards,
+> Mateusz Burznski
 > ```
 > 
 > #### Client 2 
