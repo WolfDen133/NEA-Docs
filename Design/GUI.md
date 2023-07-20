@@ -1,6 +1,6 @@
 > [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Project](https://github.com/WolfDen133/NEA-Game) ]
 >
-> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (1/-)
+> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (1/9)
  
  # GUI (main)
 
@@ -20,19 +20,35 @@ The main design of my game will be largely based off Extreme Pamplona in the fac
 > - I will either be using free online assets or generating my own.
 > - The floor layer will also be moving right to left and will be dynamic to the level progress.
 
-> ### Parallax background Layer
+> #### Parallax background Layer
 > - This will be where there will be a fake 3d parallax layer, that will trick the user into thinking they are moving across a 3d plane with a fixed camera angle.
 > - I will either be creating or generating, or using free online sources for these layers.
 > - They will move in the opposite direction with distance multipliers to create the illusion of 3d perspective.
 
-> ### Enemy Layer
+> #### Enemy Layer
 > - This will be where the enemy comes on the screen if it gets to close.
 > - The enemy will be offscreen left when the player outruns it.
 
-> ### Player Layer
+> #### Player Layer
 > - This will be where the player will be displayed.
 > - Will be able to move back and fourth with the camera following, with the background moving right to left.
 > - The assets used for the player will be either made by me, or use free open source content.
 
+# Main menu & Settings
 
-> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (1/-)
+>![](https://i.imgur.com/ooouZw7.png)
+>![](https://i.imgur.com/lrLv5wB.png)
+>
+>These are the designs of the main menu and settings screens I want to implement. I will first mark them out with rectangles in the game engine and then add assets and textures later.
+
+> #### Firstly the main menu screen
+> - It will consists of a section for the title card where there will be a banner for the game, including its title. It will be positioned at the top left of the screen
+> - Next there is the buttons area. There will be a play button that will take the player to the Level select screen. There will also be a button to take the user to the Player stats screen. Then there will be a button to take the user to the settings menu, and lastly a quit button.
+> - The background section is where there will be animated transition images of the game, to keep the player engaged with the game straight from boot.
+> - Finally there will be a game version information area that will display the current game build version and engine version etc.
+
+> #### Secondly the settings screen
+> - It will consist of a menu with different category selectors to change what category of setting you wish to change
+> - In the sub categories there will be a variety of sliders, buttons, input boxes, lists etc. to change settings of the game
+
+> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (1/9)

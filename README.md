@@ -17,6 +17,12 @@ In the content below I will be discussing every section of my project, and will 
 
 > ### Design
 > - [GUI](Design/GUI.md)
-> - [Main menu & Settings](Design/Main%20menu%20&%20Settings.md)
+> - [Usability Features](Design/Usability%20Features.md)
+> - [Structure Diagrams](Design/Structure%20Diagrams.md)
+> - [Subroutine Explanation](Design/Subroutine%20Exp.md)
+> - [Algorithms](Design/Algorithms.md)
+> - [Inputs & Outputs](Design/Inputs%20&%20Outputs.md)
+> - [Validation](Design/Validation.md)
+> - [Testing Plan](Design/Testing%20plan.md)
 
 > © Reuben Yates 2023, Frome College
