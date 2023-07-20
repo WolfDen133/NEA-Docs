@@ -1,6 +1,6 @@
 > [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Project](https://github.com/WolfDen133/NEA-Game) ]
 >
-> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (6/6)
+> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (1/-)
  
  # GUI (main)
 
@@ -35,4 +35,4 @@ The main design of my game will be largely based off Extreme Pamplona in the fac
 > - The assets used for the player will be either made by me, or use free open source content.
 
 
-> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (6/6)
+> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (1/-)
