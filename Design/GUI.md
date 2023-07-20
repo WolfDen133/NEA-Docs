@@ -1,4 +1,8 @@
-﻿# GUI (main)
+> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Project](https://github.com/WolfDen133/NEA-Game) ]
+>
+> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (6/6)
+ 
+ # GUI (main)
 
 The main design of my game will be largely based off Extreme Pamplona in the fact that.
 
@@ -29,3 +33,6 @@ The main design of my game will be largely based off Extreme Pamplona in the fac
 > - This will be where the player will be displayed.
 > - Will be able to move back and fourth with the camera following, with the background moving right to left.
 > - The assets used for the player will be either made by me, or use free open source content.
+
+
+> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (6/6)
