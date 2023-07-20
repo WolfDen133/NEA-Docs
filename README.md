@@ -17,5 +17,6 @@ In the content below I will be discussing every section of my project, and will 
 
 > ### Design
 > - [GUI](Design/GUI.md)
+> - [Main menu & Settings](Design/Main%20menu%20&%20Settings.md)
 
 > © Reuben Yates 2023, Frome College
