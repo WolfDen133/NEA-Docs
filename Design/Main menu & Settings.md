@@ -1,4 +1,8 @@
-﻿# Main menu & Settings
+> [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Project](https://github.com/WolfDen133/NEA-Game) ]
+>
+> [ [<- GUI](GUI.md)  |  [ ->](-) ] - (6/6)
+ 
+ # Main menu & Settings
 
 ![](https://i.imgur.com/ooouZw7.png)
 ![](https://i.imgur.com/lrLv5wB.png)
