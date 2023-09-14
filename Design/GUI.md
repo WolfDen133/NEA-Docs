@@ -1,6 +1,6 @@
 > [ [Docs](https://github.com/WolfDen133/NEA-Docs/) | [Project](https://github.com/WolfDen133/NEA-Game) ]
 >
-> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (1/9)
+> [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Useability features ->](Usability%20Features.md) ] - (1/9)
  
  # GUI (main)
 
@@ -49,6 +49,20 @@ The main design of my game will be largely based off Extreme Pamplona in the fac
 
 > #### Secondly the settings screen
 > - It will consist of a menu with different category selectors to change what category of setting you wish to change
-> - In the sub categories there will be a variety of sliders, buttons, input boxes, lists etc. to change settings of the game
+> - In the sub categories there will be a variety of sliders, buttons, input boxes, lists etc. to change settings of the game.
+> - There will be an apply, reset and close button at the bottom left.
+> - There may also be a area at the bottom of the screen that displays some more information about the game version.
+
+# Misc screens
+
+> #### Stats screen (and maybe a leaderboard)
+> - I would like to impliment a stats screen so that the player can see what levels they have completed, there time record, there high score and other various stats.
+> - I would like to have them sync up with a online database but may not get round to that.
+
+> #### Pause menu
+> - A traditional pause menu that shows: resume, restart, game settings and main menu.
+> - It will also show current score, current time and pause the game.
+
+And that's largely it, this is where I will be focusing on these sections of the game, adding features where I see fit.
 
 > [ [<- Read me](https://github.com/WolfDen133/NEA-Docs/)  |  [Main menu & Settings ->](Main%20menu%20&%20Settings.md) ] - (1/9)
