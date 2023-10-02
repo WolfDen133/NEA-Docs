@@ -14,5 +14,6 @@ Playability is also important down to knowing what controls to use, so the botto
 
 I want to focus on the ability to navigate the levels easily, maybe introducing a level select carousel with screenshots of the levels to display what a level will be, including the level difficulty.
 
-I want to also make it clear if the game is loading or saving to make sure that the user doesnt have to wait for program hangs and doesnt get confused between crashes and intended behaviour.
+I want to also make it clear if the game is loading or saving to make sure that the user doesnt have to wait for program hangs and so they don't get confused between crashes and intended behaviour.
 
+Having clear explanations for in game features will also be an important factor as some new players, not just to the game, but the gaming industry need to be able to understand game mechanics, controls, scoring schemes etc.
