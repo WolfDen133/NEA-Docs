@@ -278,6 +278,7 @@ public class BackgroundRenderer : UiRenderer
 {
     public BackgroundRenderer(string id, bool isEnabled = true) : base(id)
     {
+        IsEnabled = isEnabled;
     }
 }
 ```
@@ -307,3 +308,4 @@ public abstract class ConditionalRenderer : UiRenderer
     { }
 }
 ```
+
