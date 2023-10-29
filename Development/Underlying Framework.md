@@ -39,6 +39,9 @@ public class WindowManager
     private Rectangle _sourceRectangle;
     private Rectangle _destRectangle;
     
+    // This is the procedure of creating a window and registering it in the operating system
+    // It also creates a virtual canvas to draw to, so that we can scale the game to any resolution
+    // It also creates a camera so that we can move the camera around the game world
     public void CreateWindow()
     {
         VirtualRatio = Width / Velocity.Settings.Resolution.X;
@@ -67,7 +70,24 @@ public class WindowManager
 
         _screenSpaceCamera = Camera;
     }
+    
+    
+    // This is the procedure of applying any settings changes to the window
+    // This includes resolution, fullscreen, and any other settings
+    public void ApplySettingsChange()
+    {
+        if (!Raylib.IsWindowFullscreen() && Loader.Settings.FullScreen) Raylib.ToggleFullscreen();
+        else if (Raylib.IsWindowFullscreen() && !Loader.Settings.FullScreen) Raylib.ToggleFullscreen();
+        
+        VirtualRatio = Width / Settings.Resolutions[Loader.Settings.Resolution].X;
+        _destRectangle = new Rectangle(-VirtualRatio, -VirtualRatio, Settings.Resolutions[Loader.Settings.Resolution].X + VirtualRatio * 2, Settings.Resolutions[Loader.Settings.Resolution].Y + VirtualRatio * 2);
 
+        Raylib.SetWindowSize((int)Settings.Resolutions[Loader.Settings.Resolution].X, (int)Settings.Resolutions[Loader.Settings.Resolution].Y);
+    }
+
+    // This is the main draw loop of the game, it will draw to a virtual canvas, and then draw that canvas to the screen
+    // This allows us to scale the game to any resolution
+    // It also allows us to use a camera to move around the game world
     public void DrawLoop()
     {
         while (!Raylib.WindowShouldClose()) 

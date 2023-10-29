@@ -17,3 +17,8 @@ I want to focus on the ability to navigate the levels easily, maybe introducing 
 I want to also make it clear if the game is loading or saving to make sure that the user doesnt have to wait for program hangs and so they don't get confused between crashes and intended behaviour.
 
 Having clear explanations for in game features will also be an important factor as some new players, not just to the game, but the gaming industry need to be able to understand game mechanics, controls, scoring schemes etc.
+
+Another usability feature is having an obvious way to exit the game, so I will be adding a quit button to the main menu.
+
+And lastly having a way to display the user what ui elements are interactable, so I will be adding a hover effect to the buttons, sliders and any other ui elements.
+
