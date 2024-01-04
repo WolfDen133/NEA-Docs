@@ -17,16 +17,19 @@ In the content below I will be discussing every section of my project, and will 
 
 ### Design
 > - [GUI](#gui)
-> - [Usability Features](Design/Usability%20Features.md)
-> - [Structure Diagrams](Design/Structure%20Diagrams.md)
-> - [Subroutine Explanation](Design/Subroutine%20Exp.md)
-> - [Algorithms](Design/Algorithms.md)
-> - [Inputs & Outputs](Design/Inputs%20&%20Outputs.md)
-> - [Validation](Design/Validation.md)
-> - [Testing Plan](Design/Testing%20plan.md)
+> - [Usability Features](#usability-features)
+> - [Structure Diagrams](#structure-diagrams)
+> - [Subroutine Explanation](#subroutine-exp)
+> - [Algorithms](#algorithms)
+> - [Inputs & Outputs](#inputs--outputs)
+> - [Validation](#validation)
+> - [Testing Plan](#testing-plan)
 
-### Development
-> - [Underlying Framework](Development/Underlying%20Framework.md)
+### [Development](#development)
+> - [Underlying Framework](#underlying-framework)
+> - [Base game, settings and menu manager](#base-game-settings-and-menus)
+> - [UiElements](#ui-elements)
+> - [Windows](#physics)
 
 > © Reuben Yates 2023, Frome College
 
@@ -44,7 +47,7 @@ In the world of gaming, where players seek thrilling adventures and immersive ex
 
 > ### Why is it suited to a computational solution
 > A computational solution is well-suited for creating a 2D platformer game because computers offer powerful processing capabilities, allowing for complex and dynamic gameplay mechanics. The ability to manipulate and render graphics in real-time, calculate physics interactions, and handle player input makes computers the ideal platform for developing and running a game of this nature.
-> 
+>
 > Furthermore, a computational solution enables developers to implement sophisticated artificial intelligence algorithms to control the non-player character's behavior, creating a challenging and engaging experience for players. The game can leverage the computational power of modern hardware to deliver smooth animations, realistic physics simulations, and immersive audiovisual effects.
 
 > ### What a computational solution would lend
@@ -95,7 +98,7 @@ When creating a 2D side-scroller game where a non-player character (NPC) chases 
 > - Occupation: Unemployed
 > - Reasoning: I want to interview Mati because he represents a perspective of having a lot of time to spend on gaming and can provide an unbiased opinion.
 > 1. Quite often. I play games daily.
-> 2. I enjoy 2D games, probably around 50% of my gaming time. 
+> 2. I enjoy 2D games, probably around 50% of my gaming time.
 > 3. PC & Phone
 > 4. Yes, it would make the game more thrilling and keep me engaged.
 > 5. Definitely! Different levels and environments would add variety and make the game more interesting.
@@ -109,7 +112,7 @@ When creating a 2D side-scroller game where a non-player character (NPC) chases 
 > - Age: 20
 > - Occupation: Part-time bar & shop work
 > - Reasoning: I want to interview Lochan to gain insights into how young adults perceive 2D side-scroller games and their preferences in game design.
-> 
+>
 > 1. I play video games regularly, usually a few times a week.
 > 2. I enjoy playing 2D games, they make up a significant portion of my gaming library.
 > 3. Primarily on my phone.
@@ -123,7 +126,7 @@ When creating a 2D side-scroller game where a non-player character (NPC) chases 
 > ### Client 3
 > - Subject: Louis Tayler
 > - Age: 16
-> 
+>
 > 1. I play video games whenever I have free time, which is quite often.
 > 2. I enjoy playing 2D games, especially on my Xbox.
 > 3. I primarily use my Xbox, phone, and iPad for gaming.
@@ -147,8 +150,6 @@ When creating a 2D side-scroller game where a non-player character (NPC) chases 
 > 7. I prefer the NPC's behavior to be unbiased and consistent. It allows for fair gameplay and strategic decision-making.
 > 8. Yes, I would consider supporting the game's development if it offers attractive perks or additional content.
 > 9. Yes, the concept of a 2D side-scroller with a chasing NPC sounds intriguing. It would add an extra layer of intensity and make the game more exciting.
-
-> [ [<- Problem Identification](Problem%20Identification.md)  |  [Research ->](Research.md) ] - (2/6)
 
 
 ## Research
@@ -199,7 +200,7 @@ While the initial version of the game will be developed for desktop platforms, s
 
 > #### Further Feedback from Stakeholders
 > This is an email I wrote to my clients based on the interviews conducted.
-> 
+>
 > ```
 > Dear Valued Clients,
 >
@@ -222,7 +223,7 @@ While the initial version of the game will be developed for desktop platforms, s
 > Yours, Reuben Yates.
 > ```
 > #### Client 1
-> 
+>
 > ```
 > Dear Reuben Yates,
 > 
@@ -308,11 +309,11 @@ This is a process that I will follow when creating future applications. Breaking
 >
 > - Check to see if Escape is pressed
 > > - Activate pause screen
-> 
+>
 > - Poll the physics manager
 > > - Run through all registered physics objects
 > > - Poll physics for object
-> 
+>
 > - Poll camera controller
 > - Update camera position based on player position
 > - Times numbers by the previous value times a ratio of camera smoothness
@@ -339,8 +340,8 @@ Physics and something for every good side scroller has so I will be implementing
 > Now we have a base class with properties that we can manipulate so that things can move around the screen.
 
 > ##### Velocity changes
-> 
-> We will define a function so we can change the velocity of a game object. And then will check to see if the added velocity plus the existing velocity of the game object is greater than the max velocity defined the physics constants. 
+>
+> We will define a function so we can change the velocity of a game object. And then will check to see if the added velocity plus the existing velocity of the game object is greater than the max velocity defined the physics constants.
 > If the velocity will be greater than max velocity zone, it will find the difference between the added velocity and the max velocity and set that difference as velocity change.
 > Otherwise it will add the velocity to the Objects, current velocity and update. The velocity changed very true, so that any changes calculated, when the frame updates will be added.
 > This is necessary, so that objects can have and receive new velocity, depending on how to use it interact with the game.
@@ -348,7 +349,7 @@ Physics and something for every good side scroller has so I will be implementing
 > ##### Global physics
 >
 > Firstly, we need to check to see if the object has gravity. If the object does have gravity and isn't on the ground, then we will add the gravity velocity to the object, moving it down.
-> Secondly, we need to check if the player's foot Y value is equal to the game floor height. If so, cancel the object, Y velocity. 
+> Secondly, we need to check if the player's foot Y value is equal to the game floor height. If so, cancel the object, Y velocity.
 > If the first case isn't true, then we need to check for a second case. This check will be, checking to see if players foot Y position plus the velocity for the current frame will be greater than or equal to the floor height. If so, set the players y velocity to 0.
 > If none of these cases are true, we can set the on-floor variable to false, as the player will not be on the floor.
 > Please note that there should be a check implemented to see if the player goes out of bounds on the Y axis, if so, reset the players position, so that they never end up below the floor and fall infinitely.
@@ -361,7 +362,7 @@ Physics and something for every good side scroller has so I will be implementing
 > Firstly, we will implement an algorithm to check to see if the players position is in the range of a game object. This range will be 1+ the maximum velocity so that the player cannot clip inside of the object if the velocity is greater than a given range.
 > Once we have this algorithm, we can perform and check on the objects in the level, to see which ones are closest to the player.
 > Once we've acquired this list of objects, we can then perform collision calculations to see whether the player will collide with said object.
-> 
+>
 > Firstly, we get the players bounds by adding or subtracting the players dimensions divided by two from the players position to find the bounding box of the player.
 > For the actual collision detection, it will be largely similar to checking if the player is on the floor, we will check to see if the players x bounds plus the velocity for the given frame equal the collidable objects x bounds. If so, set the players X velocity to 0 to stop the player from moving further inside the object.
 > If that case isn't true, then we need to check if the players X velocity plus the players expound lands inside a game object, if so, find the difference between the x bound and the colldable object. Then set the X velocity to that value.
@@ -376,7 +377,7 @@ And that will largely be it for the algorithms in my project as the majority of 
 The main design of my game will be largely based off Extreme Pamplona in the fact that.
 
 > ![](https://i.imgur.com/wrErLGJ.png)
-> 
+>
 > This will be the design of the main game window. From the image above, the main gameplay window will be a foreground layer with obstacles, a player area layer where the camera follows the player, an area where the npc can enter the screen if it gets too close, a parallax background and a level asset layer where the level assets can be shown. There will also be 3 layers at the top where the the game will display various stats about the player, and a timer.
 
 > ### Player Stat Layers
@@ -464,7 +465,7 @@ And that's largely it, this is where I will be focusing on these sections of the
 
 ![Flow diagram](https://i.imgur.com/kRE7aZK.png)
 
-As stated in the algorithm section, it is important to design a framework that you can create your game on top of us, just creating a game using draw instructions and inputs can be a very inefficient and messy. 
+As stated in the algorithm section, it is important to design a framework that you can create your game on top of us, just creating a game using draw instructions and inputs can be a very inefficient and messy.
 Above is the structure diagram for the underlying framework that I have built for my game. As you can see, it's broken into three main parts, poll, update, draw, And this is important to maintain this main flow as any and all updates need to happen before calculations happen and finally it should be drawn to the screen.
 
 Another notable element of my project would be the use of managers and child objects. I use managers everywhere in my project, and the managers are a way to register store update and on register elements when they are needed.
@@ -507,7 +508,7 @@ The first of which being the main `Game.cs` file. This is the main class that is
     endprocedure
     
 ```
- 
+
 This is the main game loop, and it is responsible for running the main logic for the game. It first checks to see if the game is running, and if it is, it will run the physics manager and the camera controller. The physics manager is responsible for running the physics for all of the physics objects, and the camera controller is responsible for moving the camera to follow the player.
 
 The next subroutines are responsible for enabling and disabling the game along with the currently active and inactive renderers.
@@ -696,7 +697,7 @@ As it is hard to test the subroutines without running the game, I will be testin
 | Click inside the sliders bounds  | Should activate and slide head should move to the mouse X value | Activates and behaves appropriately |
 | If is clicked and mouse is moved | Should move the slider head to the mouse X value                | Moves the slider head               |
 
-#### Selector 
+#### Selector
 
 | Input                                              | Validation                                    | Result                              |
 |----------------------------------------------------|-----------------------------------------------|-------------------------------------|
@@ -805,6 +806,8 @@ This will be mentioned along side my main development in the [Development](#deve
 > - I am going to be creating my game using the object oriented programming method, this allows me to have many custom classes working together to achieve a human readable and maintainable structure to my programming, while also allowing me to create different elements of the game that all work together with minimal re-writes.
 > - I will be using interfaces for any and all input logic, this reduces the number of selection statements and duplicated code.
 > - Some options such as resolution and control schemes will be using structs, to reduce the amount of registered classes in the game.
+> - I will be using a game engine called raylib, this is a c# game engine that allows me to create games in c# and have them run on any platform, including windows, mac and linux.
+> - Due to time constraints I didn't have time to document the renderers, so have included a quick description of what each renderer class does.
 
 ### Underlying framework
 
@@ -936,7 +939,7 @@ public class WindowManager
 ```
 
 > One notable error that I encoutered when creating the window manager was that the image that was drawn to the screen was flipped, this was because of the way that raylib draws images to the screen, and the way that we are handleing multiple resolutions. To fix this I had to flip the image on the y axis using a negated Virtual Ratio in the line:
-> 
+>
 > `_destRectangle = new Rectangle(-VirtualRatio, -VirtualRatio, Settings.Resolutions[Loader.Settings.Resolution].X + VirtualRatio * 2, Settings.Resolutions[Loader.Settings.Resolution].Y + VirtualRatio * 2);`
 > Using a negated virtual ratio, we can flip the image on the y axis, and draw it to the screen correctly.
 
@@ -1469,7 +1472,6 @@ Linking back to our [Testing plan, test 1](#testing-plan), we can use this test 
 
 And as we can see from the image above, we have a working window, ready for the logic to be added for the next step.
 
-
 ## Base game, Settings and Menus
 
 Now we have our underlying framework we can begin to build the basic structures for our main game logic, the settings and preferences, and menus that will be displayed to the user.
@@ -1583,7 +1585,7 @@ public class DebugRenderer : UiRenderer
 }
 ```
 
-### Base Game 
+### Base Game
 
 Now our base game file will be where all our main game will be run from, it will contain functions such as `run()` and `stop()` to begin and end our game, and will contain the main loop run for every frame of the games logic loop.
 As this file is one of the most commonly accessed files it contains definitions that we have not looked at yet, but these are the classes referenced later in the development section.
@@ -1891,10 +1893,10 @@ public class Game
 
 As you can see there are many functions of this class that are responsible for handling all of the main components of the game.
 
-### Settings 
+### Settings
 
 Next we will need to create a settings class so that we can have values to set and read from when changing the games in-game preferences, such as camera smoothness or game volume.
-Our settings file will contain all our main variables in relation to actual configuration such as resolution, controls etc. It will be defined in our main class, and be accessible to everything inside the program code. 
+Our settings file will contain all our main variables in relation to actual configuration such as resolution, controls etc. It will be defined in our main class, and be accessible to everything inside the program code.
 We will do this by defining our settings property as static therefor it can be assessed from the class' static instance.
 We will also define our DefaultSettings in a struct so we have an easy way to apply the default settings, and will create a function to do just that.
 Lastly we will define our settings file handler, so we can write and read from a file, this enables disk saving so that the chosen preferences will be saved across game restarts.
@@ -2057,8 +2059,8 @@ public class Settings : IEquatable<Settings>, ICloneable
 ```
 
 As you can see there is also some boilerplate code for the IClonable and IEquatable class declaration, this is so we can later compare and clone this class if we are trying to compare class differences.
-This file saves all the settings to three sections, and it outputs and reads to a file called `settings.ini` in the root directory of the program files. 
-It looks something like this: 
+This file saves all the settings to three sections, and it outputs and reads to a file called `settings.ini` in the root directory of the program files.
+It looks something like this:
 ```ini
 [SOUND]
 PLAYER_VOLUME=1
@@ -2166,9 +2168,9 @@ Calling the `MenuManager.Tick()` method in its tick function, therefor giving th
 
 Now as you can see this class references our windows we are going to create. These are referenced further down in this file.
 
-### UI Elements
+## UI Elements
 
-This subsection will be slightly different to the last as these belong in their own section. 
+This subsection will be slightly different to the last as these belong in their own section.
 The reason for this is because they are reused time and time again across the menus and will need explaining seperately.
 Each subsection of this file will explain each ui element and its respective renderer. Starting with the base ui element
 
@@ -2263,9 +2265,9 @@ Each subsection of this file will explain each ui element and its respective ren
 >     }
 > }
 > ```
-> 
-> ##### Renderer 
-> 
+>
+> ##### Renderer
+>
 > - Draw a box, draw a border, draw text, calculate animation step, draw gray if inactive.
 > ```csharp
 > using System.Numerics;
@@ -2344,8 +2346,8 @@ Each subsection of this file will explain each ui element and its respective ren
 > ```
 
 > #### `ControlField.cs`
-> 
->-  For the keybindings menu, displays a value specified by the `SettingsScreen.cs` class file at lines `71`-`77`. 
+>
+>-  For the keybindings menu, displays a value specified by the `SettingsScreen.cs` class file at lines `71`-`77`.
 >-  Creates a small field with a variable text, that can be clicked and accept inputs, running checks from `Keybind.cs`, to see if it is taken or invalid.
 >-  Returns `Raylib/Input/KeyboardKey` as its return value, and returns the currently selected key.
 > ```csharp using Raylib_cs;
@@ -2394,7 +2396,7 @@ Each subsection of this file will explain each ui element and its respective ren
 >     }
 > }
 > ```
-> 
+>
 > ##### Renderer
 > - Calls its child display renderer
 > ```csharp
@@ -2516,11 +2518,11 @@ Each subsection of this file will explain each ui element and its respective ren
 > }
 > 
 > ```
-> 
+>
 > Shares a renderer with `ValueField.cs`.
 
 > #### Label
-> 
+>
 > Draw text at a position
 > ```csharp
 > using Velocity.Math;
@@ -2540,7 +2542,7 @@ Each subsection of this file will explain each ui element and its respective ren
 >     }
 > }
 > ```
-> 
+>
 > ##### Renderer
 > Draws text to the window with specified arguments.
 > ```csharp
@@ -2600,14 +2602,14 @@ Each subsection of this file will explain each ui element and its respective ren
 >     }
 > } 
 > ```
-> 
+>
 > ##### Renderer
 > - Create a ui element that takes up the other half of the screen
 > - Will have a title larger than other text positioned at the top of the rectangle
 > - Then draw the level preview
-> - Then draw the difficulty 
+> - Then draw the difficulty
 > - Then draw best time
-> 
+>
 > ```csharp
 > using Raylib_cs;
 > using Velocity.Game.Statistics;
@@ -2644,7 +2646,7 @@ Each subsection of this file will explain each ui element and its respective ren
 > - To display a 2D block version of the previewed level
 > - Recalculate for different levels
 > - Display different color for different cell types
-> 
+>
 > ```csharp
 > using Raylib_cs;
 > using Velocity.Math;
@@ -2699,7 +2701,7 @@ Each subsection of this file will explain each ui element and its respective ren
 >     }
 > }
 > ```
-> 
+>
 > ##### Renderer
 > - Draw all rectangles for rows and columns
 > ```csharp
@@ -2728,8 +2730,561 @@ Each subsection of this file will explain each ui element and its respective ren
 > } 
 > ```
 
+> #### `PlayerPreview.cs`
+> - To display a player preview in the main menu
+> - So the player knows what player avatar they have selected
+> - Returns null
+> - Is able to be changed
+> - Runs through player sprites and displays them for animation
+>
+> ```csharp
+> 
+> using Velocity.Math;
+> using Velocity.Ui.Render.Element;
+> using Velocity.Window;
+> 
+> namespace Velocity.Ui.Misc;
+> 
+> public class PlayerPreview : UiElement
+> {
+> public PlayerPreview() : base(new Vector2(WindowManager.Width / 1.3 - 280, WindowManager.Height / 2 - 410), // Draw at center screen right
+> new Vector2(560, 620)) // With the dimensions of 560, 620
+> {
+> SetRenderer(new PlayerPreviewRenderer(this));
+> }
+> }
+> ```
+>
+> ##### Renderer
+> - Draw the player sprite at the position
+> ```csharp
+> using System.Numerics;
+> using Raylib_cs;
+> using Velocity.Ui.Misc;
+> using Velocity.Window.Render.Renderers;
+> 
+> namespace Velocity.Ui.Render.Element;
+> 
+> public class PlayerPreviewRenderer : ConditionalRenderer
+> {
+> private PlayerPreview _parent;
+> private Texture2D _idleAsset;
+> private int _apperence;
+> private int _currentFrame;
+> private int _frameCount;
+> private int _frameSpeed = 6;
+> private Rectangle _frameRect;
+> 
+> 
+>     private readonly Dictionary<int, int> _tileCount = new()
+>     {
+>         {1, 8},
+>         {2, 6},
+>         {3, 6}
+>     };
+> 
+>     public PlayerPreviewRenderer (PlayerPreview parent) : base("velocity:ui.playerPreview")
+>     {
+>         _parent = parent;
+>         LoadTexture();
+>     }
+> 
+>     private void LoadTexture()
+>     {
+>         _idleAsset = Loader.AssetManager.GetPlayerTexture(Loader.Game.Player.Apperance, "idle");
+>     }
+> 
+>     public override void Draw()
+>     {
+>         if (Loader.Game.Player.Apperance != _apperence)
+>         {
+>             _apperence = Loader.Game.Player.Apperance;
+>             LoadTexture();
+>             return;
+>         }
+>         
+>         _frameCount++;
+> 
+>         if (_frameCount >= 60 / _frameSpeed)
+>         {
+>             _frameCount = 0;
+>             _currentFrame++;
+>             if (_currentFrame >= GetFrameCount()) _currentFrame = 0;
+>             
+>             _frameRect = new Rectangle(_currentFrame * _idleAsset.width / GetFrameCount(), 0, _idleAsset.width / GetFrameCount(), _idleAsset.height);
+>         }
+>         
+>         Raylib.DrawTexturePro(_idleAsset, _frameRect, new Rectangle((int)_parent.Position.X, (int)_parent.Position.Y, (int)_parent.Dimensions.X, (int)_parent.Dimensions.Y), new Vector2(), 0.0f, Color.WHITE);
+>     }
+>     
+>     private int GetFrameCount()
+>     {
+>         _tileCount.TryGetValue(_apperence, out int count);
+> 
+>         return count;
+>     }
+> }
+> ```
+
+> #### `Selector.cs`
+> - To display an interactable selector for various things such as player appearance, resolution selection, etc.
+> - Returns the selected values index
+> - Is able to be changed
+> - Is able to be clicked
+> - Is able to be hovered
+>
+> ```csharp
+> using Raylib_cs;
+> using Velocity.Math;
+> using Velocity.Ui.Render.Element;
+> using static Velocity.Window.WindowManager;
+> 
+> namespace Velocity.Ui.Misc;
+> 
+> public class Selector : UiElement
+> {
+> public readonly string?[] Options; // Different options for the selector
+> public int Index; // Currently selected index
+> 
+>     public Selector(string?[] options, int index, Vector2 dimensions) : base(Vector2.Zero(), dimensions)
+>     {
+>         Options = options; // Set the options
+>         Index = index; // Set the index
+>         
+>         SetRenderer(new SelectorRenderer(this));
+>     }
+> 
+>     // Override: Register the display element for the value (from all ui elements)
+>     public override void RegisterSubElements(Vector2 position)
+>     {
+>         Display = new ValueField(() => Options[Index], Options[Index],
+>             new Color(10, 10, 10, 255), new Color(200, 200, 200, 255))
+>         {
+>             Position = position,
+>             Dimensions = new Vector2(0, Height / 32 + 10)
+>         };
+>     }
+> 
+>     // Set the index of the currently selected option
+>     public void SetIndex(int index)
+>     {
+>         Index = index;
+>     }
+> 
+>     // Increment the index by a certain amount
+>     private void IncrementIndex(int by = 1)
+>     {
+>         if (Index + by >= Options.Length || Index + by < 0) return;
+> 
+>         Index += by;
+>     }
+> 
+>     // Override: If mouse is over the selector, check if the buttons are clicked
+>     // If the left is clicked, decrement the index, if the right is clicked, increment the index
+>     public override bool IsClicked()
+>     {
+>         if (!base.IsClicked()) return base.IsClicked();
+>         switch (GetButtonClicked())
+>         {
+>             case 1: IncrementIndex(-1);
+>                 break;
+>             case 2: IncrementIndex();
+>                 break;
+>         }
+> 
+>         return base.IsClicked();
+>     }
+> 
+>     // Get the button that is clicked
+>     private int GetButtonClicked()
+>     {
+>         if (!IsMouseOver()) return 0;
+> 
+>         if (Raylib.GetMouseX() * Loader.WindowManager.VirtualRatio <= Position.X + Dimensions.X / 6) return 1; // Left button
+>         return Raylib.GetMouseX() * Loader.WindowManager.VirtualRatio >=
+>                Position.X + Dimensions.X - Dimensions.X / 6 ? 2 : 0; // Right button
+>     }
+> 
+>     // Override: Get the index of the selector
+>     public override double GetValue(int args = 0)
+>     {
+>         return Index;
+>     }
+> }
+> ```
+>
+> ##### Renderer
+> - Draw the selector at the position with the dimensions
+> - Draw the left and right buttons
+> - Draw the text
+> ```csharp
+> using System.Numerics;
+> using Raylib_cs;
+> using Velocity.Ui.Misc;
+> using Velocity.Window;
+> using Velocity.Window.Render.Renderers;
+> 
+> namespace Velocity.Ui.Render.Element;
+> 
+> public class SelectorRenderer : AnimatableRenderer
+> {
+>     private readonly Selector _parent;
+> 
+>     public SelectorRenderer(Selector parent) : base(parent, "velocity.selector." + Guid.NewGuid())
+>     {
+>         _parent = parent;
+>     }
+> 
+>     public override void Draw()
+>     {
+>         Raylib.DrawRectangle((int)_parent.Position.X, (int)_parent.Position.Y, (int)_parent.Dimensions.X, (int)_parent.Dimensions.Y, InternalBg);
+>         Raylib.DrawRectangleLinesEx(new Rectangle((int)_parent.Position.X, (int)_parent.Position.Y, (int)_parent.Dimensions.X, (int)_parent.Dimensions.Y), (Loader.Settings.Resolution + 1) * 2f, InternalBorder);
+>         Raylib.DrawText(_parent.Options[_parent.Index], (int) (_parent.Position.X + (_parent.Dimensions.X / 2 - Raylib.MeasureText(_parent.Options[_parent.Index], Convert.ToInt32(WindowManager.Height / 28)) / 2)), (int) (_parent.Position.Y + (_parent.Dimensions.Y / 2 - Convert.ToInt32(WindowManager.Height / 28) / 2)), Convert.ToInt32(WindowManager.Height / 28), InternalBorder);
+>         Raylib.DrawTriangle(new Vector2((int)(_parent.Position.X + (_parent.Dimensions.X / 16) * 2), (int)(_parent.Position.Y + _parent.Dimensions.Y / 4)), new Vector2((int)(_parent.Position.X + _parent.Dimensions.X / 32), (int)(_parent.Position.Y + _parent.Dimensions.Y / 2)), new Vector2((int)(_parent.Position.X + (_parent.Dimensions.X / 16) * 2), (int)(_parent.Position.Y + (_parent.Dimensions.Y / 4) * 3)), _parent.Index == 0 ? Color.DARKGRAY : InternalBorder);
+>         Raylib.DrawTriangle(new Vector2((int)(_parent.Position.X + _parent.Dimensions.X - _parent.Dimensions.X / 32), (int)(_parent.Position.Y + _parent.Dimensions.Y / 2)), new Vector2((int)(_parent.Position.X + _parent.Dimensions.X - (_parent.Dimensions.X / 16) * 2), (int)(_parent.Position.Y + _parent.Dimensions.Y / 4)), new Vector2((int)(_parent.Position.X + _parent.Dimensions.X - (_parent.Dimensions.X / 16) * 2), (int)(_parent.Position.Y + (_parent.Dimensions.Y / 4) * 3)), _parent.Index + 1 == _parent.Options.Length ? Color.DARKGRAY : InternalBorder);
+>         Raylib.DrawLineEx(new Vector2((int)(_parent.Position.X + (_parent.Dimensions.X / 6)), (int)_parent.Position.Y), new Vector2((int)(_parent.Position.X + (_parent.Dimensions.X / 6)), (int)_parent.Position.Y + (int)_parent.Dimensions.Y), (Loader.Settings.Resolution + 1) * 2f, InternalBorder);
+>         Raylib.DrawLineEx(new Vector2((int)(_parent.Position.X + _parent.Dimensions.X - (_parent.Dimensions.X / 6)), (int)_parent.Position.Y), new Vector2((int)(_parent.Position.X + _parent.Dimensions.X - (_parent.Dimensions.X / 6)), (int)_parent.Position.Y + (int)_parent.Dimensions.Y), (Loader.Settings.Resolution + 1) * 2f, InternalBorder);
+>         
+>         _parent.Display?.Renderer?.Draw();
+>     }
+> } 
+> ```
+
+> #### `Slider.cs`
+> - To display an interactable slider for various things such as volume, camera smoothness, etc.
+> - Returns the volume selected
+> - Is able to be changed
+> - Is able to be clicked
+> - Is able to be hovered
+> - Is able to be dragged
+>
+> ```csharp
+> using System.Numerics;
+> using Raylib_cs;
+> using Velocity.Ui.Render.Element;
+> using Velocity.Window;
+> using Vector2 = Velocity.Math.Vector2;
+> 
+> namespace Velocity.Ui.Misc;
+> 
+> public class Slider : UiElement
+> {
+> private readonly double _min; // The minimum value of the slider
+> private readonly double _max; // The maximum value of the slider
+> private bool _held; // If the slider is being held
+> 
+>     public double SliderOffset; // The offset of the slider head
+>     
+>     private double _previousValue; // The previous value of the slider
+>     private int _waitFrames; // The amount of frames to wait before playing the sound again
+> 
+>     public Slider(double min, double max, Vector2 dimensions, double? d = null) : base(Vector2.Zero(), dimensions)
+>     {
+>         _min = min; // Set the minimum value
+>         _max = max; // Set the maximum value
+>         
+>         SliderOffset = Dimensions.GetX() * ((d - _min) / (_max - _min)) ?? 0; // Set the slider offset to the default value
+> 
+>         SetRenderer(new SliderRenderer(this)); // Set the renderer
+>     }
+> 
+>     // Override: Register the display element for the value (from all ui elements)
+>     public override void RegisterSubElements(Vector2 position)
+>     {
+>         Display = new ValueField(() => System.Math.Round(GetValue(2) / _max * 100) + "%", GetValue(2) + "%",
+>             new Color(10, 10, 10, 255), new Color(200, 200, 200, 255))
+>         {
+>             Position = position,
+>             Dimensions = new Vector2(0, WindowManager.Height / 32 + 10)
+>         };
+>     }
+> 
+>     // Override: If mouse is over the slider, check if the slider head is clicked
+>     // If the slider head is clicked, set the slider offset to the mouse position
+>     // Limit slider offset to the slider bounds
+>     public override bool IsClicked()
+>     {
+>         if (_waitFrames != 0) _waitFrames--; // Decrement the wait frames
+>         if (IsMouseInHeadBounds() && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT)) _held = true; // If the mouse is in the slider head bounds and the left mouse button is down, set held to true
+>         
+>         if (base.IsClicked() || (_held && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))) // If the slider is clicked or held
+>         {
+>             _held = true; // Set held to true
+>             
+>             SliderOffset = Raylib.GetMouseX() * Loader.WindowManager.VirtualRatio - Position.GetX(); // Set the slider offset to the mouse position
+>             
+>             if (SliderOffset < 0) SliderOffset = 0; // Limit the slider offset to the slider bounds 
+>             if (SliderOffset > Dimensions.GetX()) SliderOffset = Dimensions.GetX(); // Limit the slider offset to the slider bounds
+> 
+>             if (System.Math.Abs(_previousValue - GetValue(2)) == 0) return _held; // If the value hasn't changed return held
+>             if (_waitFrames == 0) // If the wait frames is 0
+>             {
+>                 _waitFrames = (int)(Double.Abs(_previousValue - GetValue(2)) * 100) * 3; // Set the wait frames to the difference between the values * 100 * 3 (To stop more clicks the faster its moved)
+>                 Loader.AudioManager.PlaySound("ui.interact"); // Play the sound
+>             }
+> 
+>             _previousValue = GetValue(2); // Set the previous value to the current value
+> 
+>         } else _held = false; // If the slider isn't clicked, set held to false
+> 
+>         return _held; // Return held
+>     }
+> 
+>     // If the mouse is over the slider head, change the cursor to a hand
+>     private bool IsMouseInHeadBounds ()
+>     {
+>         var mousePos = System.Numerics.Vector2.Multiply(Raylib.GetMousePosition(),
+>             new System.Numerics.Vector2(Loader.WindowManager.VirtualRatio, Loader.WindowManager.VirtualRatio)); // Get the mouse position
+> 
+>         return
+>             mousePos.X >= GetSlideHeadBounds().X && 
+>             mousePos.X <= GetSlideHeadBounds().Z &&
+>             mousePos.Y >= GetSlideHeadBounds().Y &&
+>             mousePos.Y <= GetSlideHeadBounds().W; // Return if the mouse is in the slider head bounds
+>     }
+>     
+>     
+>     // Get the slider head bounds
+>     private Vector4 GetSlideHeadBounds() 
+>     {
+>         return new Vector4(Convert.ToSingle(Position.GetX() - 5 + SliderOffset), Convert.ToSingle(Position.GetY() - 5), Convert.ToSingle(Position.GetX() + 5 + SliderOffset), Convert.ToSingle(Position.GetY() + 5 + Dimensions.GetY())); // Return the slider head bounds
+>     }
+> 
+>     // Override: Get the value of the slider
+>     public override double GetValue(int precision = 0)
+>     {
+>         return System.Math.Round(_min + (_max - _min) * (SliderOffset / Dimensions.GetX()), precision); // Return the value of the slider
+>     }
+> }
+> ```
+>
+> ##### Renderer
+> - Draw the slider at the position with the dimensions
+> - Draw the slider head
+> ```csharp
+> using Raylib_cs;
+> using Velocity.Ui.Misc;
+> using Velocity.Window.Render.Renderers;
+> 
+> namespace Velocity.Ui.Render.Element;
+> 
+> public class SliderRenderer : AnimatableRenderer
+> {
+>     private readonly Slider _parent;
+> 
+>     public SliderRenderer(Slider parent) : base(parent, "velocity:ui.slider." + Guid.NewGuid())
+>     {
+>         _parent = parent;
+>     }
+> 
+>     public override void Draw()
+>     {
+> 
+>         /*Raylib.DrawRectangleLinesEx(new Rectangle(Convert.ToInt32(_parent.Position.X) - 1, Convert.ToInt32(_parent.Position.Y) - 1,
+>             Convert.ToInt32(_parent.Dimensions.X) + 2, Convert.ToInt32(_parent.Dimensions.Y) + 2), (Loader.Settings.Resolution + 1) * 3f,
+>             new Color(200 + hoverCa, 200 + hoverCa, 200 + hoverCa, 255));*/
+>         
+>         Raylib.DrawRectangle(Convert.ToInt32(_parent.Position.X), Convert.ToInt32(_parent.Position.Y),
+>             Convert.ToInt32(_parent.Dimensions.X), Convert.ToInt32(_parent.Dimensions.Y),
+>             InternalBg);
+> 
+>         Raylib.DrawRectangle(
+>             Convert.ToInt32(_parent.Position.X - 4 + _parent.SliderOffset - (Loader.Settings.Resolution + 1) * 2f),
+>             Convert.ToInt32(_parent.Position.GetY() - 4), 8 + (Loader.Settings.Resolution + 1) * 4,
+>             Convert.ToInt32(_parent.Dimensions.GetY()) + 8,
+>             _parent.IsClicked() ? BgColor with { a = 255 } : BgColor with { a = 200 });
+>         Raylib.DrawRectangleLinesEx(new Rectangle(Convert.ToInt32(_parent.Position.X - 5 + _parent.SliderOffset - (Loader.Settings.Resolution + 1) * 2), Convert.ToInt32(_parent.Position.GetY() - 5), 10 + (Loader.Settings.Resolution + 1) * 4, Convert.ToInt32(_parent.Dimensions.GetY()) + 10), (Loader.Settings.Resolution + 1) * 2f, _parent.IsClicked() ? BorderColor with { a = 255 } : BorderColor with { a = 200 });
+> 
+>         _parent.Display.Renderer.Draw();
+>     }
+> }
+> ```
+
+> #### `Text.cs`
+>
+> - Text value for a label
+> - Contains properties for the text such as font, data, color, etc.
+> ```csharp
+> using Raylib_cs;
+> 
+> namespace Velocity.Ui.Misc;
+> 
+> public class Text
+> {
+> public Text(string? data = null, int fontSize = 32, Font? font = null, Color? color = null)
+> {
+> Data = data ?? "";
+> FontSize = fontSize;
+> Font = font ?? Raylib.GetFontDefault();
+> Color = color ?? Color.WHITE;
+> }
+> public string Data { get; set; } // String data
+> public Color Color { get; set; } // Color of the text
+> public int FontSize { get; set; } // Font size
+> 
+>     public Font Font { get; set; } // Font
+> 
+>     public int GetWidth() // Get the width of the text
+>     {
+>         return (int)Raylib.MeasureTextEx(Font, Data, FontSize, 4f).X; // Return the width of the text
+>     }
+> }
+> ```
+>
+> No renderer for this element as it is only used in the `Label.cs` class.
+
+> #### `Toggle.cs`
+> - To display an interactable toggle for various things such as fullscreen, vsync, etc.
+> - Returns the toggle state
+> - Is able to be changed
+> - Is able to be clicked
+>
+> ```csharp
+> using Raylib_cs;
+> using Velocity.Math;
+> using Velocity.Ui.Render.Element;
+> using Velocity.Window;
+> 
+> namespace Velocity.Ui.Misc;
+> 
+> public class Toggle : UiElement
+> {
+> private bool _value; // The value of the toggle
+> public Toggle(bool d, Vector2 dimensions) : base(Vector2.Zero(), dimensions)
+> {
+> _value = d; // Set the value to the default value
+> 
+>         SetRenderer(new ToggleRenderer(this)); // Set the renderer
+>     }
+> 
+>     // Override: Register the display element for the value (from all ui elements)
+>     public override bool IsClicked()
+>     {
+>         if (!base.IsClicked()) return false; // If the toggle isn't clicked, return false
+>         _value = !_value; // Set the value to the opposite of the current value
+>         Loader.AudioManager.PlaySound("ui.interact");  // Play the ui interact sound
+>         return base.IsClicked(); // Return true
+>     }
+> 
+>     // Override: Register the display element for the value (from all ui elements)
+>     public override void RegisterSubElements(Vector2 position)
+>     {
+>         Display = new ValueField(() => _value ? "Enabled" : "Disabled", _value ? "Enabled" : "Disabled",
+>             new Color(10, 10, 10, 255), new Color(200, 200, 200, 255))
+>         {
+>             Position = position,
+>             Dimensions = new Vector2(0, WindowManager.Height / 32 + 10)
+>         };
+>     }
+> 
+>     // Override: Get the value of the toggle
+>     public override double GetValue(int args = 0)
+>     {
+>         return Convert.ToDouble(_value); // Return the value
+>     }
+> }
+> ```
+>
+> ##### Renderer
+> - Draw the toggle frame at the position with the dimensions
+> - Draw the toggle if is true
+> ```csharp
+> using Raylib_cs;
+> using Velocity.Ui.Misc;
+> using Velocity.Window.Render.Renderers;
+> 
+> namespace Velocity.Ui.Render.Element;
+> 
+> public class ToggleRenderer : AnimatableRenderer
+> {
+>     public ToggleRenderer(Toggle parent) : base(parent, "velocity.ui.toggle." + Guid.NewGuid()) { }
+> 
+>     public override void Draw()
+>     {
+>         Raylib.DrawRectangle((int)Parent.Position.X, (int)Parent.Position.Y, (int)Parent.Dimensions.X, (int)Parent.Dimensions.X, InternalBg);
+>         Raylib.DrawRectangleLinesEx(new Rectangle((int)Parent.Position.X, (int)Parent.Position.Y, (int)Parent.Dimensions.X, (int)Parent.Dimensions.X), (Loader.Settings.Resolution + 1) * 2f, InternalBorder);
+>         
+>         if (Convert.ToBoolean(Parent.GetValue())) Raylib.DrawRectangle((int)Parent.Position.X + 10, (int)Parent.Position.Y + 10, (int)Parent.Dimensions.X - 20, (int)Parent.Dimensions.X - 20, InternalBorder);
+>         Parent.Display?.Renderer?.Draw();
+>     }
+> }
+> ```
+
+> #### `ValueField.cs`
+> - To display a value for various things such as keybinds, resolution, etc.
+> - Doesn't return a value
+> - Is able to be changed
+>
+> ```csharp
+> using Raylib_cs;
+> using Velocity.Math;
+> using Velocity.Ui.Overlay.Render;
+> 
+> namespace Velocity.Ui.Misc;
+> 
+> public class ValueField : UiElement
+> {
+> private readonly Func<string?> _listener; // Listener for the value
+> public Color BgColor; // Background color
+> public Color TextColor; // Text color
+> public string? Value; // Value of the field
+> private readonly int? _customX = null; // Custom x value
+> 
+> 
+>     public ValueField(Func<string?> listener, string? defaultValue, Color bgColor, Color textColor) : base(Vector2.Zero(), Vector2.Zero())
+>     {
+>         _listener = listener; // Set the listener
+>         Value = defaultValue;   // Set the value
+>         BgColor = bgColor; // Set the background color
+>         TextColor = textColor; // Set the text color
+> 
+>         SetRenderer(new ValueFieldRenderer(this)); // Set the renderer
+>     }
+>     
+>     // Set the custom x value
+>     public virtual void Update()
+>     {
+>         Value = _listener.Invoke(); // Update the value
+>         Dimensions.X = _customX ?? Vector2.ToCustom(Raylib.MeasureTextEx(FontUtils.ButtonFont, Value, (float)Dimensions.GetY() - 6, 2f)).X + 8; // Update the dimensions of the field to fit the text + padding
+>     }
+> }
+> ```
+>
+> ##### Renderer
+> - Draw the value field at the position with the dimensions
+> - Draw the text
+> ```csharp
+> using System.Numerics;
+> using Raylib_cs;
+> using Velocity.Ui.Misc;
+> using Velocity.Window.Render.Renderers;
+> 
+> namespace Velocity.Ui.Render.Element;
+> 
+> public class ValueFieldRenderer : ConditionalRenderer
+> {
+>     private readonly ValueField _parent;
+>     
+>     public ValueFieldRenderer(ValueField parent) : base("velocity.value-field." + Guid.NewGuid())
+>     {
+>         _parent = parent;
+>     }
+> 
+>     public override void Draw()
+>     {
+>         Raylib.DrawRectangle((int)_parent.Position.X, (int)_parent.Position.Y, (int)_parent.Dimensions.X + 12, (int)_parent.Dimensions.Y, _parent.BgColor);
+>         Raylib.DrawRectangleLinesEx(new Rectangle((int)_parent.Position.X, (int)_parent.Position.Y, (int)_parent.Dimensions.X + 12, (int)_parent.Dimensions.Y), (Loader.Settings.Resolution + 1) * 2f, _parent.TextColor);
+>         var textX = (_parent.Position.X + _parent.Dimensions.X / 2) - Convert.ToSingle(Math.Vector2.ToCustom(Raylib.MeasureTextEx(FontUtils.ButtonFont, _parent.Value, (float)_parent.Dimensions.GetY() - 8, 4f)).X / 2);
+>         var textY = (_parent.Position.Y + _parent.Dimensions.Y / 2) - Convert.ToSingle(Math.Vector2.ToCustom(Raylib.MeasureTextEx(FontUtils.ButtonFont, _parent.Value, (float)_parent.Dimensions.GetY() - 8, 4f)).Y / 2);
+>         Raylib.DrawTextEx(FontUtils.ButtonFont, _parent.Value, new Vector2(Convert.ToSingle(textX) + 6, Convert.ToSingle(textY)), (int)_parent.Dimensions.Y - 8, 4f, _parent.TextColor);
+>     }
+> }
+> ```
+
+## Windows
+
 #### Main menu
-Now that we have a working menu manager its time to create some menus, we will be starting with the main menu.
+Now that we have a working menu manager, and some ui elements to build our menus, its time to create some, we will be starting with the main menu.
 For this we will need one element defined in the [UiElements](#ui-elements) subsection. A button, 3 of them to be precise. A play, settings and exit button.
 
 
