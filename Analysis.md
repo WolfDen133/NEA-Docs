@@ -29,7 +29,7 @@ In the content below I will be discussing every section of my project, and will 
 > - [Underlying Framework](#underlying-framework)
 > - [Base game, settings and menu manager](#base-game-settings-and-menus)
 > - [UiElements](#ui-elements)
-> - [Windows](#physics)
+> - [Main menu & settings](#main--settings-menu)
 
 > © Reuben Yates 2023, Frome College
 
@@ -201,7 +201,7 @@ While the initial version of the game will be developed for desktop platforms, s
 > #### Further Feedback from Stakeholders
 > This is an email I wrote to my clients based on the interviews conducted.
 >
-> ```
+> ```text
 > Dear Valued Clients,
 >
 > I wanted to take a moment to express my gratitude for your interest in our upcoming game. Your feedback and support are invaluable to us as we work on developing and improving the platform.
@@ -224,7 +224,7 @@ While the initial version of the game will be developed for desktop platforms, s
 > ```
 > #### Client 1
 >
-> ```
+> ```text
 > Dear Reuben Yates,
 > 
 > Thank you for reaching out and expressing your gratitude for our interest in your upcoming game. We are thrilled to hear about your plans and the exciting gameplay experience you aim to deliver. The choice of using the raylib framework in C## for game development, with its visually appealing 2D capabilities and multi-platform support, shows great promise. We look forward to experiencing the smooth animations, responsive controls, and captivating visuals that raylib offers. The integration of dynamic sound effects and background music using raylib's audio capabilities will undoubtedly enhance the immersion and overall atmosphere of the game.
@@ -668,8 +668,8 @@ As it is hard to test the subroutines without running the game, I will be testin
 
 | Action or feature                                                                                                    | Working? |
 |----------------------------------------------------------------------------------------------------------------------|----------|
-| 1. A open blank window ready for us to implement our features                                                        |          |
-| 2. Main menu with 4 buttons and a title, including game version information and my copywrite                         |          |
+| 1. A open blank window ready for us to implement our features                                                        |  ✓       |
+| 2. Main menu with 4 buttons and a title, including game version information and my copywrite                         |  ✓       |
 | 3. Settings screen with at least 3 sections, that include controls, video settings, audio settings                   |          |
 | 4. Working camera system that smoothly follows the player wherever they go on the game canvas                        |          |
 | 5. A working physics system that can be applied to any object, with gravity, drag, and collision calculations        |          |
@@ -1472,7 +1472,7 @@ Linking back to our [Testing plan, test 1](#testing-plan), we can use this test 
 
 And as we can see from the image above, we have a working window, ready for the logic to be added for the next step.
 
-## Base game, Settings and Menus
+## Base game, Settings and Menu manager
 
 Now we have our underlying framework we can begin to build the basic structures for our main game logic, the settings and preferences, and menus that will be displayed to the user.
 To begin we will be going into these sections and building our classes with our required properties and functions to build a functioning game.
@@ -2167,6 +2167,256 @@ It is important to mention the declaration of this class in the main `Game` clas
 Calling the `MenuManager.Tick()` method in its tick function, therefor giving the menu a heart beat and enabling it to handle menus when they are needed.
 
 Now as you can see this class references our windows we are going to create. These are referenced further down in this file.
+
+
+## Asset & Sound Manager
+
+### Asset Manager
+
+Firstly we will be creating an asset manager class, this will be responsible for loading and unloading all of our assets, such as textures.
+We need this class so we can successfully evaluate each texture and load it into memory, and then unload it when it is no longer needed.
+We need to be able to access this class from anywhere in the program, so we will be declaring it in our main, which is a static class, and defining our functions as public so they can be accessed from the class instance.
+It will be called `AssetManager.cs` and will contain the following code:
+
+```csharp
+using Raylib_cs;
+using Velocity.Utils;
+
+namespace Velocity.Asset;
+
+public class AssetManager
+{
+    // List of all assets to load
+    public string[] TextureLocations =
+    {
+        "background\\1\\layer07.png",
+        "background\\1\\layer06.png",
+        "background\\1\\layer05.png",
+        "background\\1\\layer04.png",
+        "background\\1\\layer03.png",
+        "background\\1\\layer02.png",
+        "background\\1\\layer01.png",
+        "background\\2\\layer07.png",
+        "background\\2\\layer06.png",
+        "background\\2\\layer05.png",
+        "background\\2\\layer04.png",
+        "background\\2\\layer03.png",
+        "background\\2\\layer02.png",
+        "background\\2\\layer01.png",
+        "background\\3\\layer07.png",
+        "background\\3\\layer06.png",
+        "background\\3\\layer05.png",
+        "background\\3\\layer04.png",
+        "background\\3\\layer03.png",
+        "background\\3\\layer02.png",
+        "background\\3\\layer01.png",
+        "background\\mainmenu.png",
+        "obj\\crate.png",
+        "obj\\barrel.png",
+        "particle\\particle_map.png",
+        "item\\power_ups.png",
+        "item\\coin.png",
+        "ui\\heart.png",
+        "player\\1\\walk.png",
+        "player\\1\\run.png",
+        "player\\1\\idle.png",
+        "player\\1\\jump.png",
+        "player\\2\\walk.png",
+        "player\\2\\run.png",
+        "player\\2\\idle.png",
+        "player\\2\\jump.png",
+        "player\\3\\walk.png",
+        "player\\3\\run.png",
+        "player\\3\\idle.png",
+        "player\\3\\jump.png"
+    };
+
+    public Dictionary<string, Texture2D> Textures = new();
+    
+    public AssetManager()
+    {
+        LoadAssets();
+    }
+
+    // Load all assets into memory
+    private void LoadAssets()
+    {
+        foreach (var textureLocation in TextureLocations)
+        {
+            Texture2D tempTexture = Raylib.LoadTexture(Utils.Utils.AssetLocation + textureLocation.Replace("\\", OsVersion.GetDirSeperator()));
+
+            string name = textureLocation.Split(".")[0].Replace("\\", ".");
+            
+            Textures.Add(name, tempTexture);
+        }    
+    }
+
+    // Return a loaded texture with anti-aliasing
+    public Texture2D GetTexture(string name)
+    {
+        Textures.TryGetValue(name, out Texture2D texture);
+        // Raylib.SetTextureFilter(texture, TextureFilter.TEXTURE_FILTER_ANISOTROPIC_16X);
+        return texture;
+    }
+
+    public Texture2D GetPlayerTexture(int player, string name)
+    {
+        return GetTexture("player." + player + "." + name);
+    }
+    
+    public Texture2D GetBackgroundTexture(int background, string name)
+    {
+        return GetTexture("background." + background + "." + name);
+    }
+}
+```
+
+Up top is a variable containing all the texture locations, this is so we can easily add and remove textures from the game, and have them loaded and unloaded accordingly.
+We have a dictionary of textures, this is so we can easily access the textures by name, and have them loaded into memory.
+We have a function to load all the textures into memory, and a function to get a texture by name, and return it.
+We also have a function to get a player texture, and a background texture, this is so we can easily access the textures by type and pull them in according to which player apperance and backround is currently chosen.
+This class will serve as a texture provider and we will now be able to access the texture class from any where within our code.
+
+### Sound manager
+
+Next we will be creating a sound manager class, this will be responsible for loading and unloading all of our sounds, such as music and sound effects.
+We need this class so we can successfully evaluate each sound and load it into memory, and then unload it when it is no longer needed.
+We need to be able to access this class from anywhere in the program, so we will be declaring it in our main, which is a static class, and defining our functions as public so they can be accessed from the class instance.
+It will be called `SoundManager.cs` and will contain the following code:
+```csharp
+using System.Runtime.CompilerServices;
+using Raylib_cs;
+
+namespace Velocity.Sound;
+
+public class AudioManager
+{
+    private Dictionary<string, Raylib_cs.Sound?> _gameSounds = new();
+    private Dictionary<string, Raylib_cs.Sound?> _uiSounds = new();
+    private Dictionary<string, Raylib_cs.Sound?> _playerSounds = new();
+
+    private string[] _audioFiles =
+    {
+        "game/collect.wav",
+        "game/coin.wav",
+        "ui/click.wav",
+        "ui/interact.wav",
+        "player/jump.wav",
+        "player/walk.wav"
+    };
+    
+    public AudioManager ()
+    {
+        Initialise();
+    }
+
+    private void Initialise()
+    {
+        Raylib.InitAudioDevice();
+        
+        LoadAudioFiles();
+    }
+
+    private void LoadAudioFiles()
+    {
+        foreach (var file in _audioFiles)
+        {
+            string category = file.Split("/")[0];
+            Raylib_cs.Sound sound = Raylib.LoadSound(Utils.Utils.SoundLocation + file);
+
+            string name = Path.GetFileName(Utils.Utils.SoundLocation + file).Split(".")[0];
+            
+            switch (category)
+            {
+                case "game":
+                    _gameSounds.Add(name, sound);
+                    break;
+                case "ui":
+                    _uiSounds.Add(name, sound);
+                    break;
+                case "player":
+                    _playerSounds.Add(name, sound);
+                    break;
+            }
+        }
+    }
+
+    public void UpdateGameVolume()
+    {
+        foreach (var sound in _gameSounds)
+        {
+            if (sound.Value == null) continue;
+            
+            Raylib.SetSoundVolume((Raylib_cs.Sound)sound.Value, (float)Loader.Settings.GameVolume);
+        } 
+    }
+    
+    public void UpdateUiVolume()
+    {
+        foreach (var sound in _uiSounds)
+        {
+            if (sound.Value == null) continue;
+            
+            Raylib.SetSoundVolume((Raylib_cs.Sound)sound.Value, (float)Loader.Settings.UiVolume);
+        } 
+    }
+    
+    public void UpdatePlayerVolume()
+    {
+        foreach (var sound in _playerSounds)
+        {
+            if (sound.Value == null) continue;
+            
+            Raylib.SetSoundVolume((Raylib_cs.Sound)sound.Value, (float)Loader.Settings.PlayerVolume);
+        } 
+    }
+
+
+    public void UpdateVolume()
+    {
+        Raylib.SetMasterVolume(Convert.ToSingle(Loader.Settings.Volume));
+    }
+
+    public void PlaySound(string name)
+    {
+        string category = name.Split(".")[0];
+        string soundName = name.Split(".")[1];
+        switch (category)
+        {
+            case "game":
+                _gameSounds.TryGetValue(soundName, out Raylib_cs.Sound? sounda);
+                if (sounda != null) Raylib.PlaySound((Raylib_cs.Sound) sounda);
+                break;
+            case "ui":
+                _uiSounds.TryGetValue(soundName, out Raylib_cs.Sound? soundb);
+                if (soundb != null) Raylib.PlaySound((Raylib_cs.Sound) soundb);
+                break;
+            case "player":
+                _playerSounds.TryGetValue(soundName, out Raylib_cs.Sound? soundc);
+                if (soundc != null) Raylib.PlaySound((Raylib_cs.Sound) soundc);
+                break;
+        }
+    }
+}
+```
+
+Firstly when the class is loaded it will initialise the audio device, this is so we can play sounds and music.
+We have a dictionary of sounds, this is so we can easily access the sounds by name, and have them loaded into memory.
+We have a function to load all the sounds into memory, and a function to play a sound by name.
+We also have a function to update the volume of all the sounds, this is so we can easily update the volume of all the sounds when the volume is changed.
+We also have seperate functions to update the volume of each category of sound, this is so we can easily update the volume in settings of each category of sound when the volume is changed. 
+This class will serve as a sound provider and we will now be able to access the sound class from any where within our code.
+
+
+> #### Errors to overcome
+> 
+> - The first error we encountered was the fact that the textures were not loading, this was because we were not using the correct directory seperator for the operating system, and therefor the file could not be found. - This was tested on a mac and didnt work, so changed from `/` to `\\` and it worked.
+> - The second error we encountered was textures were not being returned correctly in the player and background methods. This was because we were not using the correct name for the texture, and therefor it was not being found. - This was fixed by changing the texture code format so it returns the correct background and player textures.
+> - The third error we encountered was the fact that the sound was not playing, this was because we were not initialising the audio device, and therefor the sound could not be played. - This was fixed by initialising the audio device in the constructor of the sound manager.
+> - The fourth error was sounds not being found, this came from using the incorrect sound format and name, so it was easily fixed by changing the sound format and name to the correct format.
+
+And so concludes this section of development, we now have a working sound manager and asset manager so we can play sounds, change sound volume and load, unload and access textures when needed.
+
 
 ## UI Elements
 
@@ -3281,12 +3531,1257 @@ Each subsection of this file will explain each ui element and its respective ren
 > }
 > ```
 
-## Windows
+## Main & Settings menu
+
+#### Base Window
+Now that we have a working menu manager, and some ui elements to build our menus, its time to create some, we will be starting with the base menu class.
+The base menu class serves as our framework for implementing menus, it will contain the basic functionality of a menu, such as:
+- A ui renderer
+- An onDisplay function for when the menu is opened
+- A Tick function for when the menu is open
+
+These serve as the back bone for all future menus to be built on top of, so that our game knows which menu is currently open, how to render it, what to do once it has been opened and finally what to do while it is open.
+
+```csharp
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Screens;
+
+public class Window
+{
+    public static int UiId; // Unique id for this screen (to be overwriten by child classses) 
+    public UiRenderer Renderer; // The renderer object for child class
+
+    public virtual void OnDisplay (int? previous) // Called when the window is opened
+    { }
+    public virtual void Tick() // Called every frame the window is open for
+    { }
+}
+```
+
 
 #### Main menu
-Now that we have a working menu manager, and some ui elements to build our menus, its time to create some, we will be starting with the main menu.
+Now we have our base class its time to create our main menu!
 For this we will need one element defined in the [UiElements](#ui-elements) subsection. A button, 3 of them to be precise. A play, settings and exit button.
+We will also need a label to display the title of the game, and a player preview to show the player avatar. Our main menu will look like this:
+
+```csharp
+using Velocity.Math;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Render;
+using Raylib_cs;
+using Velocity.Ui.Render.Element;
+using Velocity.Window;
+
+namespace Velocity.Ui.Screens;
+
+public class MainMenuScreen : Window
+{
+    public new static readonly int UiId = 2; // Unique id for this screen
+
+    public readonly Dictionary<int, Button?> Buttons = new(); // Buttons on the screen
+    
+    public readonly PlayerPreview PlayerPreview = new(); // Player preview on the screen
+    
+    public readonly Selector AppearanceSelector; // Selector for the player appearance
+
+    private bool[] _hasSoundPlayed = new bool[4]; // Whether the sound has played (stop buttons double activating the sound)
+    public MainMenuScreen()
+    {
+        RegisterButtons(); // Register the buttons
+        Renderer = new MainMenuScreenRenderer(this); // Set the renderer
+        string?[] names = new string?[3] {"Swordsman", "Archer", "Wizard"}; // Names for the player appearance selector
+        AppearanceSelector = new Selector(names, Loader.Game.Player.Apperance - 1, new Vector2(400, 80)); // Create the selector
+        AppearanceSelector.Position = new Vector2(WindowManager.Width / 1.3 - 200, WindowManager.Height / 2 + 230); // Set the position
+    }
+
+    private void RegisterButtons()
+    {
+        AddButton(0, "Play"); // Add the play button
+        // AddButton(-1, "Statistics"); // TODO
+        AddButton(1, "Options"); // Add the options button
+        AddButton(2, "Exit"); // Add the exit button
+    }
+
+    // Called every frame the window is open for
+    public override void Tick()
+    {
+        foreach (var pair in Buttons) // Loop through the buttons
+        {
+            Button? clicked = pair.Value; // Get the button
+            if (clicked == null) continue; // If the button is null, skip it
+
+            if (clicked.IsClicked()) // If the button is clicked
+            {
+                Select(pair.Key); // Select the button
+            }
+        }
+
+        if (AppearanceSelector.IsClicked()) // If the appearance selector is clicked
+        {
+            Loader.Game.Player.Apperance = AppearanceSelector.Index + 1; // Set the player appearance to the selected appearance
+        }
+    }
+
+    // Called when a button is pressed
+    private void Select(int buttonId)
+    {
+        switch (buttonId)
+        {
+            case 0: // Play
+                Loader.Game.MenuManager.SetActiveWindow(LevelScreen.UiId, UiId); // Set the active window to the level screen
+                break;
+            case -1: // Statistics
+                // TODO OPTIONS
+                break;
+            case 1: // Options
+                Loader.Game.MenuManager.SetActiveWindow(SettingsScreen.UiId, UiId); // Set the active window to the settings screen
+                break;
+            case 2: // Exit
+                Loader.Close(); // Close the game
+                break;
+        }
+    }
+
+    private void AddButton (int id, string text) // Add a button to the screen 
+    {
+        Text buttonText = new Text();
+
+        buttonText.Color = new Color(200, 200, 200, 255);
+        buttonText.FontSize = Convert.ToInt32(WindowManager.Height / 18);
+        buttonText.Data = text;
+        buttonText.Font = FontUtils.ButtonFont;
+
+        int y = Convert.ToInt32(WindowManager.Height / 2 - (Convert.ToInt32(WindowManager.Height / 5.145) - WindowManager.Height / 16) + (Buttons.Count) * (WindowManager.Height / 8));
+
+        Button? button = new Button(
+            buttonText,
+            new Vector2(Convert.ToInt32(WindowManager.Width / 18.29), y),
+            new Vector2(Convert.ToInt32(WindowManager.Width / 4.65), Convert.ToInt32(WindowManager.Height / 10.29)));
+        button.BgColor = new Color(40, 40, 40, 200);
+        button.BorderColor = Color.WHITE;
+        
+        Buttons.Add(id, button);
+    }
+}
+```
+
+Then we will need to define our renderer class so that our game knows how to render the menu.
+We will draw a background image, a gradient over the top of that, a title, then the buttons, and finally the player preview and the selector (by calling its own renderer).
+It will then draw a bar over the top at the bottom of the screen displaying the game version and 
+```csharp
+using System.Numerics;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Screens;
+using Velocity.Window.Render.Renderers;
+using Raylib_cs;
+using Velocity.Exception;
+using Velocity.Window;
+
+namespace Velocity.Ui.Render;
+
+public class MainMenuScreenRenderer : UiRenderer
+{
+    private readonly MainMenuScreen _parent; // The parent screen
+    private readonly Texture2D _background; // The background texture
+
+    public MainMenuScreenRenderer(MainMenuScreen parent) : base("velocity:window." + MainMenuScreen.UiId)
+    {
+        _parent = parent;
+
+        _background = Loader.AssetManager.GetTexture("background.main-menu");
+    }
+
+    public override void Draw()
+    {
+        Raylib.DrawTexturePro(_background, new Rectangle(0, 0, _background.width, _background.height), new Rectangle(0, 0, WindowManager.Width, WindowManager.Height), new Vector2(), 0, Color.WHITE);
+        Raylib.DrawRectangleGradientH(0, 0, WindowManager.Width, WindowManager.Height, Color.BLACK with {a = 255}, Color.BLACK with {a = 20});
+        int x = Convert.ToInt32(WindowManager.Width / 18.29);
+        int fontSize = Convert.ToInt32(WindowManager.Height / 10);
+        
+        Raylib.DrawTextEx(FontUtils.Font, GameConst.Name, new Vector2(x, WindowManager.Height / 6 - (fontSize / 2)), fontSize, 2, Color.WHITE);
+
+        foreach (var pair in _parent.Buttons)
+        {
+            if (pair.Value?.Renderer == null) throw new VelocityException("Element renderer undefined");
+            pair.Value.Renderer.Draw();
+        }
+        
+        Raylib.DrawRectangle((int)_parent.PlayerPreview.Position.X + 20, (int)_parent.PlayerPreview.Position.Y + 170, (int)_parent.PlayerPreview.Dimensions.X - 40, (int)_parent.PlayerPreview.Dimensions.Y - 150 + (int)_parent.AppearanceSelector.Dimensions.Y + 40, new Color(30, 30, 30, 150));
+        
+        _parent.PlayerPreview.Renderer?.Draw();
+        
+        if (_parent.AppearanceSelector.Renderer?.GetType().BaseType == typeof(AnimatableRenderer))
+        {
+            AnimatableRenderer renderer = (AnimatableRenderer) _parent.AppearanceSelector.Renderer;
+            renderer.DrawAnimation();
+        }
+        _parent.AppearanceSelector.Renderer?.Draw();
 
 
+        Raylib.DrawRectangle(0, WindowManager.Height - 25, WindowManager.Width, 25, Color.BLACK);
+        Raylib.DrawText(GameConst.Author + ", 2023", 4, WindowManager.Height - 23, 26, Color.WHITE);
+        Raylib.DrawText("v" + GameConst.Version, WindowManager.Width - Raylib.MeasureText("v" + GameConst.Version, 26) - 4, WindowManager.Height - 23, 26, Color.WHITE);
+    }
+}
+```
 
+At this point we can perform our second test, to see if our menu works as expected. We will link back to the [Testing](#testing-plan) section for this.
+We will launch the game and see what we have. However, in the design section I decided that I would have 4 buttons, but in the actual game I only implimented 3. This is due to time constraints not being able to add a statistics screen. This is a good example of how a design can change over time, and how you can adapt to it.
 
+![](https://i.imgur.com/bfUlO38.png)
+
+And we can now see that this is working as expected, and we can move onto the next menu.
+
+If we look back to the [Testing](#testing-plan) section, we can see that we have completed the first 2 tests, and we are now ready to move onto the third test.
+
+### Settings Menu
+
+Now the settings menu is by far the most complex, requiring a lot of elements to be created, and a lot of functionality to be added.
+This menu will contain all of the available settings for the game, and will be the main way to change them.
+Firstly we need to define our main methods for registering, handling and updating the settings.
+Then we will need to create the elements for the settings menu (as seen in [Ui elements](#ui-elements) section), and provide a list for these elements so that the menu can keep track of them.
+Finally we need to update the settings when the menu is closed, and save them to the settings file.
+
+```csharp
+using Raylib_cs;
+using Velocity.Exception;
+using Velocity.Math;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Render;
+using Velocity.Window;
+
+namespace Velocity.Ui.Screens;
+
+public class SettingsScreen : Window
+{
+    public new static int UiId = 1; // Unique id for this screen
+
+    public int Page = 0; // The current page
+
+    public static readonly Vector2 Safezone = new (100, 120); // The safezone for the screen
+    
+    public Dictionary<int, Dictionary<string, UiElement>> PageElements = new(4); // The elements on the screen
+    public readonly Dictionary<int, Button> Buttons = new(); // The buttons on the screen
+    public Dictionary<int, List<Label>> PageLabels = new(); // The labels on the screen
+
+    public int Offset = 0; // The offset  for the elements (for scrolling)
+    public int PrevOffset = 0; // The previous offset for the elements (for scrolling)
+    
+    public readonly string[] PageNames = { "Video", "Audio", "Controls" }; // The names of the pages
+
+    private int? _previousWindow; // The previous window to return to on close
+
+    public SettingsScreen() // Constructor
+    {
+        RegisterButtons(); // Register the buttons
+        Renderer = new SettingsScreenRenderer(this); // Set the renderer
+    }
+
+    public override void OnDisplay(int? previous) // Called when the window is opened
+    {
+        PageElements = new Dictionary<int, Dictionary<string, UiElement>>(); // Reset the elements
+        PageLabels = new Dictionary<int, List<Label>>(); // Reset the labels
+        _previousWindow = previous;  // Set the previous window
+
+        if (previous == MainMenuScreen.UiId) // If the previous window was the main menu
+        {
+            Loader.Game.BackgroundRenderer.LoadTextures(); // Load the background textures
+            Loader.Game.BackgroundRenderer.IsEnabled = true;    // Enable the background renderer
+        }
+        
+        RegisterElements(); // Register the elements
+        Page = 0; // Set the page to 0
+    } 
+
+    private void RegisterButtons() // Register the buttons
+    {
+        AddButton(0, "Reset", new Vector2(WindowManager.Width - Convert.ToInt32(WindowManager.Width / 12) - Convert.ToInt32(WindowManager.Height / 15.4) / 2, WindowManager.Height - Safezone.Y / 2 - (WindowManager.Height / 15.4) / 2)); // Add the reset button
+        AddButton(1, "Back", new Vector2(Convert.ToInt32(WindowManager.Height / 15.4) / 2, WindowManager.Height - Safezone.Y / 2 - (WindowManager.Height / 15.4) / 2)); // Add the back button
+        
+        AddButton(2, ">", new Vector2(WindowManager.Width - Safezone.X * 2 - 80, Safezone.Y / 5), 75); // Add the next page button
+        AddButton(3, "<", new Vector2(Safezone.X * 2 - 80, Safezone.Y / 5), 75); // Add the previous page button
+    }
+
+    private void RegisterElements() // Register the elements
+    {
+        RegisterElement(0, "camera_smoothness", "Camera Smoothness",  new Slider(0, 0.95, new Vector2(WindowManager.Width - (WindowManager.Width / 3 + 40) - Safezone.X, WindowManager.Height / 32), Loader.Settings.CameraLinearity)); // Add the camera smoothness slider
+        RegisterElement(0, "resolution", "Resolution", new Selector(Settings.GetResolutionsArray(), Loader.Settings.Resolution, new Vector2(WindowManager.Width / 5, WindowManager.Height / 14))); // Add the resolution selector
+        RegisterElement(0, "fullscreen", "Fullscreen", new Toggle(Loader.Settings.FullScreen, new Vector2(50, 50))); // Add the fullscreen toggle
+        
+        RegisterElement(1, "audio_master", "Master Volume",  new Slider(0, 1, new Vector2(WindowManager.Width - (WindowManager.Width / 3 + 40) - Safezone.X, WindowManager.Height / 32), Loader.Settings.Volume)); // Add the master volume slider
+        RegisterElement(1, "audio_game", "Game Volume",  new Slider(0, 1, new Vector2(WindowManager.Width - (WindowManager.Width / 3 + 40) - Safezone.X, WindowManager.Height / 32), Loader.Settings.GameVolume)); // Add the game volume slider
+        RegisterElement(1, "audio_ui", "UI Volume",  new Slider(0, 1, new Vector2(WindowManager.Width - (WindowManager.Width / 3 + 40) - Safezone.X, WindowManager.Height / 32), Loader.Settings.UiVolume)); // Add the ui volume slider
+        RegisterElement(1, "audio_player", "Player Volume",  new Slider(0, 1, new Vector2(WindowManager.Width - (WindowManager.Width / 3 + 40) - Safezone.X, WindowManager.Height / 32), Loader.Settings.PlayerVolume)); // Add the player volume slider
+
+        RegisterElement(2, "control_interact", "Interact", new ControlField(Loader.Settings.Keybind.Interact)); // Add the interact control field
+        RegisterElement(2, "control_left", "Left", new ControlField(Loader.Settings.Keybind.Left)); // Add the left control field
+        RegisterElement(2, "control_right", "Right", new ControlField(Loader.Settings.Keybind.Right)); // Add the right control field
+        RegisterElement(2, "control_jump", "Jump", new ControlField(Loader.Settings.Keybind.Jump)); // Add the jump control field
+        RegisterElement(2, "control_down", "Down", new ControlField(Loader.Settings.Keybind.Down)); // Add the down control field (unused)
+        RegisterElement(2, "control_zoomin", "Zoom In", new ControlField(Loader.Settings.Keybind.ZoomIn)); // Add the zoom in control field
+        RegisterElement(2, "control_zoomout", "Zoom Out", new ControlField(Loader.Settings.Keybind.ZoomOut)); // Add the zoom out control field
+    }
+
+    private void AddButton (int id, string text, Vector2 position, int? xd = null) // Add a button to the screen
+    {
+        Text buttonText = new Text(); // Create the button text
+
+        buttonText.Color = new Color(200, 200, 200, 255); // Set the button text color
+        buttonText.FontSize = Convert.ToInt32(WindowManager.Height / 28); // Set the button text font size
+        buttonText.Data = text; // Set the button text data
+        buttonText.Font = FontUtils.ButtonFont; // Set the button text font
+        
+        Button? button = new Button(
+            buttonText,
+            position,
+            new Vector2(xd ?? Convert.ToInt32(WindowManager.Width / 12), Convert.ToInt32(WindowManager.Height / 15.4)))
+            {
+                BgColor = new Color(0, 0, 0, 200), // Set the button background color
+                BorderColor = Color.WHITE // Set the button border color
+            }; // Create the button
+
+        Buttons.Add(id, button); // Add the button to the screen
+    }
+    
+    private void RegisterElement(int page, string id, string displayName, UiElement element) // Register an element
+    {
+        CheckPageNumber(page); // Check if the page exists
+        
+        PageElements.TryGetValue(page, out Dictionary<string, UiElement>? elements); // Get the elements on the page
+        if (elements == null) return; // If the elements are null, return
+
+        element.Position = GetNextElementPosition(element, page);   // Set the element position
+        element.RegisterSubElements(new Vector2(Safezone.X, element.Position.Y - 3)); // Register the sub elements
+        element.Display?.Update(); // Update the element display
+        elements.Add(id, element); // Add the element to the page
+        
+        Text labelText = new Text(); // Create the label text
+ 
+        labelText.Color = new Color(200, 200, 200, 255); // Set the label text color
+        labelText.FontSize = Convert.ToInt32(WindowManager.Height / 24);    // Set the label text font size
+        labelText.Data = displayName;  // Set the label text data
+        labelText.Font = FontUtils.ButtonFont; // Set the label text font
+
+        PageLabels.TryGetValue(page, out List<Label>? pageLabels); // Get the labels on the page
+        if (pageLabels == null) return; // If the labels are null, return
+
+        Vector2 position = new Vector2(Safezone.X, element.Position.Y - WindowManager.Height / 24 - 5); // Set the label position
+        pageLabels.Add(new Label(labelText, position)); // Add the label to the page
+    }
+
+    private Vector2 GetNextElementPosition(UiElement element, int page) // Get the next element position
+    {
+        int x = WindowManager.Width - (int)Safezone.X - (int)element.Dimensions.X; // Set the x position
+        
+        PageElements.TryGetValue(page, out Dictionary<string, UiElement>? elements); // Get the elements on the page
+        if (elements == null) return Safezone; // If the elements are null, return the safezone
+        
+        int yOffset; // The y offset
+        if (elements.Count != 0) // If there are elements on the page
+        { 
+            UiElement? lastElement = elements.Values.Last(); // Get the last element
+            yOffset = (int)(lastElement.Position.Y + lastElement.Dimensions.Y / 2); // Set the y offset
+        }
+        else yOffset = 70; // If there are no elements, set the y offset to 70
+        int y = (int)Safezone.Y + yOffset; // Set the y position
+
+        return new Vector2(x, y); // Return the position
+    }
+
+    private void CheckPageNumber(int page) // Check if the page exists
+    {
+        PageElements.TryGetValue(page, out Dictionary<string, UiElement>? elements); // Get the elements on the page
+        if (elements == null) 
+        {
+            PageElements.Add(page, new Dictionary<string, UiElement>()); // If the elements are null, add the page
+        }
+        
+        PageLabels.TryGetValue(page, out List<Label>? labels); // Get the labels on the page
+        if (labels == null)
+        {
+            PageLabels.Add(page, new List<Label>()); // If the labels are null, add the page
+        }
+    }
+
+    public override void Tick()     // Called every frame the window is open for
+    {
+        PageElements.TryGetValue(Page, out Dictionary<string, UiElement>? elements); // Get the elements on the page
+        PageLabels.TryGetValue(Page, out List<Label>? labels); // Get the labels on the page
+        if (elements == null && labels == null) throw new VelocityException("No page to apply logic to."); // If the elements and labels are null, throw an exception
+        
+        int lowestY = 0; // The lowest y position
+        int highestY = WindowManager.Height; // The highest y position
+        
+        foreach (var elementPair in elements) // Loop through the elements
+        {
+            elementPair.Value.Display.Update(); // Update the element display
+            
+            if (lowestY < elementPair.Value.Position.Y + elementPair.Value.Dimensions.Y) lowestY = (int) elementPair.Value.Position.Y; // Set the lowest y position
+            if (highestY > elementPair.Value.Position.Y) highestY = (int)elementPair.Value.Position.Y - 70; // Set the highest y position
+
+            
+            // Stupid nested if statements TODO: change
+            if (Page == 2) // If the page is the controls page
+            {
+                if (elementPair.Value.IsClicked()) // If the element is clicked
+                {
+                    foreach (var element in elements.Values) // Loop through the elements
+                    {
+                        if (element is ControlField controlField) // If the element is a control field
+                        {
+                            if (controlField.Display is ControlValueField controlValueField) // If the element display is a control value field
+                            {
+                                controlValueField.IsListening = false; // Stop listening for keybinds
+                                controlValueField.Value = controlField.GetKey().ToString().Replace("KEY_", ""); // Set the value to the keybind
+                            }
+                        }
+                    }
+                     
+                    if (elementPair.Value is ControlField selected) // If the element is a control field
+                    {
+                        if (selected.Display is ControlValueField controlValueField) // If the element display is a control value field
+                        {
+                            controlValueField.IsListening = true; // Start listening for keybinds
+                        }
+                    }
+                }
+            }
+            
+            switch (elementPair.Key) // Switch the element id
+            {
+                case "camera_smoothness":  // If the element is the camera smoothness slider
+                    if (!elementPair.Value.IsClicked()) continue; // If the element is not clicked, continue
+                    Loader.Settings.CameraLinearity = elementPair.Value.GetValue(2); // Set the camera linearity to the slider value
+                    continue;
+                case "resolution": // .. Etc.
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.Resolution = (int)elementPair.Value.GetValue();
+                    Loader.WindowManager.ApplySettingsChange();
+                    continue;
+                case "fullscreen":
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.FullScreen = Convert.ToBoolean(elementPair.Value.GetValue());
+                    Loader.WindowManager.ApplySettingsChange();
+                    break;
+                case "audio_master":
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.Volume = elementPair.Value.GetValue(2);
+                    Loader.AudioManager.UpdateVolume();
+                    break;
+                case "audio_game":
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.GameVolume = elementPair.Value.GetValue(2);
+                    Loader.AudioManager.UpdateGameVolume();
+                    break;
+                case "audio_ui":
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.UiVolume = elementPair.Value.GetValue(2);
+                    Loader.AudioManager.UpdateUiVolume();
+                    break;
+                case "audio_player":
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.PlayerVolume = elementPair.Value.GetValue(2);
+                    Loader.AudioManager.UpdatePlayerVolume();
+                    break;
+                case "control_interact":
+                    Loader.Settings.Keybind.Interact = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_left":
+                    Loader.Settings.Keybind.Left = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_right":
+                    Loader.Settings.Keybind.Right = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_jump":
+                    Loader.Settings.Keybind.Jump = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_down":
+                    Loader.Settings.Keybind.Down = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_zoomin":
+                    Loader.Settings.Keybind.ZoomIn = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_zoomout":
+                    Loader.Settings.Keybind.ZoomOut = ((ControlField)elementPair.Value).GetKey();
+                    break;
+            }
+        }
+
+        if (Raylib.GetMouseWheelMove() != 0) // If the mouse wheel is moved
+        {
+            int offset = (int) Raylib.GetMouseWheelMove() * 20; // Set the offset
+
+            if (lowestY + 200 + offset < WindowManager.Height) offset = 0; // If the lowest y position + 200 + the offset is less than the window height, set the offset to 0
+            if (highestY + offset > 130) offset = 0; // If the highest y position + the offset is greater than 130, set the offset to 0
+            
+            foreach (var elementPair in elements) // Loop through the elements
+            {
+                elementPair.Value.Position.Y += offset; // Add the offset to the element position
+                elementPair.Value.Display.Position.Y += offset; // Add the offset to the element display position
+            } 
+
+            foreach (var label in labels) label.Position.Y += offset; // Loop through the labels and add the offset to the position
+            
+        }
+
+        foreach (var button in Buttons) // Loop through the buttons
+        {
+            if (!button.Value.IsClicked()) continue; // If the button is not clicked, continue
+
+            switch (button.Key) // Switch the button id
+            {
+                case 0:
+                    ToDefaults(); // Reset the settings to default
+                    break;
+                case 1:
+                    Loader.Game.MenuManager.SetActiveWindow(_previousWindow ?? MainMenuScreen.UiId); // Set the active window to the previous window
+                    Loader.Settings.Save(); // Save the settings
+                    if (_previousWindow != null && _previousWindow != PauseScreen.UiId) Loader.Game.BackgroundRenderer.IsEnabled = false; // If the previous window was not the pause screen, disable the background renderer
+                    break;
+                case 2:
+                    if (Page >= 2) Page = 0; // If the page is greater than or equal to 2, set the page to 0
+                    else Page++; // Else, increment the page
+                    break;
+                case 3:
+                    if (Page <= 0) Page = 2; // If the page is less than or equal to 0, set the page to 2
+                    else Page--; // Else, decrement the page
+                    break;
+            }
+
+        }
+    }
+    
+    private void ToDefaults () // Reset the settings to default
+    {
+        Loader.Settings.ToDefault(); // Reset the settings
+        Loader.WindowManager.ApplySettingsChange(); // Apply the settings
+        Loader.AudioManager.UpdateVolume(); // Update the volume
+        PageElements.Clear(); // Clear the elements
+        PageLabels.Clear(); // Clear the labels
+        RegisterElements(); // Re-register the elements
+    }
+}
+
+```
+
+Then we will need to define our renderer class so that our game knows how to render the menu.
+We will draw a header and a footer and background rectangle first to display the page name, as a basis for our screen.
+Then we will draw the elements on the screen for the given page. Then all of the labels for the given element.
+Then we will draw our text for the page name, and finally the buttons.
+```csharp
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Screens;
+using Velocity.Window.Render.Renderers;
+using System.Numerics;
+using Velocity.Exception;
+using Velocity.Window;
+
+namespace Velocity.Ui.Render;
+
+public class SettingsScreenRenderer : UiRenderer
+{
+    private SettingsScreen _parent;
+
+    public SettingsScreenRenderer(SettingsScreen parent) : base("velocity:window." + SettingsScreen.UiId)
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        int fontSize = Convert.ToInt32(WindowManager.Height / 22);
+        
+        Raylib.DrawRectangle(10, 10, WindowManager.Width - 20, WindowManager.Height - 20, new Color(60, 60, 60, 200));
+        
+        _parent.PageElements.TryGetValue(_parent.Page, out Dictionary<string, UiElement>? elements);
+        if (elements == null)
+            throw new VelocityException("No elements on page " + _parent.Page + " on window " + SettingsScreen.UiId);
+        foreach (var elementPair in elements)
+        {
+            if (elementPair.Value.Renderer == null) throw new VelocityException("No renderer for element " + elementPair.Key + " on window " +
+                SettingsScreen.UiId);
+
+            if (elementPair.Value.Renderer.GetType().BaseType == typeof(AnimatableRenderer))
+            {
+                AnimatableRenderer renderer = (AnimatableRenderer) elementPair.Value.Renderer;
+                renderer.DrawAnimation();
+            }
+
+            elementPair.Value.Renderer.Draw();
+            
+            Raylib.DrawLineEx(new Vector2((int)SettingsScreen.Safezone.X, (int)elementPair.Value.Position.Y + (int)elementPair.Value.Dimensions.Y + 25), new Vector2(WindowManager.Width - (int)SettingsScreen.Safezone.X, (int)elementPair.Value.Position.Y + (int)elementPair.Value.Dimensions.Y + 25), (Loader.Settings.Resolution + 1) * 2f, new Color(100, 100, 100, 255));
+        }
+        
+        _parent.PageLabels.TryGetValue(_parent.Page, out List<Label>? labels);
+        if (labels == null)
+            throw new VelocityException("No elements on page " + _parent.Page + " on window " + SettingsScreen.UiId);
+        
+        foreach (var label in labels)
+        {
+            if (label.Renderer == null) throw new VelocityException("No renderer for label " + label.Text + " on window " +
+                SettingsScreen.UiId);
+            
+            label.Renderer.Draw();
+        }
+
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, (int)SettingsScreen.Safezone.Y, new Color(30, 30, 30, 255));
+        Raylib.DrawRectangle(0, (int)WindowManager.Height - (int)SettingsScreen.Safezone.Y, WindowManager.Width, (int)SettingsScreen.Safezone.Y, new Color(30, 30, 30, 255));
+        
+        Vector2 size0 = Raylib.MeasureTextEx(FontUtils.Font, GetPageName(-1), fontSize, 2);
+        Vector2 size1 = Raylib.MeasureTextEx(FontUtils.Font, GetPageName(), fontSize, 2);
+
+        Raylib.DrawTextEx(FontUtils.Font, GetPageName(-1), new Vector2(WindowManager.Width / 2 - size1.X / 2 - size0.X - fontSize, WindowManager.Height / 20 - (fontSize / 2)), fontSize, 2, Color.GRAY);
+        Raylib.DrawTextEx(FontUtils.Font, GetPageName(), new Vector2(WindowManager.Width / 2 - size1.X / 2, WindowManager.Height / 20 - (fontSize / 2)), fontSize, 2, Color.WHITE);
+        Raylib.DrawTextEx(FontUtils.Font, GetPageName(1), new Vector2(WindowManager.Width / 2 + size1.X / 2 + fontSize, WindowManager.Height / 20 - (fontSize / 2)), fontSize, 2, Color.GRAY);
+
+        foreach (var buttonPair in _parent.Buttons)
+        {
+            if (buttonPair.Value.Renderer == null)
+                throw new VelocityException("No renderer for button " + buttonPair.Key + " on window " +
+                                            SettingsScreen.UiId);
+            
+            buttonPair.Value.Renderer.Draw();
+        }
+    }
+    private string GetPageName(int offset = 0)
+    {
+        int page = _parent.Page + offset;
+        if (_parent.Page + offset + 1 > _parent.PageNames.Length) page = 0;
+        if (_parent.Page + offset < 0) page = 2;
+
+        return _parent.PageNames[page] + " Settings";   
+    }
+}
+```
+
+Now that we have our working classes for the settings menu, we can perform our third test, to see if our menu works as expected. We will link back to the [Testing](#testing-plan) section for this.
+![](https://i.imgur.com/o491U98.png)
+![](https://i.imgur.com/e7ZDUHz.png)
+![](https://i.imgur.com/L4x22QF.png)
+And as we can see, we have a working settings menu, with all of the functionality we need.
+And thus concluding the settings menu, we can now move onto the next section.
+
+> ### Errors to overcome
+> Now for this section, while testing the functionality of these menus I came across a few errors that I had to overcome.
+> - Various elements not being positioned correctly (fixed by adding a safe-zone)
+> - Ui elements not changing settings values (accessing incorrect properties, fixed by changing the settings call) 
+> - Ui elements not updating (fixed by calling the update function)
+> - Ui elements not scrolling (fixed with various changes to the scroll function)
+> - Settings not saving on quit (fixed by calling the save function after the draw loop in `Velocity.cs` our main)
+> 
+> All of these errors where fairly simple to fix, and where fixed in a timely manner.
+
+If we look back to the [Testing](#testing-plan) section, we can see that we have completed the third test, and we are now ready to move onto the next section.
+
+### Level manager, level base, and level screen
+
+Now that we have a main menu, and a settings menu, we can move onto the main part of the game, the level.
+Now our levels will be read from `.json` files, and will be loaded into the game, and then stored in the level manager, ready to be used.
+The currently active level will be stored in the `Game.cs` class, so that it can be accessed from anywhere in the game.
+The level manager will be responsible for loading the levels, and storing them in a list, and then providing a way to access them.
+The level base will be the base class for all levels, and will contain the basic data of a level, such as:
+- Difficulty
+- Background data (bg color, and image set)
+- The object map (for collidable objects)
+- The item map (for interactable items)
+- And floating texts (for displaying text on the screen) along with their positions
+
+They will format a little something like this: 
+
+`level1.json`
+```json
+{
+  "flags": {
+    "background": 3,
+    "backgroundColor": "98e2eb",
+    "difficulty": 1
+  },
+  "objectMap": [
+    "000000000000000000000000000000000000000000000000000000000000",
+    "000000000000000000000000000000000000010010001002000000000000",
+    "000000000000000000000000000000000010000000000001000000000000",
+    "000000000000000000000000020000000112000000000001100000000000",
+    "000000000000100000000010010000001111010000000001110000100001",
+    "000020000200100000200010010000011111010020000021111001100011"
+  ],
+  "itemMap": [
+    "000000000000000000000000000000000000000000000000000000000000",
+    "000000000000000000000000000000000000040040004004000000000000",
+    "000000000000000000000000000000000040000000000000000000000000",
+    "000000000000000000000000040000000400000000000000000000000000",
+    "000000000000400000000040000000004000040000000000000000400000",
+    "000000000400000000000000000000040000000040004000000004004000",
+    "000000000000004440003000000000000000000000044400000000044400"
+  ],
+  "floatingTexts": [
+    {
+      "position": [-6200, 400],
+      "text": "Welcome to Velocity, \na game about speed and momentum.\nYour controls are at\nthe bottom of the screen."
+    },
+    {
+      "position": [-5700, 400],
+      "text": "In this game you will be \nrunning from level to level."
+    },
+    {
+      "position": [-5300, 500],
+      "text": "Collecting coins, unlocking upgrades \nand trying to beat the high score."
+    },
+    {
+      "position": [-2200, 400],
+      "text": "Some jumps require some help\nfrom upgrades to cross the gap."
+    },
+    {
+      "position": [-1200, 50],
+      "text": "If you get stuck in a level,\npress escape to pause and hit restart!"
+    }
+  ]
+}
+```
+
+And we want our level schema so we can validate our level data, and it will define the structure of our level data.
+It will look a little something like this:
+
+```json
+{
+  "description": "Level data Schema",
+  "type": "object",
+  "properties": {
+    "objectMap": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "string"
+      }
+    },
+    "itemsMap": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "string"
+      }
+    },
+    "flags":
+    {
+      "type": "object",
+      "properties": {
+        "background": {
+          "type": "integer"
+        },
+        "backgroundColor": {
+          "type": "string"
+        },
+        "difficulty": {
+          "type": "integer"
+        }
+      }
+    },
+    "floatingTexts":
+    {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "position":
+          {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Now that we have our data provider for the levels, we can move onto the level manager.
+Firstly we will need to define a method for scanning the levels directory for levels, and then loading them into the game.
+Then a function to register these levels to be loaded, so the program can keep track of the levels in a dictionary.
+Then we will need to define a method for setting the current level, so we can load all the appropreate data into the game.
+Then a method to load the next level, so we can go straight from one to another, in order.
+Then a method to return all the level instances in the dictionary for our level screen.
+And lastly a method to get a level by id so we can load levels from our level screen.
+Now we have planned out all the methods, we can start to implement them.
+
+`LevelManager.cs`
+```csharp
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using Velocity.Exception;
+using Velocity.Utils;
+
+namespace Velocity.Level;
+
+public class LevelManager
+{
+    private readonly Dictionary<int, Level?> _levels = new(); // List of all levels
+
+    public LevelManager() // Constructor
+    {
+        LoadLevels(); // Load all levels
+    }
+
+    // Read all level data files
+    private void LoadLevels()
+    {
+        string levelDbRaw = File.ReadAllText(Directory.GetCurrentDirectory() + "/level/levels.json".Replace("/", OsVersion.GetDirSeperator())); // Read level database file
+        JObject levelDb = JObject.Parse(levelDbRaw); // Parse level database file
+        
+        // Iterate through every entry in the level database file
+        foreach (var i in levelDb) 
+        {
+            string name = i.Key; // Get level name
+            string? file = i.Value?.ToString(); // Get level file name
+
+            if (file == null) continue; // If file is null, skip
+            
+            RegisterLevel(name, file); // Otherwise register the level
+        }
+    }
+
+    // Validates and registers to database
+    private void RegisterLevel(string name, string file) 
+    {
+        string rawSchema = File.ReadAllText(Directory.GetCurrentDirectory() + "/level/levelSchema.json".Replace("/", OsVersion.GetDirSeperator())); // Read level schema file
+        string levelRaw = File.ReadAllText(Directory.GetCurrentDirectory() + "/level/".Replace("/", OsVersion.GetDirSeperator()) + file); // Read level file
+        JSchema schema = JSchema.Parse(rawSchema); // Parse the data to the schema for validation
+
+        JObject levelObj = JObject.Parse(levelRaw); // Parse the level data to a JObject so we can access its properties
+ 
+        if (!levelObj.IsValid(schema)) return; // If the level data is not valid, skip
+
+        _levels.Add(_levels.Values.Count, new Level(_levels.Values.Count, name, levelRaw)); // Otherwise add the level to the database with its name and raw data
+    }
+    
+    public void SelectLevel(int id) // Select a level to load
+    {
+        _levels.TryGetValue(id, out Level? level); // Get the level from the database
+
+        if (level == null) // If the level is null, throw a warning
+        {
+            Console.Error.WriteLine("Failed to load level to canvas: " + id);
+            return;
+        }
+        
+        level.Load(); // Load the level
+
+        Loader.Game.Level = level; // Set the current level to the loaded level
+
+        Loader.WindowManager.BackgroundColor = level.BackgroundColor; // Set the background color to the level's background color
+    }
+
+    public int LoadNextLevel() // Load the next level
+    {
+        if (Loader.Game.Level == null) return -1;  // If the current level is null, return -1
+        int id = Loader.Game.Level.Id + 1; // Get the next level id
+
+        if (LevelExists(id)) // If the next level exists, load it
+        {
+            SelectLevel(id); // Load the level
+            return id + 1; // Return the next level id
+        }
+
+        return -1; // Otherwise return -1
+    }
+
+    private bool LevelExists (int id) // Check if a level exists
+    {
+        return _levels.ContainsKey(id); // Return if the level exists
+    }
+
+    public Dictionary<int, Level?>.ValueCollection GetLevels() // Get all levels
+    {
+        return _levels.Values; // Return all levels
+    }
+
+    public Level GetLevelById(int id) // Get a level by its id
+    {
+        _levels.TryGetValue(id, out Level? level); // Get the level from the database
+
+        if (level == null) throw new VelocityException("Failed to get level by id: " + id);     // If the level is null, throw an error
+
+        return level;   // Otherwise return the level
+    }
+}
+```
+
+Now that we have a level manager we need to define our level file so we can have a data provider for our levels.
+It will contain the level width, height, name, id and raw data.
+The level will parse the raw data and assign its properties.
+Its properties are as follows:
+- _levelData (or object map) - The level data for the collidable objects
+- _itemMap (or item map) - The level data for the interactable items
+- BackgroundColor - The background color of the level
+- Background - The background image set of the level (stored as int for our asset manager)
+- Difficulty - The difficulty of the level
+- FloatingTexts - The floating texts for the level (list)
+
+We will also need to define the class of FloatingTextData, to store all of the data for the floating texts.
+
+Then we will need to define our methods.
+Firstly will be the LoadData method for parsing our raw data and decoding it, and finally assigning it to the properties above.
+Then we will need to define a method for loading the level, so we can load the level into the game.
+Then the sub-methods for loading the objects, and items that can be called for the level.
+Now we have planned out our methods we can start to implement them.
+
+`Level.cs`
+```csharp
+using Newtonsoft.Json;
+using Raylib_cs;
+using Velocity.Game.Object;
+using Velocity.Game.Object.FloatingText;
+using Velocity.Math;
+using Velocity.Utils;
+
+namespace Velocity.Level;
+
+public class FloatingTextData
+{
+    public Vector2 Position { get; } // Position of the text
+    public string Text { get; } // Text to display
+    
+    public FloatingTextData(string text, Vector2 position) // Constructor
+    {
+        Text = text; // Set text
+        Position = position; // Set position
+    }
+}
+
+public class Level // Level class
+{
+    public const int LevelWidth = 60; // Width of the level
+    public const int LevelHeight = 6; // Height of the level
+    
+    public readonly string Name;    // Name of the level
+    public readonly int Id;         // Id of the level
+    private readonly string _data;  // Raw level data
+
+    private string[] _levelData = Array.Empty<string>(); // Level data
+    private string[] _itemMap = Array.Empty<string>();   // Item map
+    public Color BackgroundColor;                        // Background color
+    public int Background = 1;                           // Background id
+    public int Difficulty;                               // Difficulty of the level
+    
+    public readonly List<FloatingTextData> FloatingTexts = new (); // List of floating texts
+
+    public Level(int id, string name, string data) // Constructor
+    {
+        Id = id; // Set id
+        Name = name; // Set name
+        _data = data; // Set data
+
+        LoadData(); // Load data
+    } 
+    
+    // Load json _data into data structure 
+    private void LoadData()
+    {
+        dynamic ?levelData = JsonConvert.DeserializeObject(_data); // Deserialize json _data
+
+        if (levelData == null) return; // If level data is null, skip
+
+        _levelData = levelData.objectMap.ToObject<string[]>(); // Get object map
+        
+        _itemMap = levelData.itemMap.ToObject<string[]>(); // Get item map
+
+        Background = levelData.flags.background ?? 1; // Set background id
+        BackgroundColor = levelData.flags.backgroundColor != null ? ColorFormatter.from_string((string)levelData.flags.backgroundColor) :  new Color(0, 200, 255, 255); // Set background color (and handle default)
+        Difficulty = levelData.flags.difficulty ?? 1; // Set difficulty
+
+        foreach (var data in levelData.floatingTexts) // Iterate through floating texts
+        {
+            FloatingTextData floatingTextData = new FloatingTextData((string)data.text, new Vector2((double)data.position[0], Game.Game.FloorHeight - (double)data.position[1])); // Create floating text data
+            
+            FloatingTexts.Add(floatingTextData); // Add floating text data to list
+        }
+    }
+
+    public void Load() // Load level
+    { 
+        LoadObjects(); // Load objects
+        LoadItems();   // Load items
+    }
+
+    public string[] GetObjectMap() // Get object map (for level screen preview)
+    {
+        return _levelData; // Return object map
+    }
+
+    private void LoadObjects() // Load objects
+    {
+        int y = 200 * LevelHeight; // Set y to the top of the level
+        foreach (var row in _levelData) // Iterate through each row in the level
+        {
+            int x = -200 * (LevelWidth / 2); // Set x to the left of the level
+            foreach (var id in row) // Iterate through each colomn in the row
+            {
+                if (Convert.ToInt32(new string(id, 1)) == ObjectIds.Barrel) Loader.Game.ObjectManager.AddObject(Convert.ToInt32(new string(id,1)), new Vector2(x + 25, y)); // If the id is a barrel, add it with a different offset
+                else if (!id.Equals('0')) Loader.Game.ObjectManager.AddObject(Convert.ToInt32(new string(id,1)), new Vector2(x, y)); // Otherwise add it normally
+                x += 200; // Increment x
+            }
+            y -= 200; // Decrement y (load level top to bottom)
+        }
+    }
+
+    private void LoadItems() // Load items
+    {
+        int y = (200 * LevelHeight) + 200; // Set y to the top of the level
+        foreach (var row in _itemMap) // Iterate through each row in the level
+        {
+            int x = -200 * (LevelWidth / 2); // Set x to the left of the level
+            foreach (var id in row) // Iterate through each colomn in the row
+            {
+                if (!id.Equals('0')) Loader.Game.ObjectManager.AddItemObject(Convert.ToInt32(new string(id,1)), new Vector2(x + (id.Equals('4') ? 100 : 75), y - (id.Equals('4') ? 100 : 75))); // Add the item (with correct offsets for item type)
+                x += 200; // Increment x
+            }
+            y -= 200; // Decrement y (load level top to bottom)
+        }
+    }
+}
+
+```
+
+Now that we have our level manager, and our level base, we can move onto the level screen.
+We will need to define a method to handle what the screen does when the screen is opened.
+We will need a `Tick` function to handle whats going on within the menu. 
+Various method to register the on-screen elements.
+And a method to handle to handle the seletion of the level.
+
+`LevelScreen.cs`
+```csharp
+using Raylib_cs;
+using Velocity.Game.Statistics;
+using Velocity.Ui.Misc;
+using Velocity.Math;
+using Velocity.Ui.Render;
+using Velocity.Utils;
+using Velocity.Window;
+
+namespace Velocity.Ui.Screens;
+
+public class LevelScreen : Window
+{
+    public new static readonly int UiId = 3; // Unique id for this screen
+
+    public readonly Dictionary<int, Button?> Buttons = new(); // Buttons on the screen
+
+    public Button PlayButton; // Play button on the screen
+    
+    public readonly LevelField LevelField = new(); // Level field on the screen
+    
+    public LevelScreen() // Constructor
+    {
+        Renderer = new LevelScreenRenderer(this); // Set the renderer
+        
+        RegisterButtons(); // Register the buttons
+
+        RegisterPlayButton(); // Register the play button
+    }
+
+    public override void OnDisplay(int? previous) // Called when the window is opened
+    {
+        base.OnDisplay(previous); // Call the base function
+        LevelField.SelectedLevel = null; // Set the selected level to null
+        
+        if (previous == MainMenuScreen.UiId) // If the previous window was the main menu
+        {
+            Loader.Game.BackgroundRenderer.LoadTextures(); // Load the background textures
+            Loader.Game.BackgroundRenderer.IsEnabled = true; // Enable the background renderer
+        } 
+    }
+
+    public override void Tick() // Called every frame the window is open for
+    {
+        int lowestY = 0; // Lowest y value of the buttons
+        int highestY = WindowManager.Height; // Highest y value of the buttons
+        
+        foreach (var pair in Buttons) // Loop through the buttons
+        {
+            // For scrolling
+            if (lowestY < pair.Value.Position.Y + pair.Value.Dimensions.Y) lowestY = (int) pair.Value.Position.Y; // Set the lowest y value
+            if (highestY > pair.Value.Position.Y) highestY = (int)pair.Value.Position.Y - 70; // Set the highest y value
+            
+            Color color = pair.Value.BgColor; // Get the button color
+            
+            if (pair.Value.IsMouseOver()) // If the mouse is over the button
+            {
+                color.a = 255; // Set the alpha to 255
+                pair.Value.BgColor = color; // Set the button color
+            }
+            else
+            {
+                color.a = 100; // Set the alpha to 100
+                pair.Value.BgColor = color; // Set the button color
+            }
+
+            if (pair.Value.IsClicked()) // If the button is clicked
+            {
+                Select(pair.Key); // Select the button
+            }
+        }
+
+        bool result = PlayButton.IsClicked(); // Get the result of the play button click
+
+        if (result && LevelField.SelectedLevel != null) // If the play button is clicked and a level is selected
+        {
+            Loader.Game.MenuManager.SetActiveWindow(LoadingScreen.UiId, UiId); // Set the active window to the loading screen
+            LoadingScreen.Trigger(LevelField.SelectedLevel.Name, 
+                "Time to beat: " +
+                StatisticManager.SteraliseTime(StatisticManager.GetLevelBestTime(LevelField.SelectedLevel.Id)),
+                () =>
+                {
+                    Loader.Game.LevelManager.SelectLevel(LevelField.SelectedLevel.Id);
+                    Loader.Game.Run();
+                    Loader.Game.MenuManager.DisableAll();
+                    Loader.Game.ColoredFlashRenderer.Trigger(20, Color.BLACK);
+                    return 0;
+                }); // Trigger the loading screen with the level name and time to beat, and on completion load the level, run the game, and trigger a fadeout effect
+        }
+        else if (LevelField.SelectedLevel == null) // If no level is selected
+        {
+            PlayButton.Active = false; // Disable the play button
+        }
+        else // If a level is selected
+        {
+            PlayButton.Active = true; // Enable the play button
+        }
+
+        // For scrolling
+        if (Raylib.GetMouseWheelMove() != 0)  // If the mouse wheel is moved
+        { 
+            int offset = (int) Raylib.GetMouseWheelMove() * 20; // Get the offset
+
+            if (lowestY + 170 + offset < WindowManager.Height) offset = 0; // If the lowest y value is less than the window height, set the offset to 0
+              
+            if (highestY + offset > 70) offset = 0; // If the highest y value is greater than 70, set the offset to 0
+            
+            foreach (var elementPair in Buttons) // Loop through the buttons
+            {
+                elementPair.Value.Position.Y += offset; // Add the offset to the button's y value
+            }
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE)) Loader.Game.MenuManager.SetActiveWindow(MainMenuScreen.UiId); // If escape is pressed, set the active window to the main menu
+    }
+    
+    private void RegisterButtons() // Register the buttons
+    {
+        foreach (var level in Loader.Game.LevelManager.GetLevels()) // Loop through the levels
+        {
+            if (level == null) continue; // If the level is null, skip it
+             
+            string name = level.Name; // Get the level name
+
+            int id = Buttons.Count; // Get the button id
+            
+            AddButton(id, name); // Add the button
+        }
+    }
+
+    private void Select(int buttonId)  // Select a level
+    {
+        LevelField.SelectLevel(buttonId); // Select the level
+    }
+
+    private void RegisterPlayButton() // Register the play button
+    {
+        Text buttonText = new Text 
+        {
+            Color = Color.WHITE,
+            FontSize = 48, 
+            Data = "Play",
+            Font = FontUtils.ButtonFont
+        }; // Create the button text
+
+        PlayButton = new Button(buttonText, new Vector2(WindowManager.Width - 360, WindowManager.Height - 180), new Vector2(300, 120))
+        {
+            BgColor = new Color(40, 40, 40, 200),
+            BorderColor = Color.WHITE
+        }; // Create the button
+    }
+
+    private void AddButton (int id, string text) // Add a button to the screen
+    {
+        Text buttonText = new Text 
+        {
+            Color = Color.WHITE,
+            FontSize = 48,
+            Data = text,
+            Font = FontUtils.ButtonFont
+        }; // Create the button text
+        
+        int y = (Buttons.Count + 1) * 140 + 20; // Get the y value of the button
+        
+        Button button = new Button(buttonText, new Vector2(40 + (OsVersion.GetOS() == OsVersion.Os.MacOs ? 20 : 0), y), new Vector2(700, 120))
+        {
+            BgColor = new Color(40, 40, 40, 200),
+            BorderColor = Color.WHITE
+        }; // Create the button
+        
+        Buttons.Add(id, button); // Add the button to the list
+    }
+}
+```
+
+Now that we have our base class for our level screen, we can move on to the renderer for the level screen.
+We will need a black rectangle to draw over the background.
+Then we will be using a raylib function called ScissorMode, this essentually allows us to draw within a rectangle, and anything outside of that rectangle will not be drawn.
+Inside this rectangle we will draw all the buttons, so they draw inside a rectangle.
+Then we will draw the level field (our information and data display about the level).
+Then we will draw the play button.
+Lastly we will draw a header for the screen, so the player knows what screen they are on.
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Screens;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render;
+
+public class LevelScreenRenderer : UiRenderer
+{
+    private readonly LevelScreen _parent;
+    
+    public LevelScreenRenderer(LevelScreen parent) : base("velocity:window." + LevelScreen.UiId)
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, new Color(10, 10, 30, 200));
+        
+        Raylib.BeginScissorMode(20, 140, 740, WindowManager.Height - 170);
+        
+        Raylib.DrawRectangle(20, 140, 740, WindowManager.Height - 170, Color.BLACK);
+        foreach (var pair in _parent.Buttons)
+        {
+            pair.Value.Renderer.Draw();
+        }
+        
+        Raylib.EndScissorMode();
+        
+        _parent.LevelField.Renderer.Draw();
+        _parent.PlayButton.Renderer.Draw();
+        
+        Raylib.DrawRectangle(0,0, WindowManager.Width, 110, new Color(40, 40, 40, 200));
+        Raylib.DrawLine(0, 110, WindowManager.Width, 110, Color.DARKGRAY);
+        Raylib.DrawTextEx(FontUtils.Font, "Level Select", new Vector2(30, 20), 65, 2, Color.WHITE);
+    }
+}
+```
+
+Now that we have our menu, we can look back to our [Testing](#testing-plan) section, and see that we have completed the fourth test, and we are now ready to move onto the next section.
