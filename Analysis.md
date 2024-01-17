@@ -670,14 +670,14 @@ As it is hard to test the subroutines without running the game, I will be testin
 |----------------------------------------------------------------------------------------------------------------------|----------|
 | 1. A open blank window ready for us to implement our features                                                        |  ✓       |
 | 2. Main menu with 4 buttons and a title, including game version information and my copywrite                         |  ✓       |
-| 3. Settings screen with at least 3 sections, that include controls, video settings, audio settings                   |          |
+| 3. Settings screen with at least 3 sections, that include controls, video settings, audio settings                   |  ✓       |
 | 4. Working camera system that smoothly follows the player wherever they go on the game canvas                        |          |
 | 5. A working physics system that can be applied to any object, with gravity, drag, and collision calculations        |          |
 | 6. A working player that can be moved using the control scheme, with velocity and appropriate drag calculations      |          |
-| 7. Working texture and audio loading system                                                                          |          |
+| 7. Working texture and audio loading system                                                                          |  ✓       |
 | 8. Working parallax background renderer that infinitely draws around the camera                                      |          |
 | 9. A working object system for adding game objects such as collidable objects and item power-ups                     |          |
-| 10. A working level system that can load and save level stats, and load the next level when the player completes one |          |
+| 10. A working level system that can load and save level stats, and load the next level when the player completes one |  ✓       |
 | 11. A working ai that chases the player                                                                              |          | 
 
 ### UI Element Validation
@@ -813,8 +813,10 @@ This will be mentioned along side my main development in the [Development](#deve
 
 Firstly I will be creating an underlying framework for my game to run on. This will consist of an input system for reading user inputs, an update system for executing game logic, and a draw loop to display the computed inputs, game logic, and elements to the screen.
 This section will be largely based off of the framework I created in my mini-nea found [here](https://github.com/WolfDen133/MiniNEA).
+This video shows what I already have programmed. 
+[Click here for video](https://imgur.com/KVb5bWA)
 
-#### Window Manager & Renderer
+#### Window Manager & Renderer 
 
 Firstly I will create a window manager that will be registered in the main class. This window manager will contain all the logic needed to register a window in the underlying operating system and allow me to start drawing elements.
 
@@ -887,6 +889,10 @@ public class WindowManager
         _destRectangle = new Rectangle(-VirtualRatio, -VirtualRatio, Settings.Resolutions[Loader.Settings.Resolution].X + VirtualRatio * 2, Settings.Resolutions[Loader.Settings.Resolution].Y + VirtualRatio * 2);
 
         Raylib.SetWindowSize((int)Settings.Resolutions[Loader.Settings.Resolution].X, (int)Settings.Resolutions[Loader.Settings.Resolution].Y);
+        
+        int x = Raylib.GetScreenWidth() >= Raylib.GetMonitorWidth(0) ? 0 : (Raylib.GetMonitorWidth(0) / 2 - Raylib.GetScreenWidth() / 2);
+        int y = Raylib.GetScreenHeight() >= Raylib.GetMonitorHeight(0) ? 0 : (Raylib.GetMonitorHeight(0) / 2 - Raylib.GetScreenHeight() / 2);
+        Raylib.SetWindowPosition(x, y);
     }
 
     // This is the main draw loop of the game, it will draw to a virtual canvas, and then draw that canvas to the screen
@@ -2414,6 +2420,16 @@ This class will serve as a sound provider and we will now be able to access the 
 > - The second error we encountered was textures were not being returned correctly in the player and background methods. This was because we were not using the correct name for the texture, and therefor it was not being found. - This was fixed by changing the texture code format so it returns the correct background and player textures.
 > - The third error we encountered was the fact that the sound was not playing, this was because we were not initialising the audio device, and therefor the sound could not be played. - This was fixed by initialising the audio device in the constructor of the sound manager.
 > - The fourth error was sounds not being found, this came from using the incorrect sound format and name, so it was easily fixed by changing the sound format and name to the correct format.
+
+Linking back to our [Testing Plab](#testing-plan) section, we can now test our sound and asset manager by playing a sound and loading a texture, and we can see that it works as expected.
+
+I will insert lines of code into the draw loop, and post load in the main file, so we can test both.
+
+`AudioManager.PlaySound("ui.click");` post load in the main file, and `Raylib.DrawTexture(AssetManager.GetTexture("ui.heart"), 0, 0, Color.WHITE);` in the draw loop.
+
+[Click here for video](https://imgur.com/vAw06lc)
+
+We can see that the sound plays and the texture is loaded, and therefor our sound and asset manager is working as expected.
 
 And so concludes this section of development, we now have a working sound manager and asset manager so we can play sounds, change sound volume and load, unload and access textures when needed.
 
@@ -4784,4 +4800,598 @@ public class LevelScreenRenderer : UiRenderer
 }
 ```
 
-Now that we have our menu, we can look back to our [Testing](#testing-plan) section, and see that we have completed the fourth test, and we are now ready to move onto the next section.
+> ### Errors to overcome
+> Now for this section, while testing the functionality of these menus I came across a few errors that I had to overcome.
+> - Buttons not being positioned correctly for mac-os (fixed by adding an offset with an os check)
+> - Various adjustments to borders and margins 
+> - Rectangles not displaying at correct size (fixed by changing the rectangle size to the element size / number of rectangles)
+> - Level screen not displaying correctly (fixed by adding a scissor mode)
+
+Now that we have the level system implemented, we can perform our next test. 
+Test 10: Test the level system.
+We will link back to the [Testing](#testing-plan) section for this.
+
+![](https://i.imgur.com/4xN4ATd.png)
+![](https://i.imgur.com/qnnNdil.png)
+
+And we can now see that this is working as expected, and we can now move onto the next section.
+
+### Utility classes
+
+Now that we have our main game structure, we need some various files to help us with the game.
+We will need a class to format the color codes specified in the level data, so we can use them in our game.
+We will need a class to provide us with a ini file, for settings and other data saving.
+We will need a file to parse our keyboard inputs into string values and back again.
+We will need a file to check the OsVersion, so we can use the correct directory seperator for our operating system.
+We will need a file to provide us with our directories for our assets.
+
+They are all defined below
+
+> `ColorFormatter.cs`
+> ```csharp
+> using Raylib_cs;
+> 
+> namespace Velocity.Utils;
+> 
+> public class ColorFormatter
+> {
+>     private static int H2d(char c) // Convert hex to decimal
+>     {
+>         return c switch
+>         {
+>             >= '0' and <= '9' => c - '0',
+>             >= 'A' and <= 'F' => c - 'A' + 10,
+>             >= 'a' and <= 'f' => c - 'a' + 10,
+>             _ => 0
+>         };
+>     }
+>     
+>     public static Color from_string(string s) // Convert hex-code to color instance
+>     {
+>         var c = new Color((H2d(s[0])<<4)+H2d(s[1]), (H2d(s[2])<<4)+(byte)H2d(s[3]), (H2d(s[4])<<4)+(byte)H2d(s[5]), s.Length == 8 ? (H2d(s[6])<<4)+H2d(s[7]) : 255);
+>         return c;
+>     }
+> }
+> ```
+
+> `IniFile.cs`
+> ```csharp
+> using System.Collections;
+> 
+> namespace Velocity.Utils;
+> 
+> /**
+> * @ref https://gist.github.com/Sn0wCrack/5891612
+>   */
+>   public class IniFile
+>   {
+>   private readonly Hashtable _keyPairs = new Hashtable();
+>   private readonly String _iniFilePath;
+> 
+>   private struct SectionPair
+>   {
+>   public string? Section;
+>   public string? Key;
+>   }
+> 
+>   /// <summary>
+>   /// Opens the INI file at the given path and enumerates the values in the IniParser.
+>   /// </summary>
+>   /// <param name="iniPath">Full path to INI file.</param>
+>   public IniFile(String iniPath)
+>   {
+>   TextReader? iniFile = null;
+>   string? currentRoot = null;
+> 
+>        _iniFilePath = iniPath;
+> 
+>        if (!File.Exists(iniPath))
+>        {
+>            TextWriter tw = new StreamWriter(iniPath);
+>            tw.Write("Velocity Settings");
+>            tw.Close();
+>        }
+>        
+>        try
+>        {
+>            iniFile = new StreamReader(iniPath);
+> 
+>            var strLine = iniFile.ReadLine();
+> 
+>            while (strLine != null)
+>            {
+>                strLine = strLine.Trim().ToUpper();
+> 
+>                if (strLine != "")
+>                {
+>                    if (strLine.StartsWith("[") && strLine.EndsWith("]"))
+>                    {
+>                        currentRoot = strLine.Substring(1, strLine.Length - 2);
+>                    }
+>                    else
+>                    {
+>                        string?[] keyPair = strLine.Split(new[] { '=' }, 2);
+> 
+>                        SectionPair sectionPair;
+>                        string? value = null;
+> 
+>                        if (currentRoot == null)
+>                            currentRoot = "ROOT";
+> 
+>                        sectionPair.Section = currentRoot;
+>                        sectionPair.Key = keyPair[0];
+> 
+>                        if (keyPair.Length > 1)
+>                            value = keyPair[1];
+> 
+>                        _keyPairs.Add(sectionPair, value);
+>                    }
+>                }
+> 
+>                strLine = iniFile.ReadLine();
+>            }
+> 
+>        }
+>        catch (System.Exception ex)
+>        {
+>            throw ex;
+>        }
+>        finally
+>        {
+>            iniFile?.Close();
+>        }
+>   }
+> 
+>   /// <summary>
+>   /// Returns the value for the given section, key pair.
+>   /// </summary>
+>   /// <param name="sectionName">Section name.</param>
+>   /// <param name="settingName">Key name.</param>
+>   public string GetSetting(String sectionName, String settingName)
+>   {
+>   SectionPair sectionPair;
+>   sectionPair.Section = sectionName.ToUpper();
+>   sectionPair.Key = settingName.ToUpper();
+> 
+>        return (String)_keyPairs[sectionPair]!;
+>   }
+> 
+>   /// <summary>
+>   /// Enumerates all lines for given section.
+>   /// </summary>
+>   /// <param name="sectionName">Section to enum.</param>
+>   public String[] EnumSection(String sectionName)
+>   {
+>   ArrayList tmpArray = new ArrayList();
+> 
+>        foreach (SectionPair pair in _keyPairs.Keys)
+>        {
+>            if (pair.Section == sectionName.ToUpper())
+>                tmpArray.Add(pair.Key);
+>        }
+> 
+>        return (String[])tmpArray.ToArray(typeof(String));
+>   }
+> 
+>   /// <summary>
+>   /// Adds or replaces a setting to the table to be saved.
+>   /// </summary>
+>   /// <param name="sectionName">Section to add under.</param>
+>   /// <param name="settingName">Key name to add.</param>
+>   /// <param name="settingValue">Value of key.</param>
+>   public void AddSetting(String sectionName, String settingName, string? settingValue = null)
+>   {
+>   SectionPair sectionPair;
+>   sectionPair.Section = sectionName.ToUpper();
+>   sectionPair.Key = settingName.ToUpper();
+> 
+>        if (_keyPairs.ContainsKey(sectionPair))
+>            _keyPairs.Remove(sectionPair);
+> 
+>        _keyPairs.Add(sectionPair, settingValue);
+>   }
+> 
+>   /// <summary>
+>   /// Remove a setting.
+>   /// </summary>
+>   /// <param name="sectionName">Section to add under.</param>
+>   /// <param name="settingName">Key name to add.</param>
+>   public void DeleteSetting(String sectionName, String settingName)
+>   {
+>   SectionPair sectionPair;
+>   sectionPair.Section = sectionName.ToUpper();
+>   sectionPair.Key = settingName.ToUpper();
+> 
+>        if (_keyPairs.ContainsKey(sectionPair))
+>            _keyPairs.Remove(sectionPair);
+>   }
+> 
+>   /// <summary>
+>   /// Save settings to new file.
+>   /// </summary>
+>   /// <param name="newFilePath">New file path.</param>
+>   private void SaveSettings(String newFilePath)
+>   {
+>   ArrayList sections = new ArrayList();
+>   string tmpValue = "";
+>   String strToSave = "";
+> 
+>        foreach (SectionPair sectionPair in _keyPairs.Keys)
+>        {
+>            if (!sections.Contains(sectionPair.Section))
+>                sections.Add(sectionPair.Section);
+>        }
+> 
+>        foreach (String section in sections)
+>        {
+>            strToSave += ("[" + section + "]\r\n");
+> 
+>            foreach (SectionPair sectionPair in _keyPairs.Keys)
+>            {
+>                if (sectionPair.Section == section)
+>                {
+>                    tmpValue = (String)_keyPairs[sectionPair]!;
+> 
+>                    tmpValue = "=" + tmpValue;
+> 
+>                    strToSave += (sectionPair.Key + tmpValue + "\r\n");
+>                }
+>            }
+> 
+>            strToSave += "\r\n";
+>        }
+> 
+>        try
+>        {
+>            TextWriter tw = new StreamWriter(newFilePath);
+>            tw.Write(strToSave);
+>            tw.Close();
+>        }
+>        catch (System.Exception ex)
+>        {
+>            throw ex;
+>        }
+>   }
+> 
+>   /// <summary>
+>   /// Save settings back to ini file.
+>   /// </summary>
+>   public void SaveSettings()
+>   {
+>   SaveSettings(_iniFilePath);
+>   }
+>   }
+> ```
+> **CREDIT:** https://gist.github.com/Sn0wCrack/5891612
+
+> `KeyParser.cs`
+> ```csharp
+> using Raylib_cs;
+> 
+> namespace Velocity.Utils;
+> 
+> public class KeyParser
+> {
+>     public static KeyboardKey ToKey(string? key) // Convert string to KeyboardKey
+>     {
+>         string find = key.Replace("KEY_", "").ToLower();
+>         return find switch
+>         {
+>             "a" => KeyboardKey.KEY_A,
+>             "b" => KeyboardKey.KEY_B,
+>             "c" => KeyboardKey.KEY_C,
+>             "d" => KeyboardKey.KEY_D,
+>             "e" => KeyboardKey.KEY_E,
+>             "f" => KeyboardKey.KEY_F,
+>             "g" => KeyboardKey.KEY_G,
+>             "h" => KeyboardKey.KEY_H,
+>             "i" => KeyboardKey.KEY_I,
+>             "j" => KeyboardKey.KEY_J,
+>             "k" => KeyboardKey.KEY_K,
+>             "l" => KeyboardKey.KEY_L,
+>             "m" => KeyboardKey.KEY_M,
+>             "n" => KeyboardKey.KEY_N,
+>             "o" => KeyboardKey.KEY_O,
+>             "p" => KeyboardKey.KEY_P,
+>             "q" => KeyboardKey.KEY_Q,
+>             "r" => KeyboardKey.KEY_R,
+>             "s" => KeyboardKey.KEY_S,
+>             "t" => KeyboardKey.KEY_T,
+>             "u" => KeyboardKey.KEY_U,
+>             "v" => KeyboardKey.KEY_V,
+>             "w" => KeyboardKey.KEY_W,
+>             "x" => KeyboardKey.KEY_X,
+>             "y" => KeyboardKey.KEY_Y,
+>             "z" => KeyboardKey.KEY_Z,
+>             "1" => KeyboardKey.KEY_ONE,
+>             "2" => KeyboardKey.KEY_TWO,
+>             "3" => KeyboardKey.KEY_THREE,
+>             "4" => KeyboardKey.KEY_FOUR,
+>             "5" => KeyboardKey.KEY_FIVE,
+>             "6" => KeyboardKey.KEY_SIX,
+>             "7" => KeyboardKey.KEY_SEVEN,
+>             "8" => KeyboardKey.KEY_EIGHT,
+>             "9" => KeyboardKey.KEY_NINE,
+>             "0" => KeyboardKey.KEY_ZERO,
+>             "up" => KeyboardKey.KEY_UP,
+>             "down" => KeyboardKey.KEY_DOWN,
+>             "left" => KeyboardKey.KEY_LEFT,
+>             "right" => KeyboardKey.KEY_RIGHT,
+>             "minus" => KeyboardKey.KEY_MINUS,
+>             "equal" => KeyboardKey.KEY_EQUAL,
+>             "left_shift" => KeyboardKey.KEY_LEFT_SHIFT,
+>             "right_shift" => KeyboardKey.KEY_RIGHT_SHIFT,
+>             "tab" => KeyboardKey.KEY_TAB,
+>             "space" => KeyboardKey.KEY_SPACE,
+>             _ => KeyboardKey.KEY_NULL
+>         };
+>     }
+> }
+> ```
+
+> `OsVersion.cs`
+> ```csharp
+> namespace Velocity.Utils;
+> 
+> public class OsVersion
+> {
+> public static Os GetOS() // Get the current OS
+> {
+> switch (Environment.OSVersion.Platform)
+> {
+> case PlatformID.Win32Windows: return Os.Windows;
+> case PlatformID.MacOSX: return Os.MacOs;
+> case PlatformID.Unix: return Os.Linux;
+> default: return Os.Other;
+> }
+> }
+> 
+>     public static string GetDirSeperator () // Get the directory seperator for the current OS
+>     {
+>         switch (GetOS())
+>         {
+>             case Os.MacOs:
+>             case Os.Linux:
+>                 return "/";
+>             case Os.Windows: return "\\";
+>             default: return "/";
+>         }
+>     }
+> 
+>     public enum Os // Enum for the OS
+>     {
+>         Windows = 0,
+>         MacOs = 1,
+>         Linux = 2,
+>         Other = 3
+>     }
+> }
+> ```
+
+These serve as utility classes for our game, and will be used throughout the classes.
+
+I did not encounter any errors with this section.
+
+### Base physics and player
+
+Now that we have our main game structure, we need to implement the base physics for our game.
+We will need to define a class for our physics that we can assign to our player, so we can handle the physics of our game.
+This will be defined as a base class so we can extend our other classes from it and assign them physics.
+In this class we will need:
+- Property for the enable state of the physics, so we can turn them off
+- Property for the gravity state, so we can turn off gravity
+- Property for if the player has collided with the floor, so we know when it happens
+- Position, dimensions and velocity properties, so we know where the player is, the bounding box of the player so we can calculate face to face collision and the velocity of the player so we can move the player
+- A method to add velocity to the player so our controller can move the player
+- An enable disable function so we can turn the physics on and off
+- A method to calculate gravity, to calculate floor collision (in this case floor y is at 10000), to then calculate friction resistance from the floor and other objects, to calculate air resistance, to soft-limit the players velicty for terminal velocity, and finally a dead zone for the player so they don't move when they are not being controlled (issues with doubles and floats not returning to 0 when dividing)
+- A method to apply these calculations to the player
+
+So our physics loop will be 3 main steps:
+- Add velocity
+- Calculate velocity difference + physics and collision + gravity
+- Apply calculations
+
+And we can interupt these steps if necessary.
+
+Now we have our structure we can define the class
+
+```csharp
+using Velocity.Math;
+
+namespace Velocity.Game.Physics;
+
+public abstract class BasePhysics
+{
+    public bool IsEnabled = true;
+    public bool HasGravity = false;
+    public bool OnFloor;
+    
+    public Vector2 Position;
+    public readonly Vector2 Dimensions;
+    public Vector2 Velocity;
+
+    protected BasePhysics(Vector2 position, Vector2 dimensions)
+    {
+        Position = position;
+        Velocity = new Vector2();
+        Dimensions = dimensions;
+    }
+
+    public void AddVelocity(double x = 0, double y = 0, bool jump = false)
+    {
+        if (System.Math.Abs(Velocity.X) + System.Math.Abs(x) > PhysicsConst.MaxVelocity && !jump && !OnFloor)
+        {
+            double difference = Double.Abs(PhysicsConst.MaxVelocity) - Double.Abs(Velocity.X);
+            x = Velocity.X > 0 ? difference : -difference;
+
+        } else if (System.Math.Abs(System.Math.Abs(Velocity.X) - PhysicsConst.MaxVelocity) == 0 && !jump && !OnFloor) x = 0;
+        
+        if (System.Math.Abs(Velocity.Y) + System.Math.Abs(y) > PhysicsConst.MaxVelocity && !jump && !OnFloor)
+        {
+            double difference = Double.Abs(PhysicsConst.MaxVelocity - Velocity.Y);
+            y = Velocity.Y > 0 ? difference : -difference;
+
+        } else if (System.Math.Abs(System.Math.Abs(Double.Round(Velocity.Y)) - PhysicsConst.MaxVelocity) == 0 && !jump && !OnFloor) y = 0;
+        
+        if (x != 0) Velocity.X += x;
+        if (y != 0) Velocity.Y -= y;
+    }
+
+    public void SetEnabled(bool value = true)
+    {
+        IsEnabled = true;
+    }
+
+    /** 
+     * Calculate gravity
+     */
+    public virtual void Tick() {
+        if (!IsEnabled) return;
+        
+        if (HasGravity && !OnFloor) Velocity.Y += PhysicsConst.Gravity;
+
+        double footY = Position.Y + Dimensions.Y / 2;
+
+        if (footY >= Game.FloorHeight - PhysicsConst.MaxVelocity)
+        {
+            if (Convert.ToInt32(footY) == Game.FloorHeight)
+            {
+                if (Velocity.Y >= 0)
+                {
+                    Velocity.Y = 0;
+                }
+
+                OnFloor = true;
+
+            }
+            else if (footY + Velocity.Y >= Game.FloorHeight && footY <= Game.FloorHeight)
+            {
+                Velocity.Y = 0;
+            }
+            else OnFloor = false;
+
+            if (Position.Y >= Game.FloorHeight + 200)
+            {
+                Position.Y = Game.FloorHeight - 100;
+                return;
+            }
+        }
+
+        if (OnFloor)
+        {
+            double frictionLossX = (Velocity.X / PhysicsConst.MaxVelocity) * PhysicsConst.Friction;
+            Velocity.X -= frictionLossX;
+        }
+        
+        double airResistanceLossX = (Velocity.X / PhysicsConst.MaxVelocity) * PhysicsConst.AirResistance;
+        Velocity.X -= airResistanceLossX;
+        
+        double airResistanceLossY = (Velocity.Y / PhysicsConst.MaxVelocity) * PhysicsConst.AirResistance;
+        Velocity.Y -= airResistanceLossY;
+        
+        
+        if (Velocity.X is >= -0.05 and < 0 or <= 0.05 and > 0) Velocity.X = 0.0;
+        if (Velocity.Y is >= -0.05 and < 0 or <= 0.05 and > 0) Velocity.Y = 0.0;
+
+        
+        if (System.Math.Abs(Velocity.X) is > 0 and > PhysicsConst.MaxVelocity)
+            Velocity.X = Velocity.X > 0 ? PhysicsConst.MaxVelocity : -PhysicsConst.MaxVelocity; 
+        
+        if (System.Math.Abs(Velocity.Y) is > 0 and > PhysicsConst.MaxVelocity)
+            Velocity.Y = Velocity.Y > 0 ? -PhysicsConst.MaxVelocity : PhysicsConst.MaxVelocity;
+    }
+
+    public void UpdatePosition()
+    {
+        Position.Change(Double.Round(Velocity.X), Double.Round(Velocity.Y));
+    }
+    
+}
+```
+
+Now that we have our base physics class, we can move onto the player.
+
+For the player we will need:
+- A property for the player's health
+- A property for the player's renderer
+- A property for the player's controller
+- A property for the player's state (enum, alive, dead, etc) [unused]
+- A property for the player's apperence 
+- A method to damage the player (unused)
+- A method called by the renderer (TODO: calculate sounds seperately) to calculate the sounds that need to be played
+- And a method for resetting the players current state
+
+This will provide us with all of the necisary data to keep track of the player.
+As previously mensioned, I will be extending this class from BasePhysics to provide the player with physics.
+As you can see from the code below, I have extended it from the Collidable class, this will come later in the section, but for now you need to know that Collidable is a child class of BasePhysics, so will behave the same until we add our object collision.
+
+```csharp
+using Velocity.Game.Physics;
+using Velocity.Math;
+
+
+namespace Velocity.Player;
+
+public class Player : Collidable
+{
+    public readonly PlayerRenderer? Renderer;
+
+    public int Appearance = 2;
+
+    public PlayerState State;
+
+    public double Health = 3;
+
+    private int _soundStep = 0;
+
+    public Player(Vector2 spawn) : base(spawn, new Vector2(70, 175))
+    {
+        Renderer = new PlayerRenderer(this);
+        var controller = new PlayerController(this, spawn);
+
+        State = PlayerState.Alive;
+        
+        Loader.ControlManager.RegisterController(controller);
+    }
+
+    public void Damage()
+    {
+        Health -= 1;
+        if (Health <= 0) State = PlayerState.Dead;
+    }
+
+    public void HandleMoveSound()
+    {
+        _soundStep++;
+        if (_soundStep >= 18) _soundStep = 0;
+        if (_soundStep % 3 == 0 && OnFloor && Velocity.X != 0) Loader.AudioManager.PlaySound("player.walk");
+    }
+
+    public void Reset()
+    {
+        State = PlayerState.Alive;
+        Health = 3;
+        Position = new Vector2(-200 * (Level.Level.LevelWidth / 2 + 1), Game.Game.FloorHeight - 300);
+        Velocity = new Vector2();
+        OnFloor = false;
+    }
+}
+
+public enum PlayerState
+{
+    Alive = 1,
+    Dead = 0
+}
+```
+
+Now that we have our player, we can move onto the player renderer.
+
+For now the player will be represented by a rectangle. So we can test, and we will add the player sprite later.
+This is for testing perpouses and will be changed later.
+
+We will need to calculate the players position as a sprite, by finding the players position and dimensions, and then calculating the position of the sprite by taking away half the width and height from the x and y respectively.
+
+```csharp
+
+```
