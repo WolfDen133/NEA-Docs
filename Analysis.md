@@ -5388,10 +5388,39 @@ public enum PlayerState
 Now that we have our player, we can move onto the player renderer.
 
 For now the player will be represented by a rectangle. So we can test, and we will add the player sprite later.
-This is for testing perpouses and will be changed later.
+This is for testing peruses and will be changed later.
 
 We will need to calculate the players position as a sprite, by finding the players position and dimensions, and then calculating the position of the sprite by taking away half the width and height from the x and y respectively.
 
 ```csharp
+using Velocity.Window.Render.Renderers;
+using Raylib_cs;
 
+namespace Velocity.Player;
+
+public class PlayerRenderer : ElementRenderer
+{
+    public PlayerRenderer(Player parentPlayer) : base("main:player")
+    {
+        Player = parentPlayer;
+    }
+
+    public override void Draw()
+    {
+        int x = Convert.ToInt32(Player.Position.X) - (Convert.ToInt32(Player.Dimensions.X) / 2);
+        int y = Convert.ToInt32(Player.Position.Y) - (Convert.ToInt32(Player.Dimensions.Y) / 2);
+
+        int width = Convert.ToInt32(Player.Dimensions.X);
+        int height = Convert.ToInt32(Player.Dimensions.Y);
+        
+        Raylib.DrawRectangle(x, y, width, height, Color.WHITE);
+    }
+    
+    public Player Player { get; set; }
+}
 ```
+
+Now that we have our player and player renderer, we can move onto the player controller.
+
+For the player controller we will need:
+ .
