@@ -668,16 +668,16 @@ As it is hard to test the subroutines without running the game, I will be testin
 
 | Action or feature                                                                                                    | Working? |
 |----------------------------------------------------------------------------------------------------------------------|----------|
-| 1. A open blank window ready for us to implement our features                                                        |  ✓       |
-| 2. Main menu with 4 buttons and a title, including game version information and my copywrite                         |  ✓       |
-| 3. Settings screen with at least 3 sections, that include controls, video settings, audio settings                   |  ✓       |
-| 4. Working camera system that smoothly follows the player wherever they go on the game canvas                        |          |
-| 5. A working physics system that can be applied to any object, with gravity, drag, and collision calculations        |          |
-| 6. A working player that can be moved using the control scheme, with velocity and appropriate drag calculations      |          |
-| 7. Working texture and audio loading system                                                                          |  ✓       |
-| 8. Working parallax background renderer that infinitely draws around the camera                                      |          |
-| 9. A working object system for adding game objects such as collidable objects and item power-ups                     |          |
-| 10. A working level system that can load and save level stats, and load the next level when the player completes one |  ✓       |
+| 1. A open blank window ready for us to implement our features                                                        | ✓        |
+| 2. Main menu with 4 buttons and a title, including game version information and my copywrite                         | ✓        |
+| 3. Settings screen with at least 3 sections, that include controls, video settings, audio settings                   | ✓        |
+| 4. Working camera system that smoothly follows the player wherever they go on the game canvas                        | ✓        |
+| 5. A working physics system that can be applied to any object, with gravity, drag, and collision calculations        | ✓        |
+| 6. A working player that can be moved using the control scheme, with velocity and appropriate drag calculations      | ✓        |
+| 7. Working texture and audio loading system                                                                          | ✓        |
+| 8. Working parallax background renderer that infinitely draws around the camera                                      | ✓        |
+| 9. A working object system for adding game objects such as collidable objects and item power-ups                     | ✓        |
+| 10. A working level system that can load and save level stats, and load the next level when the player completes one | ✓        |
 | 11. A working ai that chases the player                                                                              |          | 
 
 ### UI Element Validation
@@ -808,6 +808,7 @@ This will be mentioned along side my main development in the [Development](#deve
 > - Some options such as resolution and control schemes will be using structs, to reduce the amount of registered classes in the game.
 > - I will be using a game engine called raylib, this is a c# game engine that allows me to create games in c# and have them run on any platform, including windows, mac and linux.
 > - Due to time constraints I didn't have time to document the renderers, so have included a quick description of what each renderer class does.
+> - All video and image links will be embedded imgur links as I have had issues with embedding videos in the past.
 
 ### Underlying framework
 
@@ -5203,108 +5204,106 @@ namespace Velocity.Game.Physics;
 
 public abstract class BasePhysics
 {
-    public bool IsEnabled = true;
-    public bool HasGravity = false;
-    public bool OnFloor;
+    public bool IsEnabled = true; // If the physics should be applied
+    public bool HasGravity = false;  // If the physics should have gravity
+    public bool OnFloor; // If the physics object is on the floor
     
-    public Vector2 Position;
-    public readonly Vector2 Dimensions;
-    public Vector2 Velocity;
+    public Vector2 Position; // Position of the physics object
+    public readonly Vector2 Dimensions; // Dimensions of the physics object
+    public Vector2 Velocity; // Velocity of the physics object
 
-    protected BasePhysics(Vector2 position, Vector2 dimensions)
+    protected BasePhysics(Vector2 position, Vector2 dimensions) // Constructor
     {
-        Position = position;
-        Velocity = new Vector2();
-        Dimensions = dimensions;
+        Position = position; // Set position
+        Velocity = new Vector2(); // Set velocity
+        Dimensions = dimensions; // Set dimensions
     }
 
-    public void AddVelocity(double x = 0, double y = 0, bool jump = false)
+    public void AddVelocity(double x = 0, double y = 0, bool jump = false) // Add velocity to the physics object
     {
-        if (System.Math.Abs(Velocity.X) + System.Math.Abs(x) > PhysicsConst.MaxVelocity && !jump && !OnFloor)
+        if (System.Math.Abs(Velocity.X) + System.Math.Abs(x) > PhysicsConst.MaxVelocity && !jump && !OnFloor) // If the x velocity is greater than the max velocity and the physics object is not jumping and the physics object is not on the floor
         {
-            double difference = Double.Abs(PhysicsConst.MaxVelocity) - Double.Abs(Velocity.X);
-            x = Velocity.X > 0 ? difference : -difference;
+            double difference = Double.Abs(PhysicsConst.MaxVelocity) - Double.Abs(Velocity.X); // Calculate the difference between the max velocity and the current velocity
+            x = Velocity.X > 0 ? difference : -difference; // Set x to the difference if the velocity is greater than 0, otherwise set x to the negative difference
 
-        } else if (System.Math.Abs(System.Math.Abs(Velocity.X) - PhysicsConst.MaxVelocity) == 0 && !jump && !OnFloor) x = 0;
+        } else if (System.Math.Abs(System.Math.Abs(Velocity.X) - PhysicsConst.MaxVelocity) == 0 && !jump && !OnFloor) x = 0; // If the velocity is equal to the max velocity and the physics object is not jumping and the physics object is not on the floor, set x to 0
         
-        if (System.Math.Abs(Velocity.Y) + System.Math.Abs(y) > PhysicsConst.MaxVelocity && !jump && !OnFloor)
+        if (System.Math.Abs(Velocity.Y) + System.Math.Abs(y) > PhysicsConst.MaxVelocity && !jump && !OnFloor) // If the y velocity is greater than the max velocity and the physics object is not jumping and the physics object is not on the floor
         {
-            double difference = Double.Abs(PhysicsConst.MaxVelocity - Velocity.Y);
-            y = Velocity.Y > 0 ? difference : -difference;
+            double difference = Double.Abs(PhysicsConst.MaxVelocity - Velocity.Y); // Calculate the difference between the max velocity and the current velocity
+            y = Velocity.Y > 0 ? difference : -difference; // Set y to the difference if the velocity is greater than 0, otherwise set y to the negative difference
 
-        } else if (System.Math.Abs(System.Math.Abs(Double.Round(Velocity.Y)) - PhysicsConst.MaxVelocity) == 0 && !jump && !OnFloor) y = 0;
+        } else if (System.Math.Abs(System.Math.Abs(Double.Round(Velocity.Y)) - PhysicsConst.MaxVelocity) == 0 && !jump && !OnFloor) y = 0; // If the velocity is equal to the max velocity and the physics object is not jumping and the physics object is not on the floor, set y to 0
         
-        if (x != 0) Velocity.X += x;
-        if (y != 0) Velocity.Y -= y;
+        if (x != 0) Velocity.X += x; // Add x to the velocity if x is not 0
+        if (y != 0) Velocity.Y -= y; // Add y to the velocity if y is not 0
     }
 
-    public void SetEnabled(bool value = true)
+    public void SetEnabled(bool value = true) // Set if the physics should be applied
     {
-        IsEnabled = true;
+        IsEnabled = value; // Set if the physics should be applied
     }
 
-    /** 
-     * Calculate gravity
-     */
+    // Calculate the base physics
     public virtual void Tick() {
-        if (!IsEnabled) return;
-        
-        if (HasGravity && !OnFloor) Velocity.Y += PhysicsConst.Gravity;
+        if (!IsEnabled) return; // If the physics should not be applied, return
+         
+        if (HasGravity && !OnFloor) Velocity.Y += PhysicsConst.Gravity; // If the physics object has gravity and is not on the floor, add gravity to the y velocity
 
-        double footY = Position.Y + Dimensions.Y / 2;
+        double footY = Position.Y + Dimensions.Y / 2; // Calculate the foot y position
 
-        if (footY >= Game.FloorHeight - PhysicsConst.MaxVelocity)
+        if (footY >= Game.FloorHeight - PhysicsConst.MaxVelocity) // If the foot y position is greater than or equal to the floor height minus the max velocity
         {
-            if (Convert.ToInt32(footY) == Game.FloorHeight)
+            if (Convert.ToInt32(footY) == Game.FloorHeight) // If the foot y position is equal to the floor height
             {
-                if (Velocity.Y >= 0)
+                if (Velocity.Y >= 0) // If the y velocity is greater than or equal to 0
                 {
-                    Velocity.Y = 0;
+                    Velocity.Y = 0; // Set the y velocity to 0
                 }
 
-                OnFloor = true;
+                OnFloor = true; // Set on floor to true
 
             }
-            else if (footY + Velocity.Y >= Game.FloorHeight && footY <= Game.FloorHeight)
+            else if (footY + Velocity.Y >= Game.FloorHeight && footY <= Game.FloorHeight) // If the foot y position plus the y velocity is greater than or equal to the floor height and the foot y position is less than or equal to the floor height
             {
-                Velocity.Y = 0;
+                Velocity.Y = 0; // Set the y velocity to 0
             }
-            else OnFloor = false;
+            else OnFloor = false; // Set on floor to false
 
-            if (Position.Y >= Game.FloorHeight + 200)
+            if (Position.Y >= Game.FloorHeight + 200) // If the y position is greater than or equal to the floor height plus 200 (respawn the player if they somehow end up below the floor)
             {
-                Position.Y = Game.FloorHeight - 100;
-                return;
+                Position.Y = Game.FloorHeight - 100; // Set the y position to the floor height minus 100
+                return; // Return
             }
         }
 
-        if (OnFloor)
+        if (OnFloor) // If the player is on the floor
         {
-            double frictionLossX = (Velocity.X / PhysicsConst.MaxVelocity) * PhysicsConst.Friction;
-            Velocity.X -= frictionLossX;
+            double frictionLossX = (Velocity.X / PhysicsConst.MaxVelocity) * PhysicsConst.Friction; // Calculate the friction loss for the x velocity (friction constant times the players current velocity over max velocity)
+            Velocity.X -= frictionLossX; // Subtract the friction loss from the x velocity
         }
         
-        double airResistanceLossX = (Velocity.X / PhysicsConst.MaxVelocity) * PhysicsConst.AirResistance;
-        Velocity.X -= airResistanceLossX;
+        double airResistanceLossX = (Velocity.X / PhysicsConst.MaxVelocity) * PhysicsConst.AirResistance; // Calculate the air resistance loss for the x velocity (air resistance constant times the players current velocity over max velocity)
+        Velocity.X -= airResistanceLossX; // Subtract the air resistance loss from the x velocity
         
-        double airResistanceLossY = (Velocity.Y / PhysicsConst.MaxVelocity) * PhysicsConst.AirResistance;
-        Velocity.Y -= airResistanceLossY;
+        double airResistanceLossY = (Velocity.Y / PhysicsConst.MaxVelocity) * PhysicsConst.AirResistance; // Calculate the air resistance loss for the y velocity (air resistance constant times the players current velocity over max velocity)
+        Velocity.Y -= airResistanceLossY; // Subtract the air resistance loss from the y velocity
         
         
-        if (Velocity.X is >= -0.05 and < 0 or <= 0.05 and > 0) Velocity.X = 0.0;
-        if (Velocity.Y is >= -0.05 and < 0 or <= 0.05 and > 0) Velocity.Y = 0.0;
+        if (Velocity.X is >= -0.05 and < 0 or <= 0.05 and > 0) Velocity.X = 0.0; // If the x velocity is greater than or equal to -0.05 and less than 0 or less than or equal to 0.05 and greater than 0, set the x velocity to 0 (return to 0 if reaches below 0.05 velocity, loss of accuracy when subtracting numbers from doubles)
+        if (Velocity.Y is >= -0.05 and < 0 or <= 0.05 and > 0) Velocity.Y = 0.0; // If the y velocity is greater than or equal to -0.05 and less than 0 or less than or equal to 0.05 and greater than 0, set the y velocity to 0 (return to 0 if reaches below 0.05 velocity, loss of accuracy when subtracting numbers from doubles)
 
         
-        if (System.Math.Abs(Velocity.X) is > 0 and > PhysicsConst.MaxVelocity)
-            Velocity.X = Velocity.X > 0 ? PhysicsConst.MaxVelocity : -PhysicsConst.MaxVelocity; 
+        if (System.Math.Abs(Velocity.X) is > 0 and > PhysicsConst.MaxVelocity) // If the absolute value of the x velocity is greater than 0 and greater than the max velocity
+            Velocity.X = Velocity.X > 0 ? PhysicsConst.MaxVelocity : -PhysicsConst.MaxVelocity;  // Set the x velocity to the max velocity if the x velocity is greater than 0, otherwise set the x velocity to the negative max velocity (velocity soft-limits)
         
-        if (System.Math.Abs(Velocity.Y) is > 0 and > PhysicsConst.MaxVelocity)
-            Velocity.Y = Velocity.Y > 0 ? -PhysicsConst.MaxVelocity : PhysicsConst.MaxVelocity;
+        if (System.Math.Abs(Velocity.Y) is > 0 and > PhysicsConst.MaxVelocity) // If the absolute value of the y velocity is greater than 0 and greater than the max velocity
+            Velocity.Y = Velocity.Y > 0 ? -PhysicsConst.MaxVelocity : PhysicsConst.MaxVelocity; // Set the y velocity to the negative max velocity if the y velocity is greater than 0, otherwise set the y velocity to the max velocity (velocity soft-limits)
     }
 
-    public void UpdatePosition()
+    protected void UpdatePosition() // Update the position of the physics object
     {
-        Position.Change(Double.Round(Velocity.X), Double.Round(Velocity.Y));
+        Position.Change(Double.Round(Velocity.X), Double.Round(Velocity.Y)); // Change the position by the velocity
     }
     
 }
@@ -5335,53 +5334,53 @@ namespace Velocity.Player;
 
 public class Player : Collidable
 {
-    public readonly PlayerRenderer? Renderer;
+    public readonly PlayerRenderer? Renderer; // Renderer for player
 
-    public int Appearance = 2;
+    public int Appearance = 2; // Appearance of player
 
-    public PlayerState State;
+    public PlayerState State; // State of player (Unused)
+ 
+    public double Health = 3; // Health of player
 
-    public double Health = 3;
+    private int _soundStep; // Step for sound
 
-    private int _soundStep = 0;
-
-    public Player(Vector2 spawn) : base(spawn, new Vector2(70, 175))
+    public Player(Vector2 spawn) : base(spawn, new Vector2(70, 175)) // Constructor
     {
-        Renderer = new PlayerRenderer(this);
-        var controller = new PlayerController(this, spawn);
+        Renderer = new PlayerRenderer(this); // Create renderer
+        var controller = new PlayerController(this); // Create controller
 
-        State = PlayerState.Alive;
+        State = PlayerState.Alive; // Set state to alive
         
-        Loader.ControlManager.RegisterController(controller);
+        Loader.ControlManager.RegisterController(controller); // Register controller
     }
 
-    public void Damage()
+    public void Damage() // Damage player
     {
-        Health -= 1;
-        if (Health <= 0) State = PlayerState.Dead;
+        Health -= 1; // Decrement health
+        if (Health <= 0) State = PlayerState.Dead; // Set state to dead if health is 0
     }
 
-    public void HandleMoveSound()
+    public void HandleMoveSound() // Handle move sound
     {
-        _soundStep++;
-        if (_soundStep >= 18) _soundStep = 0;
-        if (_soundStep % 3 == 0 && OnFloor && Velocity.X != 0) Loader.AudioManager.PlaySound("player.walk");
+        _soundStep++; // Increment sound step
+        if (_soundStep >= 18) _soundStep = 0; // Reset sound step if it is greater than 18
+        if (_soundStep % 3 == 0 && OnFloor && Velocity.X != 0) Loader.AudioManager.PlaySound("player.walk"); // Play sound if sound step is divisible by 3 and player is on floor and player is moving
     }
 
-    public void Reset()
+    public void Reset() // Reset player
     {
-        State = PlayerState.Alive;
-        Health = 3;
-        Position = new Vector2(-200 * (Level.Level.LevelWidth / 2 + 1), Game.Game.FloorHeight - 300);
-        Velocity = new Vector2();
-        OnFloor = false;
+        State = PlayerState.Alive; // Set state to alive
+        Health = 3; // Set health to 3 
+        Position = new Vector2(-200 * (Level.Level.LevelWidth / 2 + 1), Game.Game.FloorHeight - 300); // Set position to spawn
+        Velocity = new Vector2(); // Set velocity to 0
+        OnFloor = false; // Set on floor to false
     }
 }
 
-public enum PlayerState
+public enum PlayerState // Player state
 {
-    Alive = 1,
-    Dead = 0
+    Alive = 1, // Alive = 1
+    Dead = 0 // Dead = 0
 }
 ```
 
@@ -5423,4 +5422,448 @@ public class PlayerRenderer : ElementRenderer
 Now that we have our player and player renderer, we can move onto the player controller.
 
 For the player controller we will need:
- .
+- A property to hold the player instance
+- A property (bool) to state if the player can jump (to stop being able to jump in mid air) [links back to the OnFloor var in the physics]
+- And our apropreate functions from IControllable so we can control the player
+
+For each of our directions we will calculate the players velocity by checking for any movement powerups and then adding the velocity to the player.
+We also need to check for our maximum velocity so the player doesnt over accelerate.
+
+```csharp
+using System.Diagnostics.Metrics;
+using Velocity.Game.Physics;
+using Velocity.Input;
+using Velocity.Math;
+
+namespace Velocity.Player;
+
+public class PlayerController : IControllable
+{
+    private readonly Player _player; // Player
+    private bool _canJump = true; // If the player can jump
+
+    public PlayerController(Player parent) // Constructor
+    {
+        _player = parent; // Set player
+    }
+    
+    public void OnJump() // Jump
+    {
+        if (!_canJump && _player.OnFloor) _canJump = true; // If the player is on the floor and cannot jump, set can jump to true
+        if (!_canJump) return; // If the player cannot jump, return
+        
+        _player.AddVelocity(0, PhysicsConst.Jump, true); // Add jump velocity to the player
+        Loader.AudioManager.PlaySound("player.jump"); // Play jump sound
+        _canJump = false; // Set can jump to false
+    }
+
+    public void OnLeft() // Left movement
+    {
+        if (_player.Velocity.X > (-PhysicsConst.MaxAcceleration - (Loader.Game.PowerUps[2] > 0 ? 1 : 0) * (PhysicsConst.MaxAcceleration / 6.66)) / (_player.OnFloor ? 1 : 1.5)) _player.AddVelocity((-PhysicsConst.Acceleration + (Loader.Game.PowerUps[2] > 0 ? 1 : 0) * (-PhysicsConst.MaxAcceleration / 6)) / (_player.OnFloor ? 1 : 1.5)); // Add left velocity to the player if the player is on the floor and the player's x velocity is less than the max velocity or the player is not on the floor with multipliers if the player has the speed powerup
+    }
+
+    public void OnRight() // Right movement
+    {
+        if (_player.Velocity.X < (PhysicsConst.MaxAcceleration + (Loader.Game.PowerUps[2] > 0 ? 1 : 0) * (PhysicsConst.MaxAcceleration / 6.66)) / (_player.OnFloor ? 1 : 1.5)) _player.AddVelocity((PhysicsConst.Acceleration + (Loader.Game.PowerUps[2] > 0 ? 1 : 0) * (PhysicsConst.MaxAcceleration / 6))  / (_player.OnFloor ? 1 : 1.5));  // Add right velocity to the player if the player is on the floor and the player's x velocity is less than the max velocity or the player is not on the floor with multipliers if the player has the speed powerup
+    }
+
+    public void OnDown() // TODO: Use for crouching
+    {
+        if (_player is { HasGravity: false, Velocity.Y: > -PhysicsConst.MaxAcceleration }) _player.AddVelocity(0, -PhysicsConst.Acceleration); // Add down velocity to the player if the player has gravity and the player's y velocity is less than the max velocity
+    }
+}
+```
+
+> #### Errors to overcome
+> Now for this section, while testing the functionality of these classes I came across a few errors that I had to overcome.
+> - Player not moving (fixed by adding a multiplier to the velocity if the player is not on the floor)
+> - Player not jumping (fixed by adding a bool to check if the player can jump)
+> - Player jumping in mid air (fixed by adding a bool to check if the player can jump)
+> - Player phasing through the floor (fixed by calculating the difference between floor and player and setting the player to the floor if the difference is less than 0)
+> - Player not moving at the correct speed (fixed by adding a multiplier to the velocity if the player has the speed powerup)
+> - Player not stopping (moving slowly back and fourth when not moving) (fixed by adding a dead zone to the physics)
+
+
+Now we have our 3 dedicated parts for each section of our control loop, listen, update, draw, we can now perform our next test.
+Test 6: Test the player physics.
+We will link back to the [Testing](#testing-plan) section for this.
+> Last thing of note for this section, we will need a debug floor renderer, so we can see where our player lands on the floor.
+> This will be defined below
+> To be changed in the future
+> ```csharp
+> using Raylib_cs;
+> using Velocity.Window.Render.Renderers;
+> 
+> namespace Velocity.Game.Misc;
+> 
+> public class FloorRenderer : ElementRenderer
+> {
+>     private Game game;
+>     
+>     public FloorRenderer(Game game) : base("velocity:floor")
+>     {
+>         this.game = game;
+>     }
+> 
+>     public override void Draw()
+>     {
+>         for (int i = -50; i < 50; i++) Raylib.DrawRectangle(400 * i, Game.FloorHeight, 400, 200, i % 2 == 0 ? Color.RED : Color.ORANGE);
+>     }
+> }
+> ```
+
+Now we can uncomment our lines for player in the [Debug Renderer](#debug-renderer) and we can see our player in action.
+
+[Click here for video](https://imgur.com/lKZUf9U)
+
+And we can now see that this is working. We can now move onto the next section.
+
+### Camera system
+This will be a breif explanation explaining how the camera controller works.
+Now when our controller is in a menu, there is no camera present, as we are rendering straight to the physical x and y position of the screen.
+So we dont need to worry about rendering the menus at the cameras position.
+
+However, when we are in game, we need to render the game at the cameras position.
+So we will need to create a camera controller that will handle the camera position.
+We will need:
+- A property for the camera position (provided by Raylib.Camera2D)
+- A property for the smoothed and previous camera position (for smoothing the camera)
+- The zoom of the camera
+- The zoom offset of the camera (for zooming in and out)
+- Again the previous and smoothed zoom (for smoothing the zoom)
+- A method to initialise the camera at the players position.
+- A method to zoom the camera in and out (provided by IControllable)
+- A method to apply the smoothing of the camera
+- And finally a method to update the camera position
+
+Our class will look like this: 
+```csharp
+using Velocity.Math;
+using Raylib_cs;
+using Velocity.Game.Object;
+using Velocity.Input;
+using Velocity.Window;
+
+namespace Velocity.Game;
+
+public class CameraController : IControllable
+{ 
+    private readonly Game _game; // The game instance
+     
+    private Vector2 _smoothedPosition = Vector2.Zero(); // The smoothed position of the camera
+    private Vector2 _prevPosition = Vector2.Zero(); // The previous position of the camera
+
+    private float _zoom = 1.0f; // The zoom of the camera
+    private float _zoomOffset = 0.0f; // The zoom offset of the camera
+    private float _smoothedZoom = 1.0f; // The smoothed zoom of the camera
+    private float _prevZoom = 1.0f; // The previous zoom of the camera
+
+
+    public CameraController(Game game) // Constructor
+    {
+        _game = game; // Set game
+        Loader.WindowManager.Camera.offset = new System.Numerics.Vector2(WindowManager.Width / 2 - (WindowManager.Width / 8), WindowManager.Height / 2 + WindowManager.Height / 3); // Set camera offset to center of screen
+        Loader.WindowManager.Camera.target = new System.Numerics.Vector2(0, Game.FloorHeight); // Set camera target the floor
+    }
+
+    public void Init()
+    {
+        _smoothedPosition.X = _game.Player.Position.X; // Set smoothed position x to player x
+        _smoothedPosition.Y = _game.Player.Position.Y; // Set smoothed position y to player y
+
+        Loader.WindowManager.Camera.target = new System.Numerics.Vector2(Convert.ToSingle(_smoothedPosition.X), Convert.ToSingle(_smoothedPosition.Y)); // Set camera target to smoothed position
+        Loader.WindowManager.Camera.zoom = _smoothedZoom; // Set camera zoom to smoothed zoom
+    }
+    
+    public void Tick()
+    {
+        ApplySmoothing(_game.Player.Position); // Apply smoothing to the player position
+        
+        Loader.WindowManager.Camera.target = new System.Numerics.Vector2( 
+            Convert.ToSingle(_smoothedPosition.X), Convert.ToSingle(
+                Game.FloorHeight - ((Game.FloorHeight - _game.Player.Position.Y) / 2) * (1 + _zoomOffset) / 2) // Set camera target to smoothed position with zoom offset applied so that the camera zooms out when the player is higher up
+            );
+        Loader.WindowManager.Camera.zoom = _smoothedZoom; // Set camera zoom to smoothed zoom
+    }
+
+    private void ApplySmoothing(Vector2 to) // Apply smoothing to the player position
+    { 
+        double ratio = 1 - Loader.Settings.CameraLinearity;  // Calculate the smoothing ratio
+
+        float zoomOffset = Convert.ToSingle((_game.Player.Position.Y + _game.Player.Dimensions.Y / 4) /
+                                                            (Game.FloorHeight - WindowManager.Height / 2)); // Calculate the zoom offset based on the player position and the floor height
+        
+        _zoom = zoomOffset < 1 ? float.Pow(zoomOffset, 3.6f * (0.9f + _zoomOffset)) : 1; // Calculate the zoom based on the zoom offset
+
+        _zoom += _zoomOffset; // Add the zoom offset to the zoom
+        
+        _smoothedPosition.X = Convert.ToInt32(to.X * ratio + _prevPosition.X * Loader.Settings.CameraLinearity); // Calculate the smoothed position x
+        _smoothedPosition.Y = Convert.ToInt32(to.Y * ratio + _prevPosition.Y * Loader.Settings.CameraLinearity); // Calculate the smoothed position y
+        _prevPosition = _smoothedPosition; // Set the previous position to the smoothed position
+        
+        _smoothedZoom = _zoom * 0.15f + _prevZoom * 0.85f; // Calculate the smoothed zoom
+        _prevZoom = _smoothedZoom; // Set the previous zoom to the smoothed zoom
+    }
+
+    public void OnZoomIn() // Zoom in
+    {
+        if (_zoomOffset < 0.1f) _zoomOffset += 0.01f; // If the zoom offset is less than 0.1, add 0.01 to the zoom offset
+    }
+
+    public void OnZoomOut() // Zoom out
+    {
+        if (_zoomOffset > -0.2f) _zoomOffset -= 0.01f; // If the zoom offset is greater than -0.2, subtract 0.01 from the zoom offset
+    }
+}
+```
+
+> #### Errors to overcome
+> - Camera not smoothing (fixed by adding a smoothing ratio)
+> - Camera not zooming out the correct amount when the player moves up the screen (fixed by changing the divider of the y position)
+> - Camera zooming out too much when the player moves up the screen (fixed by adding a deadzone half way up the screen)
+> - Not allowing the more of the play field to be seen (fixed by changing the camera offset)
+
+Now we have added this we can move on to our next test.
+Test 4: Test the camera system.
+We will link back to the [Testing](#testing-plan) section for this.
+
+[Click here for video](https://imgur.com/Y2auGC4)
+
+Now this is working we can move on to our next section.
+
+### Various Renderers
+
+The next thing we will look at are the various renderers for our game.
+We need these for things like the background, hud, floor, distance limit etc.
+
+#### Background Renderer
+
+The first of which is the background renderer.
+In the code this is called `ParallaxRenderer.cs` as we are achieveing a sudo-parallax effect.
+By this I mean, we will be moving 5-6 background layers at different speeds to give the illusion of depth.
+We will need:
+- A property (array) for the background layers
+- The last position of the camera so it can keep track of changes (so its not performing calculations if the camera has not moved)
+- The texture bounds of the background so we can calculate the position of the background
+- The cloud offset value (so we can continuously move the clouds)
+- A array of offsets for the background layers (so we can align them properly per layer)
+- The layer positions so we can keep track of which positions the layers are at
+- A method to load the textures and set the background id (for multiple backgrounds) (Refer to [Asset Manager](#asset-manager): `GetBackgroundTexture(int id, string name)`) 
+- A method to generate the rectangles
+- A method to offset retangles
+- A method to calculate the render positions
+- A method to check if they need to be offset if they are too far away from the camera
+- And the draw method as we are rendering something
+
+Firstly we will be implimenting the first couple of methods, we need to figure out how to infineitely draw the background around camera.
+We will be using the `OffsetRectangle` method to offset the rectangles, and we will be using the `GenerateRectangle` method to generate the rectangles.
+We will be using the `GetRenderPosition` method to calculate the render positions.
+And we will be using the `CheckOffset` method to check if the rectangles need to be offset.
+We will then draw 3 squares with these calculated positions to test.
+
+[Click here for video](https://imgur.com/Hv97918)
+
+Now that we have this working we can impliment out texture loading and renderering.
+We will be using the `LoadTextures` method to load the textures.
+And we will be using the `Draw` method to render the textures.
+
+[Click here for video](https://imgur.com/2Mz0rq0)
+
+Now as you can see we have a minor error as the textures are not flipping at the correct point so we can see them in an un-renderered state of off screen right.
+To fix this we need to add an offset to the textures so they are renderered from the center out, rather than top left down.
+
+Now that we have squashed this, we will need to add the cloud layer.
+For this we will need 7 layers instead of three, center, left, right, top, top right, top left and center top.
+
+Now that we have added that, this is what our final class looks like:
+```csharp
+
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Misc;
+
+public class ParallaxRenderer : BackgroundRenderer
+{
+    private readonly Texture2D[] _parallaxTextures = new Texture2D[5]; // Background textures: 0 = layer02, 1 = layer03, 2 = layer04, 3 = layer05, 4 = layer06
+
+    private Vector2 _lastPosition = Vector2.Zero; // Last camera position
+    private Rectangle _textureBounds; // Texture bounds
+
+    private int _cloudOffset; // Cloud offset
+    
+    private readonly int[] _yOffsets =
+    {
+        -60,
+        0,
+        0,
+        -40,
+        0
+    }; // Y offsets for each layer so we can position them per layer
+
+    private readonly Vector2[] _layerPositions = new Vector2[5]; // Positions of each layer
+    
+    public ParallaxRenderer() : base("velocity:background", false) // Register the renderer
+    {
+        GenerateNewPositions(); // Generate the positions
+    }
+    
+    public void LoadTextures() // Load the textures
+    {
+        int bg = Loader.Game.Level == null ? (new Random()).Next(1, 3) : Loader.Game.Level.Background; // Get the background id (random if no level is loaded) 
+        _parallaxTextures[0] = Loader.AssetManager.GetBackgroundTexture(bg, "layer02"); // Load the the first layer        (offset of 1 as we are not using the background plane as this renderer will not drawn at the correct stage in the loop)
+        _parallaxTextures[1] = Loader.AssetManager.GetBackgroundTexture(bg, "layer03"); // Load the the second layer
+        _parallaxTextures[2] = Loader.AssetManager.GetBackgroundTexture(bg, "layer04"); // Load the the third layer
+        _parallaxTextures[3] = Loader.AssetManager.GetBackgroundTexture(bg, "layer05"); // Load the the fourth layer
+        _parallaxTextures[4] = Loader.AssetManager.GetBackgroundTexture(bg, "layer06"); // Load the the fifth layer
+        
+        _textureBounds = new Rectangle(0.0f, 0.0f, _parallaxTextures[1].width, _parallaxTextures[1].height); // Set the texture bounds
+    }
+
+    public override void Draw()
+    {
+        if (System.Math.Abs(_lastPosition.X - Loader.WindowManager.Camera.target.X) != 0 ||
+            System.Math.Abs(_lastPosition.Y - Loader.WindowManager.Camera.target.Y) != 0) // Check if the camera has moved
+        {
+            GenerateNewPositions(); // Generate new positions
+
+            _lastPosition = Loader.WindowManager.Camera.target; // Set the last position of the camera to the current position of the camera
+        }
+
+        _cloudOffset += 1; // Increment the cloud offset (make them move to the right)
+        if (_cloudOffset > WindowManager.Width / 2) _cloudOffset = -(WindowManager.Width / 2); // Reset the cloud offset if it is greater than half the width of the window (loop pefrectly
+
+        // Generate the rectangles for each layer (x, y, width and height) 
+        // The cloud layer is offset by the cloud offset
+        Rectangle rectangle0 = GenerateRectangle(_layerPositions[0]); 
+        Rectangle rectangle1 = GenerateRectangle(_layerPositions[1]); 
+        Rectangle rectangle2 = GenerateRectangle(_layerPositions[2]);
+        Rectangle rectangle3 = GenerateRectangle(Vector2.Add(_layerPositions[3], new Vector2(_cloudOffset, 0)));
+        Rectangle rectangle4 = GenerateRectangle(_layerPositions[4]);
+
+        
+        // Will draw the layers in reverse order (so the first layer is drawn last)
+        // Draw the first layer (layer02) 3 times (one in the middle and one on each side) with y offsets, with its origin being in the center of the texture
+        Raylib.DrawTexturePro(_parallaxTextures[4], _textureBounds, OffsetRectangle(rectangle4, 0, _yOffsets[4]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[4], _textureBounds, OffsetRectangle(rectangle4, WindowManager.Width, _yOffsets[4]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[4], _textureBounds, OffsetRectangle(rectangle4, -WindowManager.Width, _yOffsets[4]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        
+        // Do the same for the clouds (7 layers to increase the density) while being symmetrical and loop able
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, 0, _yOffsets[3]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, WindowManager.Width, _yOffsets[3]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, -WindowManager.Width, _yOffsets[3]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, WindowManager.Width / 2, _yOffsets[3] - WindowManager.Height / 4), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, -WindowManager.Width / 2, _yOffsets[3] - WindowManager.Height / 4), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, WindowManager.Width + WindowManager.Width / 2, _yOffsets[3] - WindowManager.Height / 4), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, -WindowManager.Width - WindowManager.Width / 2, _yOffsets[3] - WindowManager.Height / 4), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        
+        // Do the same for the other layers
+        Raylib.DrawTexturePro(_parallaxTextures[2], _textureBounds, OffsetRectangle(rectangle2, 0, _yOffsets[2]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[2], _textureBounds, OffsetRectangle(rectangle2, WindowManager.Width, _yOffsets[2]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE); 
+        Raylib.DrawTexturePro(_parallaxTextures[2], _textureBounds, OffsetRectangle(rectangle2, -WindowManager.Width, _yOffsets[2]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        
+        Raylib.DrawTexturePro(_parallaxTextures[1], _textureBounds, OffsetRectangle(rectangle1, 0, _yOffsets[1]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[1], _textureBounds, OffsetRectangle(rectangle1, WindowManager.Width, _yOffsets[1]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[1], _textureBounds, OffsetRectangle(rectangle1, -WindowManager.Width, _yOffsets[1]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        
+        Raylib.DrawTexturePro(_parallaxTextures[0], _textureBounds, OffsetRectangle(rectangle0, 0, _yOffsets[0]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[0], _textureBounds, OffsetRectangle(rectangle0, WindowManager.Width, _yOffsets[0]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[0], _textureBounds, OffsetRectangle(rectangle0, -WindowManager.Width, _yOffsets[0]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+    }
+
+    private void GenerateNewPositions() // Generate new positions for the layers
+    {
+        // Get the render position for each layer
+        _layerPositions[0] = GetRenderPosition(2, 2); // Movement offset multiplier being 2 so its camera position / 2
+        _layerPositions[1] = GetRenderPosition(3, 5); // Same again but with 3 and 5
+        _layerPositions[2] = GetRenderPosition(4, 6); // Same again but with 4 and 6
+        _layerPositions[3] = GetRenderPosition(6, 8); // Same again but with 6 and 8
+        _layerPositions[4] = GetRenderPosition(8, 10); // Same again but with 8 and 10
+    }
+    
+
+    private Rectangle OffsetRectangle(Rectangle subject, int x = 0, int y = 0) // Offset a rectangle by x and y
+    {
+        subject.x += x; // Offset the x
+        subject.y += y; // Offset the y
+        return subject; // Return the rectangle
+    }
+
+    private Rectangle GenerateRectangle(Vector2 at) // Generate a rectangle at a position
+    {
+        return new Rectangle(at.X, at.Y, WindowManager.Width, WindowManager.Height); // Generate a rectangle at a position with the width and height of the window
+    }
+    
+    private Vector2 GetRenderPosition(int rx, int ry) // Get the render position of a layer
+    {
+        int x = Convert.ToInt32(Loader.WindowManager.Camera.target.X - Loader.WindowManager.Camera.offset.X) + WindowManager.Width / 2 - Convert.ToInt32(Loader.WindowManager.Camera.target.X / rx); // Get the x position of the layer (offset by the camera offset) and offset by the camera position / rx (rx being the movement offset multiplier) 
+        int y = Convert.ToInt32(Loader.WindowManager.Camera.target.Y - Loader.WindowManager.Camera.offset.Y) + WindowManager.Height / 2 + (Game.FloorHeight - Convert.ToInt32(Loader.WindowManager.Camera.target.Y)) / ry; // Get the y position of the layer (offset by the camera offset) and offset by the camera position / ry (ry being the movement offset multiplier)
+
+        return new Vector2(CheckRenderOffset(rx, x) - WindowManager.Width / 2, y - WindowManager.Height / 2); // Return the render position with render offset if is too far away from camera position (offset by the width and height of the window / 2)
+    }
+
+    // Checks to see if the render position is too far away from the camera position
+    // If it is then it will offset the render position by the width of the window * the movement offset multiplier
+    // This is so the layers loop perfectly
+    private int CheckRenderOffset(int rx, int x) 
+    {
+        var multiplier= Convert.ToInt32(Loader.WindowManager.Camera.target.X) / WindowManager.Width / rx + (Loader.WindowManager.Camera.target.X < 0 ? -1 : 0); // Get the movement offset multiplier (camera position / width of the window / rx + if the camera position is less than 0 then -1 else 0)
+        x += WindowManager.Width * multiplier; // Offset the x by the width of the window * the movement offset multiplier
+ 
+        return x; // Return the x
+    }
+}
+```
+
+#### Floor Renderer
+Next we need to add the floor renderer.
+This will take our floor texture and render it to the screen.
+We will achieve this by running a for loop and rendering the floor texture at the position of the loop multiplied by the texture width.
+We will need to do this a total of 26 times to render out to the end of the screen. Starting with -13 and ending with 13.
+We will need to grab our texture from our asset manager and load it into a varable so we can access it.
+Then we will draw 3 gradients so that the floor fades out to the end of the screen so we cant see the underside of the texture.
+And finally draw to the screen.
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Misc;
+
+public class FloorRenderer : ElementRenderer
+{
+    private Texture2D _floorTexture; // The floor texture
+    
+    public FloorRenderer() : base("velocity:floor") // Constructor
+    {
+        LoadTextures(); // Load textures
+    }
+
+    private void LoadTextures()
+    {
+        if (Loader.Game.Level == null) return; // Return if the level is null
+        _floorTexture = Loader.AssetManager.GetBackgroundTexture(Loader.Game.Level.Background, "layer01");  // Get the background texture
+    }
+
+    
+    public override void Draw()
+    {
+        for (int i = -13; i < 13; i++) // Draw the floor
+        {
+            Raylib.DrawTexturePro(_floorTexture, new Rectangle(0, 0, _floorTexture.width, _floorTexture.height), new Rectangle((WindowManager.Width / 3) * i, Game.FloorHeight - WindowManager.Width / 6 + 12, WindowManager.Width / 3, WindowManager.Height / 3), new Vector2(), 0, Color.WHITE); // Draw the floor texture
+
+            Raylib.DrawRectangleGradientV((WindowManager.Width / 3) * i, Game.FloorHeight - 10, (WindowManager.Width / 3), 10, new Color(1, 20, 71, 0), new Color(0, 5, 50, 25)); // Draw the floor gradient
+            Raylib.DrawRectangleGradientV((WindowManager.Width / 3) * i, Game.FloorHeight,(WindowManager.Width / 3), 48, new Color(0, 5, 50, 25), new Color(0, 0, 0, 200)); // Draw the floor gradient
+            Raylib.DrawRectangleGradientV((WindowManager.Width / 3) * i, Game.FloorHeight + 48, (WindowManager.Width / 3), 5, new Color(0, 0, 0, 200), new Color(0, 0, 0, 255)); // Draw the floor gradient
+            Raylib.DrawRectangle((WindowManager.Width / 3) * i, Game.FloorHeight + 52, (WindowManager.Width / 3), WindowManager.Height / 2, new Color(0, 0, 0, 255)); // Draw the footer for the floor
+        }
+    }
+}
+```
+
+All together it now looks like this, from a zoomed out perspective: 
+![](https://i.imgur.com/gpkbt2s.png)
