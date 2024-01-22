@@ -5309,6 +5309,45 @@ public abstract class BasePhysics
 }
 ```
 
+### Physics manager
+Now that we have our base physics, we need a way to manage the physics of our game.
+We can do this by creating a simple class to register, stop and update the physics of our game.
+
+We will need:
+- A list of physics objects to update
+- A method to register a physics object
+- A method to stop a physics object
+- A method to update the physics objects
+
+```csharp
+namespace Velocity.Game.Physics;
+
+public class PhysicsManager
+{
+    private List<BasePhysics> _physicsObjects = new();
+
+    public void RegisterObject (BasePhysics obj) // Register an object to be ticked
+    {
+        _physicsObjects.Add(obj);
+    }
+
+    // TODO: Unregister object (we only really need this for the player, so we dont need this yet)
+    
+    public void Stop() // Stop the physics manager
+    {
+        _physicsObjects = new();
+    }
+    
+    public void Tick() // Tick the physics manager
+    {
+        foreach (var obj in _physicsObjects) obj.Tick(); // Iterate through all physics objects and tick them
+    }
+}
+```
+
+I did not encounter any errors with the physics manager.
+
+
 Now that we have our base physics class, we can move onto the player.
 
 For the player we will need:
@@ -5519,8 +5558,7 @@ Now we can uncomment our lines for player in the [Debug Renderer](#debug-rendere
 And we can now see that this is working. We can now move onto the next section.
 
 ### Camera system
-This will be a breif explanation explaining how the camera controller works.
-Now when our controller is in a menu, there is no camera present, as we are rendering straight to the physical x and y position of the screen.
+Now when our user is in a menu, there is no camera present, as we are rendering straight to the physical x and y position of the screen.
 So we dont need to worry about rendering the menus at the cameras position.
 
 However, when we are in game, we need to render the game at the cameras position.
@@ -5865,5 +5903,466 @@ public class FloorRenderer : ElementRenderer
 }
 ```
 
+> #### Errors to overcome
+> - Floor drawing over the player (fixed by reducing the draw size of the floor)
+> - Floor drawing too high, moved down the texture
+
 All together it now looks like this, from a zoomed out perspective: 
 ![](https://i.imgur.com/gpkbt2s.png)
+
+#### Hud Renderer
+Next we need to add the hud renderer.
+This will provide a heads up display for the players of the game. It will display stats such as player health, coins collected, current power ups, and the controls for the game.
+This will be a 2d ui renderer, so that it draws on the screen directly, rather than drawing to the canvas.
+For this we are going to need:
+- Properties for all of the textures it needs to display.
+- Properties for all of the source rectangles of the textures, so that the game knows what part of the power up texture to draw (there all stored in one texture).
+- A method to load the textures.
+- A method to change the powerup textures so they activate visually
+- A method to draw the hud to the screen.
+- And a method to calculate the remaining time on a powerup.
+
+Now that we have our framework we can define our class
+
+```csharp
+using System.Globalization;
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+using Velocity.Game;
+using Velocity.Input;
+using Velocity.Ui.Misc;
+
+namespace Velocity.Ui.Overlay.Render;
+
+public class HudRenderer : UiRenderer
+{
+    private readonly Game.Game _game; // The game instance
+
+    private Texture2D _heartTexture; // The heart texture
+    private Texture2D _powerUpTexture; // The power up texture
+    private Texture2D _coinTexture; // The coin texture
+
+    private readonly Rectangle _heartSource; // The heart source rectangle
+    private readonly Rectangle[] _powerUpSource = new Rectangle[2]; // The power up source rectangle
+
+    public HudRenderer(Game.Game game) : base("velocity.overlay.hud", false)
+    {
+        _game = game; // Set game
+
+        LoadTextures(); // Load textures
+        _heartSource = new Rectangle(0, 0, _heartTexture.width, _heartTexture.height);
+        _powerUpSource[0] = new Rectangle(0, _powerUpTexture.height / 4, _powerUpTexture.width / 3, 
+            _powerUpTexture.height / 4); // Set power up 1 source rectangle
+        _powerUpSource[1] = new Rectangle(_powerUpTexture.width / 3 * 2, _powerUpTexture.height / 4,
+            _powerUpTexture.width / 3,
+            _powerUpTexture.height / 4); // Set power up 2 source rectangle
+    }
+
+    private void LoadTextures() // Load textures
+    {
+        _heartTexture = Loader.AssetManager.GetTexture("ui.heart"); // Get heart texture
+        _powerUpTexture = Loader.AssetManager.GetTexture("item.power_ups"); // Get power up texture
+        _coinTexture = Loader.AssetManager.GetTexture("item.coin"); // Get coin texture
+    }
+
+    private Rectangle ModifyRectangle(Rectangle rectangle, int powerUpId) // Modify rectangle to active power up visually
+    {
+        if (_game.PowerUps[powerUpId] > 0) // If the power up is active
+        {
+            rectangle.y += _powerUpTexture.height / 2; // Set the rectangle y to the second row of the power up texture
+        }
+
+        return rectangle; // Return the rectangle
+    }
+
+    public override void Draw() // Draw the hud
+    {
+        Raylib.DrawRectangleGradientV(0, 0, WindowManager.Width, 180, new Color(0, 0, 0, 45), new Color(0, 0, 0, 0)); // Draw the hud gradient background
+        for (int i = 0; i <= 2; i++) // Draw the heart backgorund
+        {
+            int rx = _heartTexture.width / 2 * i; // Calculate the x position of the heart
+
+            Raylib.DrawTexturePro(_heartTexture, _heartSource,
+                new Rectangle(rx, -10, _heartTexture.width / 2, _heartTexture.height / 2), new Vector2(), 0,
+                new Color(200, 200, 200, 75)); // Draw the heart
+        }
+
+        for (int i = 0; i <= _game.Player.Health - 1; i++) // Draw the bonus hearts
+        {
+            int rx = _heartTexture.width / 2 * i; // Calculate the x position of the heart
+
+            Raylib.DrawTexturePro(_heartTexture, _heartSource,
+                new Rectangle(rx, -10, _heartTexture.width / 2, _heartTexture.height / 2), new Vector2(), 0, i <= 2
+                    ? new Color(255, 0, 0, 255)
+                    : new Color(
+                        255, 215, 0, 255)); // Draw the heart with a different color if it is a bonus heart
+        }
+        
+        Raylib.DrawTexturePro(_coinTexture, new Rectangle(0, 0, _coinTexture.width / 5, _coinTexture.height), new Rectangle(10, 90, 70, 70), new Vector2(), 0, Color.WHITE); // Draw the coin texture
+        Raylib.DrawRectangleRounded(
+            new Rectangle(
+                Convert.ToSingle(_coinTexture.width / 5 + 32),
+                130,
+                Raylib.MeasureText(_game.Coins.ToString(), 28) + 20, 32f), 0.7f, 4,
+            new Color(20, 30, 40, 150)); // Draw the coin count background
+        Raylib.DrawText(_game.Coins.ToString(),
+            _coinTexture.width / 5 + 42,
+            134, 28, Color.WHITE); // Draw the coin count text
+        
+        Raylib.DrawTexturePro(_powerUpTexture, ModifyRectangle(_powerUpSource[0], 0),
+            new Rectangle(WindowManager.Width - _powerUpSource[0].width - 10, 10, _powerUpSource[0].width,
+                _powerUpSource[0].height), new Vector2(), 0, Color.WHITE); // Draw the power up 1 texture
+        Raylib.DrawTexturePro(_powerUpTexture, ModifyRectangle(_powerUpSource[1], 2), 
+            new Rectangle(WindowManager.Width - _powerUpSource[1].width * 2 - 10, 10, _powerUpSource[1].width,
+                _powerUpSource[1].height), new Vector2(), 0, Color.WHITE); // Draw the power up 2 texture
+        
+        if (_game.PowerUps[0] > 0) // If the power up 1 is active
+        {
+            // Calculate the timer text
+            TimeSpan ts = new TimeSpan((long)_game.PowerUps[0] + 1);
+            string text = $"{ts.Minutes}{ts.Seconds:00}";
+            
+            Raylib.DrawRectangleRounded(
+                new Rectangle(
+                    Convert.ToSingle(WindowManager.Width - (_powerUpSource[0].width - _powerUpSource[0].width / 2.4) - Raylib.MeasureText(GetTimeForPowerUp(0), 28) + 20),
+                    _powerUpSource[0].height / 2 + _powerUpSource[0].width / 3 - 2,
+                    Raylib.MeasureText(GetTimeForPowerUp(0), 28) + 20, 32f), 0.7f, 4,
+                new Color(20, 30, 40, 150)); // Draw the power up 1 timer background
+            Raylib.DrawText(GetTimeForPowerUp(0),
+                Convert.ToInt32(WindowManager.Width - (_powerUpSource[0].width - _powerUpSource[0].width / 1.8) - Raylib.MeasureText(GetTimeForPowerUp(0), 28) + 20),
+                Convert.ToInt32(_powerUpSource[0].height / 2 + _powerUpSource[0].width / 3), 28, Color.WHITE); // Draw the power up 1 timer text
+        }
+
+        if (_game.PowerUps[2] > 0) // If the power up 2 is active
+        {
+            Raylib.DrawRectangleRounded(
+                new Rectangle(
+                    Convert.ToSingle(WindowManager.Width - (_powerUpSource[0].width * 2 - _powerUpSource[0].width / 2.4) - Raylib.MeasureText(GetTimeForPowerUp(2), 28) + 20),
+                    _powerUpSource[0].height / 2 + _powerUpSource[0].width / 3 - 2,
+                    Raylib.MeasureText(GetTimeForPowerUp(2), 28) + 20, 32f), 0.7f, 4,
+                new Color(20, 30, 40, 150)); // Draw the power up 2 timer background
+            
+            
+            Raylib.DrawText(GetTimeForPowerUp(2),
+                Convert.ToInt32(WindowManager.Width - (_powerUpSource[0].width * 2 - _powerUpSource[0].width / 1.8) - Raylib.MeasureText(GetTimeForPowerUp(2), 28) + 20),
+                Convert.ToInt32(_powerUpSource[0].height / 2 + _powerUpSource[0].width / 3), 28, Color.WHITE); // Draw the power up 2 timer text
+        }
+
+        // Create a footer at the bottom of the game displaying the controls for the game 
+        
+        Raylib.DrawRectangle(0, WindowManager.Height - 60, WindowManager.Width, 60, new Color(40, 40, 40, 150)); // Draw the footer background
+        
+
+        DrawFooter(); // Draw the footer
+    }
+
+    private void DrawFooter() // Draw the footer
+    {
+        int wx = 15; // The x position of the footer (safezone of 15 pix)
+        
+        // Controls
+        
+        // Register the text for the controls
+        // Calculate the border width
+        // Draw the control border
+        // Give 5 pix margin
+        // Draw the control text
+        // Add the width of the control text to the x position
+        // Draw next control with the same steps
+        Text leftText = new Text(Loader.Settings.Keybind.Left.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.Left));
+        int leftBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.Left.ToString().Replace("KEY_", ""), leftText.FontSize);
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx, WindowManager.Height - 45, leftBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(leftText.Data, wx, WindowManager.Height - 45, leftText.FontSize, leftText.Color);
+        wx += Raylib.MeasureText(leftText.Data, 32) + 20;
+        
+        // Repeat for right, interact and jump
+        Text rightText = new Text(Loader.Settings.Keybind.Right.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.Right));
+        int rightBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.Right.ToString().Replace("KEY_", ""), rightText.FontSize);
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx, WindowManager.Height - 45, rightBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(rightText.Data, wx, WindowManager.Height - 45, rightText.FontSize, rightText.Color);
+        wx += Raylib.MeasureText(rightText.Data, 32) + 20;
+        
+        Text interactText = new Text(Loader.Settings.Keybind.Interact.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.Interact));
+        int interactBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.Interact.ToString().Replace("KEY_", ""), interactText.FontSize);
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx, WindowManager.Height - 45, interactBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(interactText.Data, wx, WindowManager.Height - 45, interactText.FontSize, interactText.Color);
+        wx += Raylib.MeasureText(interactText.Data, 32) + 20;
+        
+        Text jumpText = new Text(Loader.Settings.Keybind.Jump.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.Jump));
+        int jumpBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.Jump.ToString().Replace("KEY_", ""), jumpText.FontSize);
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx, WindowManager.Height - 45, jumpBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(jumpText.Data, wx, WindowManager.Height - 45, jumpText.FontSize, jumpText.Color);
+
+        
+        // Register text for zoom in and zoom out
+        // Calculate the border width
+        Text zoominText = new Text(Loader.Settings.Keybind.ZoomIn.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.ZoomIn));
+        int zoominBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.ZoomIn.ToString().Replace("KEY_", ""), zoominText.FontSize);
+        
+        // Set X value to the right side of the screen
+        wx = WindowManager.Width - 15;
+        
+        // Draw the border
+        // Give 5 pix margin
+        // Draw the text
+        // Subtract the width of the text from the x position
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx - zoominText.GetWidth(), WindowManager.Height - 45, zoominBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(zoominText.Data, wx - zoominText.GetWidth(), WindowManager.Height - 45, zoominText.FontSize, zoominText.Color);
+        wx -= Raylib.MeasureText(zoominText.Data, 32) + 25;
+        
+        // Repeat for zoomout
+        Text zoomoutText = new Text(Loader.Settings.Keybind.ZoomOut.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.ZoomOut));
+        int zoomoutBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.ZoomOut.ToString().Replace("KEY_", ""), zoomoutText.FontSize);
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx - zoomoutText.GetWidth(), WindowManager.Height - 45, zoomoutBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(zoomoutText.Data, wx - zoomoutText.GetWidth(), WindowManager.Height - 45, zoomoutText.FontSize, zoomoutText.Color);
+    }
+
+    private string GetTimeForPowerUp (int id) // Get the time for a power up
+    { 
+        int time = Convert.ToInt32(_game.PowerUps[id] + 1); // Get the time
+        int minutes = time / 60; // Calculate the minutes
+        int seconds = time % 60; // Calculate the seconds 
+        
+        return minutes + ":" + seconds.ToString("00"); // Return the time formatted
+    }
+}
+```
+
+As you can see we use the same varable for the x position of the control section of the hud, we do this so any changes to the controls will be reflected in the hud, and they will span correctly, rather than overlapping eachother.
+
+> #### Errors to overcome
+> - Power up textures not changing when power up is active (fixed by offsetting the source rectangle)
+> - Power up timers not displaying correctly (fixed by converting sections to string, using format "00")
+> - 
+#### Distance Renderer
+
+Next we need to add the distance renderer.
+This is so when the player heads of the left or right of the screen it faids out to black or white depending on the edge they leave from.
+We do this to limit the player to the level canvas.
+We will need:
+- To calculate the distance from the player to the edge of the canvas.
+- If the distance is less than 0 then we will need to draw a gradient to the screen.
+- The right half of the gradent will be black with an alpha value being the distance over 800.
+- And the left half being a distance over 400. So the screen will fade left to right.
+- Lastly we will calculate if the player is to the left or right of the screen, we can do this by compairing the players position to 0 as 0 is the center of the map.
+- We will draw the gradient white if its the right side, and black if its the left side. Flipping the alpha values in the right case as we want it to fade the oposite way.
+
+Now we have our framework we can define our class
+```csharp
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Overlay.Render;
+
+public class DistanceLimitRenderer : UiRenderer
+{
+    public DistanceLimitRenderer () : base("velocity.ui.distanceLimit", false)
+    {
+    }
+
+    public override void Draw()
+    {
+        int distance = 0; // Distance from the center of the level
+        if (Double.Abs(Loader.Game.Player.Position.X) >= (Level.Level.LevelWidth / 2 + 3) * 200) distance = (int) (Double.Abs(Loader.Game.Player.Position.X) - (Level.Level.LevelWidth / 2 + 3) * 200); // Calculate the distance from the edge of the level to the player
+        
+        int alphaa = 0; // Alpha for the gradient
+        if (distance is > 0 and < 400) alphaa = (int)(255 * (distance / 400d)); // Calculate the alpha for the gradient
+        else if (distance >= 400) alphaa = 255; // Set the alpha to 255 if the distance is greater than 400
+        int alphab = 0; // Alpha for the gradient
+        if (distance is > 0 and < 800) alphab = (int)(255 * (distance / 800d)); // Calculate the alpha for the gradient
+        else if (distance >= 800) alphab = 255; // Set the alpha to 255 if the distance is greater than 800
+        
+        // If the player is to the left or right of the level area
+        if (Loader.Game.Player.Position.X > 0) Raylib.DrawRectangleGradientH(0, 0, WindowManager.Width, WindowManager.Height, new Color(255, 255, 255, alphab), new Color(255, 255, 255, alphaa)); // Draw the white gradient
+        else Raylib.DrawRectangleGradientH(0, 0, WindowManager.Width, WindowManager.Height, new Color(0, 0, 0, alphaa), new Color(0, 0, 0, alphab)); // Draw the black gradient
+    }
+}
+```
+
+> #### Errors to overcome
+> - Distance limit not working (fixed by changing the distance calculation from center of level to use the level width)
+> - Not blacking out till you can see the end of the floor asset (fixed by changing distance dividers)
+
+### Timer Renderer
+This ones a simple one.
+We simply need to display the `Timer` varable in the `Game` class to the screen.
+We will need a draw method, that runs every frame to:
+- Calculate the time in minutes and seconds.
+- Draw it to the screen
+
+Our class will look like this:
+```csharp
+using System.Diagnostics;
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Overlay.Render;
+
+public class TimerRenderer : UiRenderer
+{
+    public TimerRenderer () : base("game:overlay.timer", false) {}
+
+    public override void Draw()
+    {
+        if (!Loader.Game.IsRunning) return;
+
+        TimeSpan tspan = Loader.Game.Timer.Elapsed; // Get the elapsed time
+        string text = $"{tspan.Minutes:00}:{tspan.Seconds:00}.{tspan.Milliseconds / 10:00}"; // Format the time
+        
+        Raylib.DrawTextEx(FontUtils.TimerFont, text, new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.TimerFont, text, 32 + (8 * (4 - (2 + Loader.Settings.Resolution))),2).X / 2, 10), 32 + 8 * (4 - (2 + Loader.Settings.Resolution)), 2, Color.WHITE); // Draw the timer text with the correct font size and position
+    }
+}
+```
+
+> #### Errors to overcome
+> - Not drawing at correct x position (fixed by dividing the window width by 2 and subtracting the width of the text divided by 2)
+
+### Colored flash renderer 
+This is the renderer responsible for the colored flash that happens when you enter a level, to fade from black to the game canvas.
+It will need to:
+- Draw a rectangle to a screen that has its alpha value decriment over time.
+- A method to trigger this timed flash.
+- To disable itself once the time reaches 0.
+
+Our class will look like this:
+```csharp
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Overlay.Render;
+
+public class ColoredFlashRenderer : UiRenderer
+{
+    private int _fade = 30; // The amount of frames it takes to fade out
+    private int _counter = 0; // The current frame
+    private Color _color = Color.WHITE; // The color of the flash
+
+    private int _alpha = 0; // The alpha of the flash
+    
+    public ColoredFlashRenderer() : base("velocity:game.flash", false)
+    {
+    }
+
+    public void Trigger(int fadeout, Color color) // Trigger the flash
+    {
+        _counter = fadeout; // Set the counter to the fadeout amount
+        _fade = fadeout; // Set the fade to the fadeout amount
+        _alpha = 255; // Set the alpha to 255
+        _color = color; // Set the color to the color
+        IsEnabled = true; // Enable the renderer
+    }
+
+
+    public override void Draw() // Draw the flash
+    {
+        if (_counter == 0) // If the counter is 0
+        {
+            IsEnabled = false; // Disable the renderer
+            return; // Return
+        }
+        
+        _alpha = (int)(255d * ((double)_counter / _fade)); // Calculate the alpha
+        _counter--; // Decrement the counter
+ 
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, _color with { a = (byte)_alpha }); // Draw the flash
+    }
+}
+```
+
+I did not encounter any errors developing this renderer.
+
+### TextOverlay Renderer
+This renderer is responsible for displaying text to the screen when a power-up is unlocked.
+It will display a flashing text to the screen for a set amount of time.
+With a purple background, and a border.
+It will display the text in white, displaying the type of power-up unlocked.
+It will be in the center of the screen in the x axis, and 1/12 of the way down the screen in the y axis.
+
+It will need:
+- Property for the text
+- Property for the color
+- Property for the animation step
+- Property for the alpha
+- Property for the display seconds
+- And a property for the animation stage (flip: weather it is fading in or out)
+- A method to trigger the text
+- A method to draw the text
+
+Our class will look like this:
+```csharp
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Overlay.Render;
+
+public class TextOverlayRenderer : UiRenderer
+{
+    private string _text = ""; // The text to display
+    private Color _color = Color.BLACK; // The color of the text
+
+    private int _aStep; // The current frame
+    private int _alpha; // The alpha of the text
+    private int _displaySeconds; // The amount of seconds to display the text for
+    private int _flip = 1; // The flip value for the text
+    public TextOverlayRenderer() : base("velocity:text.overlay", false)
+    { }
+
+    public void TriggerOverlay(string text, Color color, int displaySeconds) // Trigger the overlay
+    {
+        _aStep = 0; // Reset the frame
+        _alpha = 0;  // Reset the alpha
+        _text = text; // Set the text
+        _color = color; // Set the color
+        _displaySeconds = displaySeconds; // Set the display seconds
+        IsEnabled = true; // Enable the renderer
+    }
+
+    public override void Draw()
+    {
+        if (_aStep == 60 * _displaySeconds) // If the text has been displayed for the correct amount of time
+        {
+            IsEnabled = false; // Disable the renderer
+            _aStep = 0; // Reset the frame
+            return; // Return
+        }
+        
+        _aStep++; // Increment the frame
+        
+        if (_aStep % 16 == 0) _flip = _flip == 1 ? 0 : 1; // Flip the animation after 16 steps in the animation
+
+        // Fade in and out
+        if (_aStep < (_displaySeconds * 60) / 4 && _alpha < 255) _alpha += 5; // If he text has been displayed for 1/4th of the display seconds increment the alpha by 5
+        if (_aStep > ((_displaySeconds * 60) / 4) * 3 && _alpha > 0) _alpha -= 5; // If he text has been displayed for 3/4th of the display seconds decrement the alpha by 5
+        
+        Raylib.DrawRectangleRounded(
+            new Rectangle((WindowManager.Width / 2 - Raylib.MeasureText(_text, 34) / 2) - 10,
+                WindowManager.Height / 12 - 10, Raylib.MeasureText(_text, 34) + 22, 34 + 18), 0.2f, 4,
+            new Color(0, 10, 30, _alpha)); // Draw the background border for the text with a rounded rectangle
+        
+        Raylib.DrawRectangleRounded(
+            new Rectangle((WindowManager.Width / 2 - Raylib.MeasureText(_text, 34) / 2) - 5,
+                WindowManager.Height / 12 - 5, Raylib.MeasureText(_text, 34) + 12, 34 + 7), 0.2f, 4,
+            new Color(255, 10, 255, _alpha * (_flip))); // Draw the background for the text with a rounded rectangle
+        Raylib.DrawText(_text, WindowManager.Width / 2 - Raylib.MeasureText(_text, 34) / 2, WindowManager.Height / 12, 34, new Color(_color.r, _color.g, _color.b, _alpha * (_flip))); // Draw the text with the correct color and alpha
+    }
+}
+```
+
+> #### Errors to overcome
+> - Text not displaying (fixed by adding a flip value to the alpha)
+> - Text not fading in and out (issue between multiplying doubles with ints, results in int, cast to double and it was fixed)
+> - Text not displaying for the correct amount of time (fixed by timesing the display seconds by 60 (current fps))
