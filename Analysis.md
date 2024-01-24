@@ -26,10 +26,15 @@ In the content below I will be discussing every section of my project, and will 
 > - [Testing Plan](#testing-plan)
 
 ### [Development](#development)
-> - [Underlying Framework](#underlying-framework)
-> - [Base game, settings and menu manager](#base-game-settings-and-menus)
-> - [UiElements](#ui-elements)
-> - [Main menu & settings](#main--settings-menu)
+> - [Underlying Framework](#section-1-underlying-framework)
+> - [Base game, settings and render manager](#section-2-base-game-settings-and-render-manager)
+> - [Sounds, assets and menus](#section-3-sounds-assets-and-menus)
+> - [Level files, manager, provider and screen](#section-4-level-files-manager-provider-and-screen)
+> - [Physics, player and camera controller](#section-5-physics-player-and-camera-controller)
+> - [Various renderers](#section-6-various-renderers)
+> - [Object manager, game objects and collision](#section-7-object-manager-game-objects-and-collision)
+> - [Renderers & player renderer ext](#section-8-various-renderers--player-renderer-ext)
+> - [Statistics and menus ext](#section-9-statistics--menus-ext)
 
 > © Reuben Yates 2023, Frome College
 
@@ -435,7 +440,6 @@ The main design of my game will be largely based off Extreme Pamplona in the fac
 
 And that's largely it, this is where I will be focusing on these sections of the game, adding features where I see fit.
 
-
 ## Inputs & Outputs
 
 | Input                             | Process                                                                                                                                  | Output                                                                                                 |
@@ -445,7 +449,6 @@ And that's largely it, this is where I will be focusing on these sections of the
 | Read the settings file            | Process and interoperate the input file and read the syntax of the file format                                                           | Have a readable settings class so that the user has a user session with all of there expected settings |
 | Player actions such as interact   | If the player is next to or in the given interact radius of an interactable object then process the object applying any modifiers needed | The player will have the modifiers such as a speed boost                                               |
 | Clicks to the screen on menu's    | Process where the mouse is and interoperate if the mouse is over any ui elements, if so trigger the ui elements                          | Ui elements will trigger and update there respective setting and or action                             |
-
 
 ## Key Variables
 
@@ -459,7 +462,6 @@ And that's largely it, this is where I will be focusing on these sections of the
 | Settings         | The settings object                                                                | Velocity/Settings.cs                    |
 | Physics          | The physics manager                                                                | Velocity/Game/Physics/PhysicsManager.cs |
 | CameraController | The camera controller object responsible for controlling the camera automatically  | Velocity/Game/CameraController.cs       |
-
 
 ## Structure Diagrams
 
@@ -668,7 +670,7 @@ As it is hard to test the subroutines without running the game, I will be testin
 
 | Action or feature                                                                                                    | Working? |
 |----------------------------------------------------------------------------------------------------------------------|----------|
-| 1. A open blank window ready for us to implement our features                                                        | ✓        |
+| 1. A window that can have its preferences changed within a settings menu                                             | ✓        |
 | 2. Main menu with 4 buttons and a title, including game version information and my copywrite                         | ✓        |
 | 3. Settings screen with at least 3 sections, that include controls, video settings, audio settings                   | ✓        |
 | 4. Working camera system that smoothly follows the player wherever they go on the game canvas                        | ✓        |
@@ -737,8 +739,6 @@ Another usability feature is having an obvious way to exit the game, so I will b
 
 And lastly having a way to display the user what ui elements are interactable, so I will be adding a hover effect to the buttons, sliders and any other ui elements.
 
-
-
 ## Validation
 
 A good example of input validation would be the ui elements, sadly for the the game engine I am using, the ui elements are not something you can just import, so I had to do a lot of trial and error to get the ui elements to work as expected.
@@ -800,24 +800,23 @@ This will be mentioned along side my main development in the [Development](#deve
 
 # Development
 
-## Underlying Framework
-
 > #### A few notes
 > - I am going to be creating my game using the object oriented programming method, this allows me to have many custom classes working together to achieve a human readable and maintainable structure to my programming, while also allowing me to create different elements of the game that all work together with minimal re-writes.
 > - I will be using interfaces for any and all input logic, this reduces the number of selection statements and duplicated code.
 > - Some options such as resolution and control schemes will be using structs, to reduce the amount of registered classes in the game.
 > - I will be using a game engine called raylib, this is a c# game engine that allows me to create games in c# and have them run on any platform, including windows, mac and linux.
-> - Due to time constraints I didn't have time to document the renderers, so have included a quick description of what each renderer class does.
+> - Due to time constraints I didn't have time to document all the renderers, so have included a quick description of what each renderer class does.
 > - All video and image links will be embedded imgur links as I have had issues with embedding videos in the past.
+> - Any assets used were not created by me and were found through google, all open source, all copywrite free.
 
-### Underlying framework
+## Section 1: Underlying Framework
 
 Firstly I will be creating an underlying framework for my game to run on. This will consist of an input system for reading user inputs, an update system for executing game logic, and a draw loop to display the computed inputs, game logic, and elements to the screen.
 This section will be largely based off of the framework I created in my mini-nea found [here](https://github.com/WolfDen133/MiniNEA).
 This video shows what I already have programmed. 
 [Click here for video](https://imgur.com/KVb5bWA)
 
-#### Window Manager & Renderer 
+### Window Manager & Renderer 
 
 Firstly I will create a window manager that will be registered in the main class. This window manager will contain all the logic needed to register a window in the underlying operating system and allow me to start drawing elements.
 
@@ -950,7 +949,7 @@ public class WindowManager
 > `_destRectangle = new Rectangle(-VirtualRatio, -VirtualRatio, Settings.Resolutions[Loader.Settings.Resolution].X + VirtualRatio * 2, Settings.Resolutions[Loader.Settings.Resolution].Y + VirtualRatio * 2);`
 > Using a negated virtual ratio, we can flip the image on the y axis, and draw it to the screen correctly.
 
-#### Renderer and sub-renderers
+### Renderer and sub-renderers
 
 Next we are going to create a renderer and sub-renderers so that we can assign a renderer to game elements, giving them a customizable renderer for any kind of display that we want.
 
@@ -1196,7 +1195,7 @@ And another function to actually change the colors for the element.
     }
 ```
 
-#### Input manager & input elements
+### Input manager & input elements
 
 Next we are going to create an input manager that will be registered in the main class. This input manager will contain all the logic needed to register an input controller and allow me to start reading inputs.
 Then we will make a few input elements that will be used to read inputs from the user.
@@ -1479,7 +1478,31 @@ Linking back to our [Testing plan, test 1](#testing-plan), we can use this test 
 
 And as we can see from the image above, we have a working window, ready for the logic to be added for the next step.
 
-## Base game, Settings and Menu manager
+## Section 1 review
+
+### What has been achieved
+We now have a working base for our game, that surve as a sort of "back-end" for our game, that will allow inputs to be read, asign keybinds and outputs to be processed and displayed.
+
+### How we have tested
+We have tested our base game by running it after each section and seeing if it works as expected, and if it does not, we can go back and fix it. 
+Then tested it again to see any iterative or reused elements are impimented correctly.
+Using `console.writeline` in various places so we can see wether our systems are working correctly. 
+
+### How it fills our success criteria 
+- [x] A working window
+- [x] A working input system
+- [x] A working renderer
+
+### Meeting the criteria of:
+A working framework that allows us to create a game on top of it.
+
+### Quick summery of this section:
+In this section we have created a working framework that allows us to create a game on top of it, with a working window, input system and renderer.
+We have also created a main loader that will be used to register all of our managers, so that our program can keep track, and have easy access to all of the required classes.
+This file will serve as our entry point in our program, so that any future-defined classes have access to the static properties of this class.
+It will also be where we call all of our run functions to initalise and run the logic.
+
+## Section 2: Base game, Settings and Render Manager
 
 Now we have our underlying framework we can begin to build the basic structures for our main game logic, the settings and preferences, and menus that will be displayed to the user.
 To begin we will be going into these sections and building our classes with our required properties and functions to build a functioning game.
@@ -2095,8 +2118,34 @@ ZOOM_IN=EQUAL
 
 We now have a working settings class that saves to and reads from a file, we can test this and see it working as it outputs a file with the expected settings and results.
 
-### Menus
+## Section 2 review
 
+### What has been achieved
+We now have a base game file, to load run and manage the actual elements of the game. We now also have a provider for settings, so we can save and load settings from a file, and apply them to the game.
+We also have a render manager that will be used to interface with the renderer, so that our program can keep track, and have easy access to all of the required element renderers.
+
+### How we have tested
+We have tested our base game by running fixing any errors that come up, and tried changing values of propertys to see if they are referenced in all the correct places. 
+Then tested it again to see any iterative code works as intended.
+
+### How it fills our success criteria
+- [x] A working game file
+- [x] A working settings file (with saving and loading)
+- [x] A working render manager (renderer interface)
+
+### Meeting the criteria of:
+A working base game that allows us to register objects and renderers, and a working program wide settings file.
+
+## Section 3: Sounds, assets and menus
+Alright, now we have our settings class, so we can make program wide changes.
+We also have a way of rendering things to the screen, so we can begin to create our menus, and the logic to handle them.
+We will be creating a menu manager class that will handle all of the menus, and will be responsible for opening and closing them, and keeping track of the currently open menu.
+We will also be creating a base menu class that will be extended by all of the menus, and will contain the basic functions for handling the menu, such as opening and closing, and rendering.
+We will also be creating a settings menu, which will be the first menu we create, and will be responsible for displaying the settings to the user, and allowing them to change them.
+We will also be creating a main menu, which will be the menu that is displayed when the game is first opened, and will contain the buttons to start the game, and open the settings menu.
+
+
+### Menu Manager
 Now that we have a working window opening and a settings menu, it would be good to have something to interact with on the screen so we can change our settings.
 We need to do this by introducing a menu system for handling, the registration and handle for a menu class. It should keep track of all the menus and handle there open, currently open and close states accordingly and will close all menus when its close function is called.
 We will create a subdirectory called `Ui` in our root folder and create a `MenuManager.cs` file and matching class. We will then define our functions with the procreate code to operate and define the actions mentioned above.
@@ -2175,10 +2224,9 @@ Calling the `MenuManager.Tick()` method in its tick function, therefor giving th
 
 Now as you can see this class references our windows we are going to create. These are referenced further down in this file.
 
+### Asset & Sound Manager
 
-## Asset & Sound Manager
-
-### Asset Manager
+#### Asset Manager
 
 Firstly we will be creating an asset manager class, this will be responsible for loading and unloading all of our assets, such as textures.
 We need this class so we can successfully evaluate each texture and load it into memory, and then unload it when it is no longer needed.
@@ -2284,7 +2332,7 @@ We have a function to load all the textures into memory, and a function to get a
 We also have a function to get a player texture, and a background texture, this is so we can easily access the textures by type and pull them in according to which player apperance and backround is currently chosen.
 This class will serve as a texture provider and we will now be able to access the texture class from any where within our code.
 
-### Sound manager
+#### Sound manager
 
 Next we will be creating a sound manager class, this will be responsible for loading and unloading all of our sounds, such as music and sound effects.
 We need this class so we can successfully evaluate each sound and load it into memory, and then unload it when it is no longer needed.
@@ -2422,7 +2470,7 @@ This class will serve as a sound provider and we will now be able to access the 
 > - The third error we encountered was the fact that the sound was not playing, this was because we were not initialising the audio device, and therefor the sound could not be played. - This was fixed by initialising the audio device in the constructor of the sound manager.
 > - The fourth error was sounds not being found, this came from using the incorrect sound format and name, so it was easily fixed by changing the sound format and name to the correct format.
 
-Linking back to our [Testing Plab](#testing-plan) section, we can now test our sound and asset manager by playing a sound and loading a texture, and we can see that it works as expected.
+Linking back to our [Testing Plan](#testing-plan) section, we can now test our sound and asset manager by playing a sound and loading a texture, and we can see that it works as expected.
 
 I will insert lines of code into the draw loop, and post load in the main file, so we can test both.
 
@@ -2434,8 +2482,7 @@ We can see that the sound plays and the texture is loaded, and therefor our soun
 
 And so concludes this section of development, we now have a working sound manager and asset manager so we can play sounds, change sound volume and load, unload and access textures when needed.
 
-
-## UI Elements
+### UI Elements
 
 This subsection will be slightly different to the last as these belong in their own section.
 The reason for this is because they are reused time and time again across the menus and will need explaining seperately.
@@ -3548,7 +3595,10 @@ Each subsection of this file will explain each ui element and its respective ren
 > }
 > ```
 
-## Main & Settings menu
+### Main & Settings menu
+Sweet, now we have a way to take inputs from our user, and display them on the screen, we can start to build our menus.
+We also have a way to load textures, and play sounds, so we can start to make our menus look and sound nice.
+We will be revisiting windows once our game has its core features implemented, but for now we will be creating the main menu, and the settings menu.
 
 #### Base Window
 Now that we have a working menu manager, and some ui elements to build our menus, its time to create some, we will be starting with the base menu class.
@@ -3575,7 +3625,6 @@ public class Window
     { }
 }
 ```
-
 
 #### Main menu
 Now we have our base class its time to create our main menu!
@@ -3752,7 +3801,7 @@ And we can now see that this is working as expected, and we can move onto the ne
 
 If we look back to the [Testing](#testing-plan) section, we can see that we have completed the first 2 tests, and we are now ready to move onto the third test.
 
-### Settings Menu
+#### Settings Menu
 
 Now the settings menu is by far the most complex, requiring a lot of elements to be created, and a lot of functionality to be added.
 This menu will contain all of the available settings for the game, and will be the main way to change them.
@@ -4192,7 +4241,36 @@ And thus concluding the settings menu, we can now move onto the next section.
 
 If we look back to the [Testing](#testing-plan) section, we can see that we have completed the third test, and we are now ready to move onto the next section.
 
-### Level manager, level base, and level screen
+## Section 3 review
+
+### What has been achieved
+We have created a working system to load and play sounds, to load and provide textures from a single class, and created our first menus.
+
+### How have we tested
+We have tested our sound manager by playing a sound, and checking if it plays, and if it plays at the correct volume.
+We have tested our asset manager by loading a texture, and checking if it loads, and displaying it on the screen.
+We have tested our main menu by launching the game, and checking if it displays, and if the buttons work.
+
+### How it fills the success criteria:
+- [x] A working sound manager
+- [x] A working asset manager
+- [x] A working main menu
+- [x] A working settings menu
+- [x] Working re-useable ui elements
+
+### Meetin the criteria of:
+A working menu system, with a main menu, and a settings menu, with re-useable ui elements, with working sound loading playing, and asset loading.
+
+### Quick summary of this section:
+In this section we have created a working sound manager to play sounds, to load and provide textures, and created our first menus, along with its required manager, allowing for more menus to be created in future, with the pre-made ui elements.
+
+## Section 4: Level files, manager, provider, and screen
+So we have our main menu, and our settings menu, but we don't have a game yet. So we will need to create a level, and a way to load it.
+We will start by creating a level file, using json, and then we will move onto the level manager, and then the level class itself, and finally the screen.
+I have also included some utility classes that have been used throughout the project, and will be largely used in this section.
+
+
+### Level files
 
 Now that we have a main menu, and a settings menu, we can move onto the main part of the game, the level.
 Now our levels will be read from `.json` files, and will be loaded into the game, and then stored in the level manager, ready to be used.
@@ -4322,6 +4400,9 @@ It will look a little something like this:
 ```
 
 Now that we have our data provider for the levels, we can move onto the level manager.
+
+### Level manager
+
 Firstly we will need to define a method for scanning the levels directory for levels, and then loading them into the game.
 Then a function to register these levels to be loaded, so the program can keep track of the levels in a dictionary.
 Then we will need to define a method for setting the current level, so we can load all the appropreate data into the game.
@@ -4431,6 +4512,8 @@ public class LevelManager
     }
 }
 ```
+
+### Level
 
 Now that we have a level manager we need to define our level file so we can have a data provider for our levels.
 It will contain the level width, height, name, id and raw data.
@@ -4569,6 +4652,9 @@ public class Level // Level class
 ```
 
 Now that we have our level manager, and our level base, we can move onto the level screen.
+
+### Level screen
+
 We will need to define a method to handle what the screen does when the screen is opened.
 We will need a `Tick` function to handle whats going on within the menu. 
 Various method to register the on-screen elements.
@@ -5173,7 +5259,31 @@ These serve as utility classes for our game, and will be used throughout the cla
 
 I did not encounter any errors with this section.
 
-### Base physics and player
+## Section 4 review
+
+### What has been achieved
+Created a level system, with a level manager, level screen, level file reading.
+Allowing for us to make manage and load levels into the game.
+Giving us an easy way to access the level data.
+
+### How we have tested
+By creating a test level, and loading it into the game.
+We can see that the level is loaded correctly, and the level screen is working as expected.
+
+### How it fills our success criteria
+- [x] Load levels from a file
+- [x] Display levels in a menu
+- [x] Select levels from a menu
+- [x] Give a provider for an easy way to acess level data
+
+### Meeting the criteria of:
+A working level system, that allows us to read from json files, add new levels, load existing ones, access there data easily, and display them in a menu.
+
+## Section 5: Physics, Player, and camera controller
+We have a pretty good looking base for our game, but we need to add some physics and a player, with a camera that follows them.
+This will be comprised of a few different parts, so we will break it down into sections.
+
+### Base physics
 
 Now that we have our main game structure, we need to implement the base physics for our game.
 We will need to define a class for our physics that we can assign to our player, so we can handle the physics of our game.
@@ -5309,6 +5419,23 @@ public abstract class BasePhysics
 }
 ```
 
+This file references a constants file, which is defined below.
+
+```csharp
+namespace Velocity.Game.Physics;
+
+public abstract class PhysicsConst
+{
+    public const double Gravity = 1;
+    public const int MaxVelocity = 80;
+    public const int MaxAcceleration = 14;
+    public const int Acceleration = 2;
+    public const double Friction = 8;
+    public const double AirResistance = 0.5;
+    public const int Jump = 26;
+}
+```
+
 ### Physics manager
 Now that we have our base physics, we need a way to manage the physics of our game.
 We can do this by creating a simple class to register, stop and update the physics of our game.
@@ -5347,6 +5474,7 @@ public class PhysicsManager
 
 I did not encounter any errors with the physics manager.
 
+### Player
 
 Now that we have our base physics class, we can move onto the player.
 
@@ -5425,6 +5553,8 @@ public enum PlayerState // Player state
 
 Now that we have our player, we can move onto the player renderer.
 
+### Player renderer
+
 For now the player will be represented by a rectangle. So we can test, and we will add the player sprite later.
 This is for testing peruses and will be changed later.
 
@@ -5459,6 +5589,8 @@ public class PlayerRenderer : ElementRenderer
 ```
 
 Now that we have our player and player renderer, we can move onto the player controller.
+
+### Player controller
 
 For the player controller we will need:
 - A property to hold the player instance
@@ -5669,12 +5801,34 @@ We will link back to the [Testing](#testing-plan) section for this.
 
 Now this is working we can move on to our next section.
 
-### Various Renderers
+## Section 5 review
+
+### What has been achieved
+Created a physics system, with a physics manager, base physics class. Created a player class, with a player renderer, and a player controller. Created a camera controller to handle the camera position and zoom.
+
+### How we have tested
+By entering the game and moving the player around, we can see that the player is moving and the camera is following the player.
+Displaying the player to test the renderer.
+Testing the collision of the floor plane and the player.
+
+### How it fills our success criteria
+- [x] Create a physics system
+- [x] Create a parent physics class for all physics objects
+- [x] Create a player class with physics
+- [x] Create a controlable player with the keyboard
+- [x] Create a camera system
+
+### Meeting the criteria of:
+A working physics system, with a parent physics class.
+A player class with physics, a controlable player with the keyboard. 
+And a camera system.
+
+## Section 6: Various Renderers
 
 The next thing we will look at are the various renderers for our game.
 We need these for things like the background, hud, floor, distance limit etc.
 
-#### Background Renderer
+### Background Renderer
 
 The first of which is the background renderer.
 In the code this is called `ParallaxRenderer.cs` as we are achieveing a sudo-parallax effect.
@@ -5855,7 +6009,7 @@ public class ParallaxRenderer : BackgroundRenderer
 }
 ```
 
-#### Floor Renderer
+### Floor Renderer
 Next we need to add the floor renderer.
 This will take our floor texture and render it to the screen.
 We will achieve this by running a for loop and rendering the floor texture at the position of the loop multiplied by the texture width.
@@ -5910,7 +6064,7 @@ public class FloorRenderer : ElementRenderer
 All together it now looks like this, from a zoomed out perspective: 
 ![](https://i.imgur.com/gpkbt2s.png)
 
-#### Hud Renderer
+### Hud Renderer
 Next we need to add the hud renderer.
 This will provide a heads up display for the players of the game. It will display stats such as player health, coins collected, current power ups, and the controls for the game.
 This will be a 2d ui renderer, so that it draws on the screen directly, rather than drawing to the canvas.
@@ -6141,8 +6295,9 @@ As you can see we use the same varable for the x position of the control section
 > #### Errors to overcome
 > - Power up textures not changing when power up is active (fixed by offsetting the source rectangle)
 > - Power up timers not displaying correctly (fixed by converting sections to string, using format "00")
-> - 
-#### Distance Renderer
+> 
+
+### Distance Renderer
 
 Next we need to add the distance renderer.
 This is so when the player heads of the left or right of the screen it faids out to black or white depending on the edge they leave from.
@@ -6191,6 +6346,7 @@ public class DistanceLimitRenderer : UiRenderer
 > #### Errors to overcome
 > - Distance limit not working (fixed by changing the distance calculation from center of level to use the level width)
 > - Not blacking out till you can see the end of the floor asset (fixed by changing distance dividers)
+> 
 
 ### Timer Renderer
 This ones a simple one.
@@ -6366,3 +6522,8603 @@ public class TextOverlayRenderer : UiRenderer
 > - Text not displaying (fixed by adding a flip value to the alpha)
 > - Text not fading in and out (issue between multiplying doubles with ints, results in int, cast to double and it was fixed)
 > - Text not displaying for the correct amount of time (fixed by timesing the display seconds by 60 (current fps))
+
+## Section 6 review
+
+### What has been achieved
+Display the various visual elements of the game, like, the background, floor, hud, distance limiter etc.
+
+### How we have tested
+After each renderer was created we tested it by adding it to the game and running the game to see if it worked.
+After inital testing we go back and make tweaks to the renderers to make them work as intended, if not working correctly.
+And perform a final test to make sure it works as a complete unit.
+
+### How it fills our success criteria
+- [x] The game has a background
+- [x] The game has a foreground
+- [x] The game has a hud
+- [x] The game has a distance limiter
+- [x] The game has a timer
+- [x] The game has a colored flash (for fadein and outs)
+- [x] The game has a text overlay (for power up unlocks)
+
+### Meeting the criteria of:
+Visual elements of the game are displayed to the screen that smooth out the visual aspects of the game.
+
+## Section 7: Object manager, game objects and collision
+
+Now that we have a working player, camera, background and foreground we can start to add some objects to the game.
+For now we will be registering the objects in our game class so we can test, but later we will be loading them from the level manager and level classes.
+
+### Objects and object manager
+The object manager will be responsible for managing all of the objects in the game.
+It needs to be able to register object classes, add them to the game, remove them, and clear out any objects from the level, before loading the next level.
+It also needs to be able to handle different types of objects, eg. items, or physics objects.
+
+For this we will need to make our object class before we can make our object manager.
+Objects are physical game objects eg. coins, power ups, crates and barrels.
+We will be creating a base class with the basic checks and behaviour for all objects, and then we will be creating a class for each type of object, eg. coin, power up, crate, barrel.
+Our object class will need:
+- A property for its id
+- A property for its collidable state (bool: if it has collision)
+- A property for its position
+- A property for its dimensions
+- A method to check its range to the collidable target (used to check if its near enough to be considered for collision)
+- A method to check if its in the x bounds, and the same for y bounds (used for collision)
+
+And our class will look like this:
+```csharp
+using System.Numerics;
+using Velocity.Game.Physics;
+using Vector2 = Velocity.Math.Vector2;
+
+namespace Velocity.Game.Object;
+
+public abstract class GameObject
+{
+    public int Id; // Item/object id
+    public bool Collidable; // Can the object be collided with?
+    public readonly Vector2 Position; // Position of the object
+    public readonly Vector2 Dimensions; // Dimensions of the object
+
+    protected GameObject(int id, Vector2 position, Vector2 dimensions, bool isCollidable = true) // Constructor
+    {
+        Id = id; // Set id
+        Position = position; // Set position
+        Dimensions = dimensions; // Set dimensions
+        Collidable = isCollidable; // Set if the object is collidable
+    }
+
+    public bool CheckRange(Collidable target) // Check if the object is in range of the player (collidable)
+    {
+        return target.Position.X + target.Dimensions.X / 2 >= Position.X - (PhysicsConst.MaxVelocity * 1.5) &&
+               target.Position.X - target.Dimensions.X / 2 <= Position.X + Dimensions.X + (PhysicsConst.MaxVelocity * 1.5) &&
+               target.Position.Y - target.Dimensions.Y / 2 <= Position.Y + Dimensions.Y + (PhysicsConst.MaxVelocity * 1.5) &&
+               target.Position.Y + target.Dimensions.Y / 2 >= Position.Y - (PhysicsConst.MaxVelocity * 1.5);
+    }
+
+    public bool InXBounds(Collidable target, int offset = 0) // Check if the object is in the x bounds of the player (collidable)
+    {
+        return target.Position.X + target.Dimensions.X / 2 >= Position.X - offset && 
+               target.Position.X - target.Dimensions.X / 2 <= Position.X + Dimensions.X + offset;
+    }
+
+    public bool InYBounds(Collidable target, int offset = 0) // Check if the object is in the y bounds of the player (collidable)
+    {
+        return target.Position.Y + target.Dimensions.Y / 2 >= Position.Y - offset &&
+               target.Position.Y - target.Dimensions.Y / 2 <= Position.Y + Dimensions.Y + offset;
+    }
+}
+```
+
+Now that we have our base class we can start to create our object classes.
+
+The first of which will be the `TexturedObject` class.
+This will be our base class for our barrels and crates as we need to give them a texture.
+It will need:
+- A property for its texture
+
+And the class will look like this:
+```csharp
+using Raylib_cs;
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class TexturedObject : GameObject
+{
+    public Texture2D Texture; // Texture of the object
+
+    protected TexturedObject(int id, Texture2D texture, Vector2 position, Vector2 dimensions) : base(id, position, dimensions)
+    {
+        Texture = texture;
+    }
+}
+```
+
+Then comes our item object class.
+
+### Item object
+This will be the base class for our coins and power ups.
+It will extend our `TexturedObject` class and have some behaviour for when the player interacts with it.
+It will need:
+- A property for its type id (int: used to identify the type of item)
+- A property for its range (int: used to check if the player is close enough to interact with it)
+- A cooldown constant (int: to give the powerup to the player for a set amount of time)
+- A property for its color
+- A property for its particle renderer (used to display particles)
+- A property for its info card (pop up explaining what the powerup does and the controls for it)
+- An enabled or disabled property (bool: used to check if the item is enabled or disabled)
+- A method to set the color of the object
+- A static method for getting the color instance from the id (so we can give different colors to different upgrades)
+- A method to check if the player is in range of the item
+- A method to interact with the item (from controllable)
+- And finally a method to remove the item once it has been picked up (unregister the controller and remove item from object manager)
+
+And the class will look like this:
+```csharp
+using Raylib_cs;
+using Velocity.Game.Object.Renderer;
+using Velocity.Input;
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class ItemObject : TexturedObject, IControllable
+{
+    public new readonly byte Id; // Item id
+    private int _range = 50; // Range of the item
+    private const int Cooldown = 40; // Cooldown of the item
+
+    public Color Color = Color.WHITE; // Color of the item
+    public ParticleRenderer ParticleRenderer; // Particle renderer of the item
+    public InfoCardRenderer InfoCardRenderer; // Info card renderer of the item
+
+    private bool _enabled = true; // Is the item enabled?
+    
+    protected ItemObject(byte id, Texture2D texture, Vector2 position, Vector2 dimensions) : base(id, texture, position, dimensions) // Constructor
+    {
+        Id = id; // Set id
+        Collidable = false; // Set collidable
+    }
+
+    public void SetInteractRange(int pixels) // Set the interact range
+    {
+        _range = pixels; // Set the range
+    }
+
+    public void SetColor(Color color) // Set the color
+    {
+        Color = color; // Set the color
+        ParticleRenderer =
+            new ParticleRenderer(
+                new System.Numerics.Vector2(Convert.ToSingle(Position.X + 25), Convert.ToSingle(Position.Y + 25)),
+                Color); // Set the particle renderer with the color
+        InfoCardRenderer = new InfoCardRenderer(this); // Set the info card renderer (must be registered after color info is set)
+    }
+
+    public static Color GetColorFor(int id) // Get the color for the item
+    {
+        return id switch
+        {
+            1 => new Color(0, 105, 10, 255),
+            2 => new Color(158, 0, 93, 255),
+            3 => new Color(167, 196, 0, 255),
+            _ => Color.WHITE
+        }; // Return the color for the item
+    }
+
+    public bool InRange(Vector2 position) // Check if the item is in range of the player
+    {
+        return
+        position.X <= Position.X + Dimensions.X + _range &&
+            position.X >= Position.X - _range &&
+            position.Y <= Position.Y + Dimensions.Y + _range &&
+            position.Y >= Position.Y - _range; // Return if the player is in range of the item by checking if the player is in the x and y bounds of the item with the range
+    }
+
+    public void OnInteract() // On interact
+    {
+        if (!InRange(Loader.Game.Player.Position)) return; // If the player is not in range, return
+        if (!_enabled) return; // If the item is not enabled, return
+            
+        switch (Id)
+        {
+            case 2: // If the item is a health item
+                Loader.Game.Player.Health += 1; // Add 1 to the player's health
+                break;
+            default: // If the item is not a health item
+                Loader.Game.PowerUps[Id - 1] += Cooldown; // Add the cooldown to the power up
+                break;
+        } 
+
+        _enabled = false;
+        Loader.Game.TextRenderer.TriggerOverlay(InfoCardRenderer._text[Id - 1] + " activated", new Color(255, 255, 0, 255), 3);
+        Loader.AudioManager.PlaySound("game.collect");
+        
+        Remove();
+    }
+    
+    private void Remove ()
+    {
+        Loader.ControlManager.UnRegisterController(this);
+        Loader.Game.ObjectManager.RemoveItemObject(this);
+    }
+}
+```
+
+Now we can create our coin class.
+
+### Coins
+This will extend our `ItemObject` class and have some behaviour for when the player interacts with it.
+It will need to run every frame as we want the player to automaticaly pick up the coin when they are in range.
+And we will need to override the `OnInteract` method so that the previously implemented code no longer works.
+We will also need to turn off this items collsion.
+It will need: 
+- A method to check for the pickup (remove it if it needs to be picked up, play the sound, and add 1 to the player's coin count or 2 if the multiplier is active)
+- An override for the `OnInteract` method (to stop previous code from running)
+
+And the class will look like this:
+```csharp
+using Raylib_cs;
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class Coin : ItemObject
+{
+    public Coin (int id, Texture2D texture, Vector2 position, Vector2 dimensions) : base(0, Loader.AssetManager.GetTexture("item.coin"), position, new Vector2(50, 50))
+    {
+        Collidable = false; // Set collidable
+    }
+
+    public void CheckForPickup() // Check if the coin is in range of the player
+    {
+        if (!InRange(Loader.Game.Player.Position)) return; // Check if the player is in range of the coin
+        Loader.Game.ObjectManager.RemoveItemObject(this); // Remove the coin from the item object list
+        Loader.AudioManager.PlaySound("game.coin"); // Play the coin sound
+        Loader.Game.Coins += 1 * (Loader.Game.PowerUps[0] > 0 ? 2 : 1); // Add 1 coin to the player's coin count
+    }
+    
+    public new void OnInteract()
+    {
+    }
+}
+```
+
+We will also need to define a class for our coin handle, that will run the check code every frame.
+It will also be able to add, remove, and clear all coins, along with updating them as previously mensioned.
+It will need:
+- A list of all of the coins in the game
+- A method to add a coin to the game
+- A method to remove a coin from the game
+- A method to clear all of the coins from the game
+- A method to update all of the coins in the game
+
+And will look like this:
+```csharp
+namespace Velocity.Game.Object;
+
+public sealed class CoinHandle
+{
+    private readonly List<Coin> _coins = new();
+
+    public void Add(Coin coin)
+    {
+        _coins.Add(coin);
+    }
+    
+    public void Remove(Coin coin)
+    {
+        _coins.Remove(coin);
+    }
+
+    public void Close()
+    {
+        _coins.Clear();
+    }
+
+    public void Update()
+    {
+        foreach (var coin in _coins.ToArray())
+        {
+            coin.CheckForPickup();
+        }
+    }
+}
+```
+
+Then we need to define our crate and barrel classes.
+These will extend our `TexturedObject` class and have its collision turned on so that the player collides with them.
+They will each define there texture and id, along with there dimensions and position in the constructor.
+
+```csharp
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class Barrel : TexturedObject
+{
+    public Barrel(Vector2 position) : base(ObjectIds.Barrel, Loader.AssetManager.GetTexture("obj.barrel"), position, new Vector2(150, 200))
+    {
+        Collidable = true;
+    }
+}
+```
+
+```csharp
+using Velocity.Game.Physics;
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class Crate : TexturedObject
+{
+    public Crate(Vector2 position) : base(ObjectIds.Crate, Loader.AssetManager.GetTexture("obj.crate"), position, new Vector2(200, 200))
+    {
+        Collidable = true;
+    }
+}
+```
+
+We now have all of our objects, now we need a manager to keep track, update and manage them.
+This will serve as a way to keep track of all the items in a level and remove them when the level is changed.
+It will also be responsible for adding the items to the game when the player enters the level.
+Our object manager will need:
+- A list of all of the objects in the game (list of game object ids, and there accoseated class)
+- A list of all of the items in the game (list of game item ids, and there accoseated class)
+- A list of currently added objects
+- A list of currently added items
+- A property for the coin handle
+- A method to register default items and objects
+- A method to register an item
+- A method to register an object
+- A method to add an item to the game
+- A method to add an object to the game
+- A method to close the object manager (clear all of the objects and items)
+- A method to remove an item from the game
+
+
+And the class will look like this:
+```csharp
+using System.Reflection;
+using Raylib_cs;
+using Velocity.Exception;
+using Velocity.Game.Object.Renderer;
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class ObjectManager
+{ 
+    private readonly Dictionary<int, Type> _registeredItems = new(); // Registered items
+    private readonly Dictionary<int, Type> _registeredObjects = new(); // Registered objects
+    
+    public readonly List<TexturedObject> LoadedTextureObjects = new(); // Loaded objects
+    public readonly List<ItemObject?> LoadedItemObjects = new(); // Loaded items
+    
+    public readonly CoinHandle CoinHandle = new(); // Coin handle
+
+    public ObjectManager() // Register default items and objects
+    {
+        RegisterDefaultItems(); // Register default items
+        RegisterDefaultObjects();  // Register default objects
+    }
+
+    private void RegisterDefaultItems() // Register default items
+    {
+        RegisterItem(ItemIds.Speed, typeof(ItemObject)); // Register speed item
+        RegisterItem(ItemIds.Health, typeof(ItemObject)); // Register health item
+        RegisterItem(ItemIds.CoinMult, typeof(ItemObject));  // Register coin multiplier item
+        RegisterItem(ItemIds.Coin, typeof(Coin)); // Register coin item
+    }
+
+    private void RegisterDefaultObjects () // Register default objects
+    {
+        RegisterObject(ObjectIds.Crate, typeof(Crate)); // Register crate object
+        RegisterObject(ObjectIds.Barrel, typeof(Barrel)); // Register barrel object
+    }
+
+    private void RegisterItem(int id, Type item) // Register item
+    {
+        _registeredItems.Add(id, item); // Add item to registered items
+    }
+    
+    private void RegisterObject(int id, Type item) // Register object
+    {
+        _registeredObjects.Add(id, item); // Add object to registered objects
+    }
+    
+    public void AddItemObject(int id, Vector2 at) // Add item object
+    {
+        ItemObject? itemObject = Activator.CreateInstance(_registeredItems[id], 
+            (byte)id,
+            Loader.AssetManager.GetTexture("item.power_ups"),
+            new Vector2(at.X, Game.FloorHeight - at.Y),
+            new Vector2(50, 50)) as ItemObject; // Create item object with its initial values and set it to the item object variable (activator because we are dealing with types rather than instances)
+        
+        if (itemObject == null) throw new VelocityException("Cannot add item object that has not been registered."); // Throw exception if item object is null
+
+        itemObject.SetColor(ItemObject.GetColorFor(id)); // Set the color of the item object
+        LoadedItemObjects.Add(itemObject); // Add item object to loaded item objects
+        Loader.ControlManager.RegisterController(itemObject); // Register item object as a controller
+
+        if (id == 4) CoinHandle.Add((Coin)itemObject); // Add coin to coin handle if the item id is 4
+    }
+
+    public void AddObject(int id, Vector2 at) // Add object
+    {
+        TexturedObject? gameObject = 
+            Activator.CreateInstance(_registeredObjects[id], new Vector2(at.X, Game.FloorHeight - at.Y)) as TexturedObject; // Create object with its initial values and set it to the object variable (activator because we are dealing with types rather than instances)
+        
+        if (gameObject == null) throw new VelocityException("Cannot add item object that has not been registered."); // Throw exception if object is null
+        
+        LoadedTextureObjects.Add(gameObject); // Add object to loaded objects
+    }
+
+    public void Close() // Close
+    {
+        LoadedItemObjects.Clear(); // Clear loaded item objects
+        LoadedTextureObjects.Clear(); // Clear loaded objects
+        CoinHandle.Clear(); // Clear coins
+    }
+
+    public void RemoveItemObject(ItemObject itemObject) // Remove item object
+    {
+        LoadedItemObjects.Remove(itemObject); // Remove item object from loaded item objects
+        if (itemObject.Id == ItemIds.Coin) CoinHandle.Remove((Coin)itemObject); // Remove coin from coin handle if the item id is 4
+    }
+}
+```
+
+> #### Errors to overcome
+> - Items not being removed from the game (fixed by adding a remove method to the object manager)
+> - Items not being able to be picked up (errors with the range check, fixed by adding a range rather than compairing player position to item position)
+> - Items not being added (fixed by using the activator class)
+> - Objects not being added (fixed by using the activator class)
+
+### Collision detection
+Now that we have our objects and object manager we can start to implement collision detection.
+We will be using comparison of the players position to the objects position to check if the player is in range of the object.
+The player will be a collidable instance, and the objects will be checked inside this class, for efficency. (checking every object compared to checking all the objects in one class is more efficent)
+It will follow the logic stated [here](#physics).
+We will need:
+- A property for if the object has collision
+- A property for if the object has gravity
+- The main tick function for calculating the collision on every frame
+
+It will look like this:
+```csharp 
+using Velocity.Game.Object;
+using Velocity.Math;
+
+namespace Velocity.Game.Physics;
+
+public class Collidable : BasePhysics
+{
+    public bool HasCollision;
+
+    protected Collidable(Vector2 position, Vector2 dimensions, bool hasCollision = true, bool hasGravity = true) : base(position, dimensions)
+    {
+        HasCollision = hasCollision;
+        HasGravity = hasGravity;
+    }
+
+    public override void Tick()
+    {
+        List<GameObject> nearObjects = new List<GameObject>(); // List of objects near the player
+
+        foreach (var gameObject in Loader.Game.ObjectManager.LoadedTextureObjects) // Loop through all objects
+        {
+            if (gameObject.CheckRange(this)) // If the object is in range of the player (players position + max velocity * 1.5, will always catch objects, if moving at max velocity sometimes it would miss objects)
+            {
+                if (gameObject.Collidable) nearObjects.Add(gameObject); // Add the object to the list of objects near the player
+            }
+        }
+        
+        // Find the position of the bounds of the player
+        double boundDown = Position.Y + Dimensions.Y / 2; // Calculate the bottom bound
+        double boundUp = Position.Y - Dimensions.Y / 2; // Calculate the top bound
+        double boundLeft = Position.X - Dimensions.X / 2; // Calculate the left bound
+        double boundRight = Position.X + Dimensions.X / 2; // Calculate the right bound
+
+        // Held constant for the duration of the loop 
+        bool isCollidingX = false; // Is the player colliding on the x axis?
+        bool isCollidingY = false; // Is the player colliding on the y axis?
+
+        foreach (var nearObject in nearObjects) // Loop through all objects near the player
+        {
+            if (((
+                     boundDown + Velocity.Y >= nearObject.Position.Y - 1 && boundDown <= nearObject.Position.Y - 1 ||
+                     boundUp + Velocity.Y <= nearObject.Position.Y + nearObject.Dimensions.Y + 1 && boundUp >= nearObject.Position.Y + nearObject.Dimensions.Y + 1) && 
+                 nearObject.InXBounds(this, (int)Double.Abs(Velocity.X) - 1))) // If player will be inside or colliding with an object on y axis for the current frame
+            {
+                if (Position.Y < nearObject.Position.Y) Velocity.Y = nearObject.Position.Y - boundDown - 1; // If the player is above the object, set the y velocity to the distance between the player and the object so they will move that amount for the current frame (prevent overshooting)
+                else Velocity.Y = nearObject.Position.Y + nearObject.Dimensions.Y - boundUp + 1; // If the player is below the object, set the y velocity to the distance between the player and the object so they will move that amount for the current frame (prevent overshooting)
+            }
+            else if (((System.Math.Abs(Convert.ToInt32(boundDown) - nearObject.Position.Y) == 0 ||
+                       System.Math.Abs(Convert.ToInt32(boundUp) - (nearObject.Position.Y + nearObject.Dimensions.Y)) == 0)
+                      && nearObject.InXBounds(this, -1)) || isCollidingY) // If the player IS colliding with an object for the current frame
+            {
+                if (Velocity.Y >= 0) // If the y velocity is greater than or equal to 0 (moving down, would prevent jumping if it was just greater than 0)
+                {
+                    Velocity.Y = 0; // Set the y velocity to 0
+                    isCollidingY = true; // Set isCollidingY to true
+                } 
+                
+                if (Position.Y < nearObject.Position.Y) OnFloor = true; // If the player is above the object, set OnFloor to true
+            } else OnFloor = false; // If the player is not colliding with an object for the current frame, set OnFloor to false
+
+
+            if ((
+                    boundRight + Velocity.X >= nearObject.Position.X - 1 && boundRight <= nearObject.Position.X - 1 ||
+                    boundLeft + Velocity.X <= nearObject.Position.X + nearObject.Dimensions.X - 1 && boundLeft >= nearObject.Position.X + nearObject.Dimensions.X - 1) && 
+                nearObject.InYBounds(this, (int)Double.Abs(Velocity.Y))) { // If player will be inside or colliding with an object on x axis for the current frame
+                if (Position.X < nearObject.Position.X) Velocity.X = nearObject.Position.X - boundRight; // If the player is to the left of the object, set the x velocity to the distance between the player and the object so they will move that amount for the current frame (prevent overshooting)
+                else Velocity.X = nearObject.Position.X + nearObject.Dimensions.X - boundLeft;  // If the player is to the right of the object, set the x velocity to the distance between the player and the object so they will move that amount for the current frame (prevent overshooting)
+                isCollidingX = true; // Set isCollidingX to true
+            } else if (
+                ((System.Math.Abs(Convert.ToInt32(boundRight) - nearObject.Position.X) == 0 || 
+                  System.Math.Abs(Convert.ToInt32(boundLeft) - nearObject.Position.X + nearObject.Position.X) == 0) &&
+                 nearObject.InYBounds(this)) || isCollidingX) // If the player IS colliding with an object on y axis for the current frame
+            {
+                if (!(Velocity.X >= 0)) continue; // If the x velocity is less than 0 (moving left), continue (would prevent moving left if it was just less than 0, for some reason, it aint broken dont fix it)
+                Velocity.X = 0; // Set the x velocity to 0
+                isCollidingX = true; // Set isCollidingX to true
+            }
+        }
+
+        base.Tick(); // Call the base tick (apply physics, gravity, etc.)
+        UpdatePosition(); // Update the position
+    }
+}
+```
+
+> #### Errors to overcome
+> SO MANY ERRORS
+> - Player sometimes not colliding with object (fixed by adding an offset to the in-range check)
+> - Player sometimes can clip into corners of objects (fixed by adding offset to in x or y bounds to the players current velocity)
+> - Player can sometimes clip into objects (fixed by adding an offset to the in-range check)
+> - Player will get stuck to the left of object (fixed by adding a check in the x axis to see if the player is colliding with an object, and if they are, set the x velocity to 0)
+> - Player will phase through objects if colliding with a different object (fixed by adding the isCollidingX and isCollidingY variables)
+> - Various refinements to this section throughout development
+
+`Acctually getting frustrated at how long this is taking, props to you miss if you made it this far, :) :clap: :clap: :clap:`
+0
+
+## Section 7 review
+
+### What has been achieved
+A working object manager, with working objects, that can be processed by the collision detection.
+A working item manager, with working items, that can be picked up by the player, helping them for a period of time.
+Working auto-collectable coins that add to the player's coin count.
+Fully working collision detection that will prevent the player from moving inside objects, and will allow for platforms and obstacles.
+
+### How we have tested
+After each section was completed we tested it by adding it to the game and running the game to see if it worked. Coming back and fixing any issues that we found.
+We then performed iterative testing until all of the bugs were fixed.
+Then performing a final test to validate it is working as a compleate unit.
+
+### How it fills our success criteria
+- [x] The game has a working object manager
+- [x] The game has working objects
+- [x] The game has working items
+- [x] The game has working collision detection
+
+### Meeting the criteria of:
+Working object manager, with object and item support, coins and collision detection.
+
+## Section 8: Various renderers & Player renderer, ext
+Now that we have our objects and collision detection we can start to add some more renderers to the game.
+We will be adding a renderer for the objects, and a renderer for the items.
+We will also be adding a renderer for particles, coins and the info card.
+
+### Object renderer
+This renderer will be responsible for rendering the objects to the screen.
+It will need to:
+- Loop through all of the objects in the object manager
+- Generate the rectangle for the object
+- Generate a source rectangle for the texture dimensions
+- Draw the object to the screen
+
+Our class will look like this:
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Object.Renderer;
+
+public class ObjectRenderer : ElementRenderer
+{
+    private readonly Game _game;
+    
+    public ObjectRenderer(Game game, string renderId = "velocity:game_objects") : base(renderId) 
+    {
+        _game = game; // Set the game
+    }
+
+    public override void Draw() 
+    {
+        if (_game.ObjectManager.LoadedTextureObjects.Count == 0) return; // Don't draw if there are no objects to draw
+        
+        foreach (var textureObject in _game.ObjectManager.LoadedTextureObjects) // Draw all objects
+        {
+            Rectangle source =
+                new Rectangle(0, 0, 
+                    textureObject.Texture.width,
+                    textureObject.Texture.height
+                    ); // Source rectangle is the entire texture
+
+            Rectangle rectangle = new Rectangle(
+                (int)textureObject.Position.X,
+                (int)textureObject.Position.Y,
+                (int)textureObject.Dimensions.X,
+                (int)textureObject.Dimensions.Y
+            ); // Destination rectangle is the object's position and dimensions
+            
+            Raylib.DrawTexturePro(textureObject.Texture, source, rectangle, new Vector2(0, 0), 0, Color.WHITE); // Draw the object
+        }
+    }
+}
+```
+
+> No errors to overcome
+
+### Item renderer
+This renderer will be responsible for rendering the items to the screen.
+It will need to:
+- Loop through all of the items in the object manager 
+- Draw the particle renderer for the item
+- Generate the rectangle for the item
+- Generate a source rectangle for the texture dimensions
+- Draw a colored circle around the item
+- Draw the item to the screen
+- Draw the items info card to the screen
+- Render the coins
+
+And it will look like this:
+```csharp
+using Raylib_cs;
+using Vector2 = System.Numerics.Vector2;
+
+namespace Velocity.Game.Object.Renderer;
+
+public class PowerUpRenderer : ObjectRenderer
+{
+    private readonly Game _game; // Game instance
+    private Texture2D _texture;  // Texture of the object
+
+    private readonly Rectangle[] _source = new Rectangle[3]; // Source rectangles for the texture
+ 
+    private readonly CoinRenderer _coinRenderer; // Coin renderer
+    public PowerUpRenderer(Game game) : base(game, "velocity:power_ups")  // Constructor
+    {
+        _game = game; // Set the game
+        _coinRenderer = new CoinRenderer(); // Create the coin renderer
+
+        LoadTexture(); // Load the texture
+        RegisterSourceRectangles(); // Register the source rectangles
+    }
+    
+    private void LoadTexture() // Load the texture
+    {
+        _texture = Loader.AssetManager.GetTexture("item.power_ups"); // Get the texture
+    }
+
+    private void RegisterSourceRectangles()
+    {
+        // generate source rectangles
+        _source[0] = new Rectangle(0, _texture.height / 4 * 3, _texture.width / 3, _texture.height / 4);  // First power up texture 
+        _source[1] = new Rectangle(_texture.width / 3, _texture.height / 4 * 2, _texture.width / 3, _texture.height / 4); // Second power up texture
+        _source[2] = new Rectangle(_texture.width / 3 * 2, _texture.height / 4 * 3, _texture.width / 3, _texture.height / 4); // Third power up texture
+    }
+
+    public override void Draw() // Draw the object
+    {
+        foreach (var item in _game.ObjectManager.LoadedItemObjects) // Draw all objects
+        {
+            if (item == null) continue; // Don't draw if the object is null
+            if (item.Id == ItemIds.Coin) continue; // Don't draw if the object is a coin
+            item.ParticleRenderer.Draw(); // Draw the particle renderer
+
+            Raylib.DrawCircle(Convert.ToInt32(item.Position.X + item.Dimensions.X / 2),
+                Convert.ToInt32(item.Position.Y + item.Dimensions.Y / 2),
+                Convert.ToInt32(item.Dimensions.X / 2) + 8, item.Color); // Draw the circle around the object
+
+            Raylib.DrawTexturePro(_texture, _source[item.Id - 1], new Rectangle(
+                Convert.ToInt32(item.Position.X - 4),
+                Convert.ToInt32(item.Position.Y - 6),
+                Convert.ToInt32(item.Dimensions.X) + 8,
+                Convert.ToInt32(item.Dimensions.X) + 8), new Vector2(0, 0), 0, new Color(255, 255, 255, 255)); // Draw the object
+
+            item.InfoCardRenderer.Draw(); // Draw the info card renderer
+        }
+        
+        _coinRenderer.Draw(); // Draw the coin renderer
+    }
+}
+```
+
+> No errors to overcome
+
+### Particle renderer
+This renderer will be responsible for rendering the particles to the screen. We need these for added pazzaaz for our items.
+We will be using a system of swapping, so once a particle has reached its lifespan, it will be re-used as a new particle. 
+This is to help increase efficency of the particles, as we are dealing with alot of them at one time.
+It will need:
+- A property for the position of the particle spawner
+- A property for the color of the particle
+- A property for the texture of the particle
+- A property for the current frame of the particle
+- A property for the frame speed of the particle
+- A property for the particles
+- A struct for the particle
+- A method to load the texture
+- A method to generate a new source position
+- A method to draw and update the particle
+
+The class will look like this: 
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Game.Physics;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Object.Renderer;
+
+public class ParticleRenderer : ConditionalRenderer
+{
+    private const int MaxParticles = 200; // Max particles to render at one time
+    
+    private readonly Vector2 _position; // Position of the particle spawner
+    private readonly Color _color; // Color of the particle
+
+    private int _currentFrame; // Current frame of the particle
+    private readonly int _frameSpeed = 8; // Speed of the particle animation
+
+    private Texture2D _particleMap; // Texture of the particle
+
+    private readonly Particle[] _particles = new Particle[MaxParticles]; // Array of particles
+
+    private struct Particle
+    {
+        public Rectangle Source;
+        public Vector2 Offset;
+        public Vector2 OffsetMultiple;
+        public float Alpha;
+        public float Size;
+        public float Rotation;
+        public float RotationMultiple;
+        public bool Active;
+    } // Particle struct
+
+    public ParticleRenderer(Vector2 position, Color color) : base("velocity.particle." + Guid.NewGuid()) // Constructor
+    {
+        _position = position; // Set the position
+        _color = color; // Set the color
+        
+        LoadTexture(); // Load the texture
+        
+        for (int i = 0; i < MaxParticles; i++) // Initialize the particles
+        {
+            Random rnd = new Random(); // Create a random instance
+
+            _particles[i].Source = GenerateNewSourcePosition(); // Generate a new source position
+            _particles[i].Offset = new Vector2(0, 1);  // Set the offset
+            _particles[i].OffsetMultiple = new Vector2(rnd.Next(0, 7) - 3, -rnd.Next(0, 8) + 4); // Set the offset multiple (for random scattering)
+            _particles[i].Alpha = 1.0f; // Set the alpha
+            _particles[i].Size = 1.0f; // Set the size
+            _particles[i].Rotation = 0.0f; // Set the rotation
+            _particles[i].RotationMultiple = rnd.Next(0, 9) - 4; // Set the rotation multiple (for random rotation)
+            _particles[i].Active = false; // Set the particle to inactive
+        }
+    }
+
+    private void LoadTexture() // Load the texture
+    {
+        _particleMap = Loader.AssetManager.GetTexture("particle.particle_map"); // Get the texture
+        
+        GenerateNewSourcePosition(); // Generate a new source position
+    }
+
+    private Rectangle GenerateNewSourcePosition() // Generate a new source position
+    {
+        Random rnd = new Random(); // Create a random instance
+
+        return new Rectangle((_particleMap.width / 4) * rnd.Next(0, 4), (_particleMap.height / 4) * rnd.Next(0, 8),
+            _particleMap.height / 4, _particleMap.height / 4); // Return the new source position (for random particle asset, stored in a tile grid)
+    }
+
+    public override void Draw() // Draw the particle
+    {
+        _currentFrame++; // Increment the current frame
+        if (_currentFrame >= 60 / _frameSpeed) // If the current frame is greater than or equal to the frame speed
+        {
+            _currentFrame = 0; // Reset the current frame
+            for (int i = 0; i < MaxParticles; i++) // Loop through all particles
+            {
+                if (!_particles[i].Active) // If the particle is not active
+                {
+                    _particles[i].Offset = Vector2.Zero; // Set the offset to zero
+                    _particles[i].Active = true; // Set the particle to active
+                    _particles[i].Size = 1.0f; // Set the size to 1
+                    _particles[i].Rotation = 0; // Set the rotation to 0
+
+                    i = MaxParticles; // Break the loop
+                }
+            }
+        }
+        
+        
+        for (int i = 0; i < MaxParticles; i++) // Loop through all particles
+        {
+            if (!_particles[i].Active) continue; // If the particle is not active, continue
+            _particles[i].Offset.X += _particles[i].OffsetMultiple.X; // Add the offset multiple to the offset
+            _particles[i].Offset.Y += _particles[i].OffsetMultiple.Y; // Add the offset multiple to the offset
+            _particles[i].Size -= 0.02f; // Decrease the size by 0.02
+
+            if (_particles[i].Size <= 0.0f) _particles[i].Active = false; // If the size is less than or equal to 0, set the particle to inactive
+
+            _particles[i].Rotation += _particles[i].RotationMultiple; // Add the rotation multiple to the rotation
+            
+            int width = Convert.ToInt32(40 * _particles[i].Size / 2); // Calculate the width
+            int height = Convert.ToInt32(40 * _particles[i].Size / 2); // Calculate the height
+
+            Rectangle dest = new Rectangle((_position.X + _particles[i].Offset.X) - width / 2, 
+                _position.Y + _particles[i].Offset.Y - height / 2, width, height); // Calculate the destination rectangle
+
+            Raylib.DrawTexturePro(_particleMap,
+                _particles[i].Source,
+                dest,
+                new Vector2(),
+                _particles[i].Rotation,
+                new Color(_color.r, _color.g, _color.b, Convert.ToByte(_color.a * _particles[i].Alpha))
+            ); // Draw the particle
+        }
+    }
+}
+```
+
+> #### Errors to overcome
+> - Particles not rendering (fixed by adding a conditional renderer)
+> - Particles not being removed (fixed by adding a lifespan to the particles/inactivating particles once they reach 0 size)
+> - Particles spawning in the same position (fixed by adding a random offset to the particles)
+
+### Coin renderer
+This renderer will be responsible for rendering the coins to the screen.
+It will need to loop through all of the coins in the coin handle and draw them to the screen.
+It will use a texture sprite sheet to render the coins, so it has an animation by swapping out the section of the texture it is renderering.
+The sprite sheet looks like this: 
+
+![](https://i.imgur.com/vzksegP.png) 
+
+As you can see the texture has 5 frames so we will need to loop through them.
+We will also need to generate a source rectangle for the texture dimensions.
+And load the texture required for the animation.
+It will need:
+- A property for the current frame of the animation
+- A property for the frames passed since the last frame change
+- A constant for the frame speed of the animation (how many frames pass before the frame changes)
+- A property for the texture of the coin
+- A property for the source rectangle of the coin
+- A method to load the texture
+- And a method to draw the coin
+
+And the class will look like this:
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Object.Renderer;
+
+public class CoinRenderer : ConditionalRenderer
+{
+    private int _currentFrame; // The current frame of the animation
+    private int _frameCount; // The current frame count
+    private const int FrameSpeed = 8; // The speed of the animation (every 8 frames)
+
+    private Texture2D _texture; // The texture of the coin
+    private Rectangle _sourceRectangle; // The source rectangle of the coin
+    
+    public CoinRenderer() : base("velocity.item.coin") // Set the render id
+    {
+        LoadTexture(); // Load the texture
+    }
+
+    private void LoadTexture () // Load the texture
+    {
+        _texture = Loader.AssetManager.GetTexture("item.coin"); // Get the texture from the asset manager
+        _sourceRectangle = new Rectangle(0, 0, _texture.width / 5, _texture.height); // Set the source rectangle to the first frame of the animation
+    }
+
+    public override void Draw() // Draw the coin
+    {
+        _frameCount++; // Increment the frame count
+        if (_frameCount >= 60 / FrameSpeed) // If the frame count is greater than or equal to 60 / FrameSpeed (60 frames per second / FrameSpeed)
+        {
+            _frameCount = 0; // Reset the frame count
+            _currentFrame++; // Increment the current frame
+            if (_currentFrame > 5) _currentFrame = 0; // If the current frame is greater than 5, reset it to 0
+            _sourceRectangle = new Rectangle(_currentFrame * (_texture.width / 5), 0, _texture.width / 5, _texture.height); // Set the source rectangle to the current frame
+        }
+        
+        foreach (var item in Loader.Game.ObjectManager.LoadedItemObjects.OfType<ItemObject>().Where(item => item.Id == ItemIds.Coin)) // Loop through all coins
+        {
+            Raylib.DrawTexturePro(_texture, _sourceRectangle, new Rectangle(
+                Convert.ToInt32(item.Position.X - item.Dimensions.X / 2), 
+                Convert.ToInt32(item.Position.Y - item.Dimensions.Y / 2),
+                Convert.ToInt32(item.Dimensions.X),
+                Convert.ToInt32(item.Dimensions.X)), new Vector2(0, 0), 0, new Color(255, 255, 255, 255)); // Draw the coin
+        }
+    }
+}
+```
+
+> No errors to overcome in this renderer
+> 
+
+### Player Renderer
+Now we have our game, its time to make the player look good.
+We will be using a sprite sheet for the player, so we can have an animation for the player.
+The sprite sheet looks like this:
+![](https://i.imgur.com/D68FmHj.png)
+![](https://i.imgur.com/Q62sVe6.png)
+![](https://i.imgur.com/5jZZ5SJ.png)
+![](https://i.imgur.com/h1zSkkL.png)
+![](https://i.imgur.com/6naLjao.png)
+![](https://i.imgur.com/SfjbUfS.png)
+![](https://i.imgur.com/81kOGrq.png)
+![](https://i.imgur.com/aLKDu4V.png)
+![](https://i.imgur.com/cYMRV4Z.png)
+
+As you can see there are a different number of frames so I will be using a dictionary to store the number of frames for each animation, per apperence.
+
+The player renderer will need to:
+- Load the textures
+- Draw the player
+- Handle the sound (TODO: Move this to a better place)
+- Handle the frame speed (frame speed is faster when the player is moving faster)
+- Handle the jump animation (jumping is a bit different to walking and running)
+- Handle the idle animation (when the player is not moving)
+- Handle the walk animation (when the player is moving slowly)
+- Handle the run animation (when the player is moving fast)
+
+The class will need:
+- A property for the player
+- A property for the current frame of the animation
+- A property for the frame count
+- A property for the frame speed of the animation
+- A property for the tile count of each animation
+- A property for if the player is jumping
+- A property for the walk asset
+- A property for the idle asset
+- A property for the run asset
+- A property for the jump asset
+- A property for the frame rectangle
+- A method to load the textures
+- A method to draw the player
+- Two constants for the maximum and minimum speed of the animation
+
+And the class will look like this:
+```csharp
+using System.Numerics;
+using Velocity.Window.Render.Renderers;
+using Raylib_cs;
+using Velocity.Game.Physics;
+
+namespace Velocity.Player;
+
+public class PlayerRenderer : ElementRenderer
+{
+    private const int MaxSpeed = 12; // The maximum speed of the animation
+    private const int MinSpeed = 5; // The minimum speed of the animation
+
+    private int _currentFrame; // The current frame of the animation
+    private int _frameCount; // The current frame count
+    private int _frameSpeed = 8; // The speed of the animation
+
+    private readonly Dictionary<int, Dictionary<string, int>?> _tileCount = new()
+    {
+        { 
+            1, new Dictionary<string, int> {
+                { "idle", 8 },
+                { "walk", 8 },
+                { "run", 8 },
+                { "jump", 8 }
+                
+            }
+        },
+        {
+            2, new Dictionary<string, int> {
+                { "idle", 6 },
+                { "walk", 8 },
+                { "run", 8 },
+                { "jump", 9 }
+            }
+        },
+        {
+            3, new Dictionary<string, int> {
+                { "idle", 6 },
+                { "walk", 7 },
+                { "run", 8 },
+                { "jump", 11 }
+            }
+        }
+        
+    }; // The tile count of each animation
+
+    private bool _jump; // Whether the player is jumping or not
+    
+    private Texture2D _walkAsset; // The walk asset
+    private Texture2D _idleAsset; // The idle asset
+    private Texture2D _runAsset; // The run asset
+    private Texture2D _jumpAsset; // The jump asset
+
+    private Rectangle _frameRect; // The frame rectangle
+
+    public PlayerRenderer(Player parentPlayer) : base("velocity:player", false) // The constructor
+    { 
+        Player = parentPlayer; // Set the player
+    }
+
+    public void LoadTextures()  // Load the textures
+    {
+        _idleAsset = Loader.AssetManager.GetPlayerTexture(Player.Appearance, "idle"); // Get the idle asset
+        _walkAsset = Loader.AssetManager.GetPlayerTexture(Player.Appearance, "walk"); // Get the walk asset
+        _runAsset =  Loader.AssetManager.GetPlayerTexture(Player.Appearance, "run");  // Get the run asset
+        _jumpAsset = Loader.AssetManager.GetPlayerTexture(Player.Appearance, "jump"); // Get the jump asset
+    }
+
+    public override void Draw() // Draw the player
+    {
+        Texture2D texture; // The texture to draw
+
+        if (_jump) // If the player is jumping
+        {
+            texture = _jumpAsset; // Set the texture to the jump asset
+            _currentFrame = 4 + Convert.ToInt32(4 * (Player.Velocity.Y / 30)); // Set the current frame, Iterate through the jump animation based on the velocity
+
+            if (Player.OnFloor) _jump = false; // If the player is on the floor, stop jumping
+        }
+        else // If the player is not jumping
+        {
+            if (Convert.ToInt32(Player.Velocity.X) == 0) texture = _idleAsset; // If the player is not moving, set the texture to the idle asset
+            else if (Convert.ToInt32(Double.Abs(Player.Velocity.X)) <= 10) texture = _walkAsset; // If the player is moving slowly, set the texture to the walk asset
+            else texture = _runAsset; // If the player is moving fast, set the texture to the run asset
+        }
+        
+        
+
+        _frameCount++; // Increment the frame count
+
+        if (_frameCount >= 60 / _frameSpeed && Loader.Game.IsRunning) // If the frame count is greater than or equal to the frame speed and the game is running
+        {
+            _frameCount = 0; // Reset the frame count
+            _currentFrame++; // Increment the current frame
+            if (_currentFrame >= GetFrameCount(texture)) _currentFrame = 0; // If the current frame is greater than or equal to the frame count, reset the current frame
+            
+            _frameRect = new Rectangle(_currentFrame * texture.width / GetFrameCount(texture), 0, texture.width / GetFrameCount(texture), texture.height); // Set the frame rectangle to the current frame
+            
+            Player.HandleMoveSound(); // Handle the move sound TODO: Move this to a better place
+        }
+
+        if (!Player.OnFloor) _jump = true; // If the player is not on the floor, set jumping to true
+        
+        if (!_jump) _frameSpeed = MinSpeed + Convert.ToInt32((MaxSpeed - MinSpeed) * Double.Abs(Player.Velocity.X) / PhysicsConst.MaxAcceleration); // If the player is not jumping, set the frame speed to the minimum speed plus the maximum speed minus the minimum speed multiplied by the absolute value of the player's velocity divided by the maximum acceleration (frame speed is faster when the player is moving faster)
+        
+        int x = Convert.ToInt32(Player.Position.X) - (Convert.ToInt32(Player.Dimensions.X) / 2); // Get the x position of the player
+        int y = Convert.ToInt32(Player.Position.Y) - (Convert.ToInt32(Player.Dimensions.Y) / 2); // Get the y position of the player
+        
+
+        Rectangle final = new Rectangle(_frameRect.x, _frameRect.y, Player.Velocity.X < 0 ? -_frameRect.width : _frameRect.width, _frameRect.height); // Set the final rectangle to the frame rectangle
+
+        Raylib.DrawTexturePro(texture, final, new Rectangle(x - 105, y - 135, 280, 310), new Vector2(), 0, Color.WHITE); // Draw the player
+    }
+    
+    private int GetFrameCount(Texture2D forTexture) // Get the frame count of a texture
+    {
+        string animation = forTexture.Equals(_idleAsset) ? "idle" : forTexture.Equals(_walkAsset) ? "walk" : forTexture.Equals(_runAsset) ? "run" : "jump"; // Get the animation of the texture
+        _tileCount.TryGetValue(Player.Appearance, out Dictionary<string, int>? dict); // Get the dictionary value of the player's appearance
+        
+        if (dict == null) return 0; // If the dictionary is null, return 0
+        dict.TryGetValue(animation, out int count); // Get the count of the animation
+        
+        return count; // Return the count
+    }
+
+    private Player Player { get; } // The player
+}
+```
+
+> #### Errors to overcome
+> - Player not rendering (fixed by modifying the final rectangle, was drawing in the wrong orentation, you cant flip the texture, they just go transparent)
+> - Player not animating (fixed by adding a frame count and frame speed, rather than a simple animation counter)
+> - Player asset jumping around and not framing correctly (fixed by adding a frame count dictionary, and getting the frame count from that)
+> - Wrong frame speed (to quick of slow, fixed by tweaking the frame speed calculation)
+
+## Section 8 review
+
+### What has been achieved
+More renderers, for the objects, items, particles, coins and the player.
+A working player renderer, with working animations, and working sound effects.
+Working sprite animations and working particle animations.
+
+### How we have tested
+After implimenting each renderer we added it to the main game file to be enabled and disabled when needed. Fixing any bugs as we find them.
+We then performed iterative testing until all of the bugs were fixed.
+Then performing a final test to validate it is working as a compleate unit.
+
+### How it fills our success criteria
+- [x] The game has a working object renderer
+- [x] The game has a working item renderer
+- [x] The game has a working particle renderer
+- [x] The game has a working coin renderer
+- [x] The game has working coin animations
+- [x] The game has working particle animations
+- [x] The game has working player animations
+- [x] The game has working player sound effects
+
+### Meeting the criteria of:
+Visually displaying, game objects, the player and giving them animations.
+
+## Section 9: Statistics & Menus ext
+Now that we have our game, its time to add some statistics and some more menus to the game.
+We will be adding a loading screen, a pause menu, a death menu and a win menu.
+
+### Loading screen
+This menu will be responsible for (sudo)loading the game.
+Of course all the data that the game needs are loaded on boot, so we dont need these, but the aim to to make the game look and feel more professional.
+It will fade in, hang for a certain amount of time, and then fade out, triggering the callback, for what the behaviour should be for once it has compleated.
+It will need:
+- A property for the alpha of the loading screen
+- A property for the text of the loading screen
+- A property for the subtext of the loading screen
+- A property for the callback of the loading screen
+- A property for the countdown of the loading screen
+- A property for the hang time of the loading screen
+- A property for the counter of the loading screen
+- A property for the step of the loading screen
+- A constant for the fade time of the loading screen
+- A method to trigger the loading screen
+- A method to tick the loading screen
+
+And it will look like this:
+```csharp
+using Velocity.Ui.Render;
+
+namespace Velocity.Ui.Screens;
+
+public class LoadingScreen : Window
+{
+    public new static readonly int UiId = 6; // The ui id
+
+    private const int Fade = 30; // The fade time
+    private static int _hang = 200; // The hang time (how long the screen stays on, frames)
+
+    private int _counter; // The counter for the fade and hang
+    private int _step; // The step of the loading screen (fading in out, hanging, etc)
+
+    public int Alpha; // The alpha of the loading screen
+
+    private static bool _countDown; // Whether to count down or not
+    public static string Text = ""; // The text of the loading screen
+    public static string Subtext = ""; // The subtext of the loading screen
+
+    private static Func<ValueType>? _onFinish; // The callback when the loading screen is finished
+
+    public LoadingScreen() // The constructor
+    {
+        Renderer = new LoadingScreenRenderer(this); // Set the renderer
+    }
+
+    public override void OnDisplay(int? previous) // When the screen is displayed
+    {
+        _step = 0;      // Reset the step
+        _counter = 0;   // Reset the counter
+        Alpha = 0;      // Reset the alpha
+    }
+
+    public static void Trigger(string text, string subtext, Func<ValueType>? callback = null, bool countDown = true, int hang = 200) // Trigger the loading screen
+    {
+        Text = text;            // Set the text
+        Subtext = subtext;      // Set the subtext
+        _onFinish = callback;   // Set the callback
+        _countDown = countDown; // Set the countdown
+        _hang = hang;           // Set the hang time
+    }
+
+    public override void Tick() // Tick the loading screen
+    {
+        switch (_step) // Switch the step
+        {
+            case 0: // Fade in
+                if (_counter >= Fade) // If the counter is greater than the fade time
+                {
+                    _step++; // Increment the step
+                    break; // Break
+                }
+
+                Alpha = (int)(255d * ((double)_counter / Fade)); // Set the alpha to the counter divided by the fade time multiplied by 255 
+                _counter++; // Increment the counter  
+                break;
+            case 1: // Hang
+                if (_counter >= Fade + _hang) // If the counter is greater than the fade time plus the hang time
+                {
+                    _step++; // Increment the step
+                    break; // Break
+                }
+
+                Alpha = 255; // Set the alpha to 255
+
+                _counter++; // Increment the counter
+                break;
+            case 2: // Fade out
+                if (_counter >= Fade * 2 + _hang) // If the counter is greater than the fade time multiplied by 2 plus the hang time
+                {
+                    _step++; // Increment the step
+                    break; // Break
+                }
+                
+                Alpha = (int)(255d * (1 - ((double)_counter - Fade - _hang) / Fade)); // Set the alpha to 255 minus the counter minus the fade time minus the hang time divided by the fade time multiplied by 255
+
+                _counter++; // Increment the counter
+                break;
+            case 3: // Finish
+                _onFinish?.Invoke(); // Invoke the callback
+                Alpha = 0; // Set the alpha to 0
+                break; // Break
+        }
+
+        if (!_countDown) return; // If not counting down, return
+        if (_counter >= Fade * 2 + _hang - 180) Text = "3"; // If the counter is greater than the fade time multiplied by 2 plus the hang time minus 180, set the text to 3
+        if (_counter >= Fade * 2 + _hang - 120) Text = "2"; // If the counter is greater than the fade time multiplied by 2 plus the hang time minus 120, set the text to 2
+        if (_counter >= Fade * 2 + _hang - 60) Text = "1";  // If the counter is greater than the fade time multiplied by 2 plus the hang time minus 60, set the text to 1
+    }
+}
+```
+
+Then comes the renderer to actually display this to the screen.
+It meeds to display a black rectangle over the whole screen with the alpha of the loading screen.
+Then display the text and sub-text in the center of the screen.
+It will look like this:
+```csharp
+using Raylib_cs;
+using Velocity.Ui.Screens;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render;
+
+public class LoadingScreenRenderer : UiRenderer
+{
+    private readonly LoadingScreen _parent;
+    
+    public LoadingScreenRenderer (LoadingScreen parent) : base("velocity:screens.loading")
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, Color.BLACK);
+        
+        Raylib.DrawText(LoadingScreen.Text, (int)(WindowManager.Width / 2 - Raylib.MeasureTextEx(Raylib.GetFontDefault(), LoadingScreen.Text, 64, 2).X / 2), (int)(WindowManager.Height / 2 - Raylib.MeasureTextEx(Raylib.GetFontDefault(), LoadingScreen.Text, 64, 2).Y / 2), 64, Color.WHITE with { a = (byte)_parent.Alpha});
+        Raylib.DrawText(LoadingScreen.Subtext, (int)(WindowManager.Width / 2 - Raylib.MeasureTextEx(Raylib.GetFontDefault(), LoadingScreen.Subtext, 34, 2).X / 2), (int)(WindowManager.Height / 2 - Raylib.MeasureTextEx(Raylib.GetFontDefault(), LoadingScreen.Subtext, 34, 2).Y / 2 + Raylib.MeasureTextEx(Raylib.GetFontDefault(), LoadingScreen.Text, 34, 2).Y + 20), 34, Color.WHITE with { a = (byte)_parent.Alpha});
+    }
+}
+```
+
+> #### Errors to overcome
+> - Staying in hang state (fixed by adding a step counter, rather than just a counter, with offsets)
+> - Not fading in or out (again fixed by adding a step counter, rather than just a counter, with offsets)
+> - Not triggering the right screen after finish (fixed by adding a callback)
+
+### Pause menu
+This menu will be responsible handling the users input when the game is paused.
+It will have a resume, restart, settings and quit button.
+It will also display the players current time and coins collected.
+It will need:
+- A property for the buttons
+- A method to register the buttons
+- A method to select a button
+- A method to add a button
+- A method to tick the pause menu
+
+The class will look like this:
+```csharp
+using Velocity.Math;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Render;
+using Raylib_cs;
+using Velocity.Window;
+
+namespace Velocity.Ui.Screens;
+
+public class PauseScreen : Window
+{
+    public new static readonly int UiId = 5; // The ui id
+
+    public readonly Dictionary<int, Button?> Buttons = new();  // The buttons
+    
+    public PauseScreen() // The constructor
+    {
+        RegisterButtons(); // Register the buttons
+        Renderer = new PauseScreenRenderer(this); // Set the renderer
+    }
+
+    private void RegisterButtons() // Register the buttons
+    {
+        AddButton(0, "Resume");     // Add the resume button
+        AddButton(1, "Restart");    // Add the restart button
+        AddButton(2, "Options");    // Add the options button
+        AddButton(3, "Main Menu");  // Add the main menu button
+    }
+
+    public override void Tick() // Tick the pause screen
+    {
+        foreach (var pair in Buttons) // For each button
+        {
+            Button? clicked = pair.Value; // Get the button
+            if (clicked == null) continue; // If the button is null, continue
+ 
+            if (clicked.IsClicked()) Select(pair.Key); // If the button is clicked, select it
+        }
+    }
+
+    private void Select(int buttonId) // Select a button
+    {
+        switch (buttonId) // Switch the button id
+        {
+            case 0: // Resume
+                Loader.Game.Resume(); // Resume the game
+                Loader.Game.MenuManager.DisableAll(); // Disable all menus
+                break;
+            case 1: // Restart
+                Loader.Game.Reset(); // Reset the game
+                Loader.Game.MenuManager.DisableAll(); // Disable all menus
+                Loader.Game.ColoredFlashRenderer.Trigger(20, Color.BLACK); // Trigger a black flash
+                break;
+            case 2: // Options
+                Loader.Game.MenuManager.SetActiveWindow(SettingsScreen.UiId, UiId); // Set the settings screen as the active window
+                break; 
+            case 3: // Main Menu
+                Loader.Game.Stop(); // Stop the game 
+                Loader.Game.MenuManager.SetActiveWindow(LoadingScreen.UiId, UiId); // Set the loading screen as the active window
+                LoadingScreen.Trigger("Returning to Main Menu",  
+                    "Please wait...",
+                    () =>
+                    {
+                        Loader.Game.MenuManager.SetActiveWindow(MainMenuScreen.UiId);
+                        return 0;
+                    }, false, 140); // Trigger the loading screen with a callback to set the main menu as the active window 
+                break;
+        }
+    }
+
+    private void AddButton (int id, string text) // Add a button
+    {
+        Text buttonText = new Text(); // The button text
+
+        buttonText.Color = new Color(200, 200, 200, 255); // Set the color
+        buttonText.FontSize = Convert.ToInt32(WindowManager.Height / 18); // Set the font size
+        buttonText.Data = text; // Set the data
+        buttonText.Font = FontUtils.ButtonFont; // Set the font
+
+        int y = Convert.ToInt32(WindowManager.Height / 2 - (Convert.ToInt32(WindowManager.Height / 5.145) - WindowManager.Height / 16) + (Buttons.Count) * (WindowManager.Height / 8)); // Calculate the y position of the button based on the number of buttons
+
+        Button? button = new Button(
+            buttonText,
+            new Vector2(Convert.ToInt32(WindowManager.Width / 18.29), y),
+            new Vector2(Convert.ToInt32(WindowManager.Width / 4.65), Convert.ToInt32(WindowManager.Height / 10.29))); // Create the button with the text, position, and size
+        button.BgColor = new Color(40, 40, 40, 200); // Set the background color
+        button.BorderColor = Color.WHITE; // Set the border color
+        
+        Buttons.Add(id, button); // Add the button
+    }
+}
+```
+
+Now we need a renderer for this menu, so the user can see what is happining in this menu.
+It will need to draw a header and footer like the [Settings Menu](#settings-menu), and draw the buttons.
+It will look like this:
+```csharp
+using System.Numerics;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Screens;
+using Velocity.Window.Render.Renderers;
+using Raylib_cs;
+using Velocity.Exception;
+using Velocity.Window;
+
+namespace Velocity.Ui.Render;
+
+public class PauseScreenRenderer : UiRenderer
+{
+    private readonly PauseScreen _parent;
+
+    public PauseScreenRenderer(PauseScreen parent) : base("velocity:window." + PauseScreen.UiId)
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        Raylib.DrawRectangle(10, 10, WindowManager.Width - 20, WindowManager.Height - 20, new Color(60, 60, 60, 200));
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, (int)SettingsScreen.Safezone.Y, new Color(30, 30, 30, 255));
+        Raylib.DrawTextEx(FontUtils.Font, "Paused", new Vector2(10, 10), (int)SettingsScreen.Safezone.Y - 20, 2, Color.WHITE);
+
+        foreach (var pair in _parent.Buttons)
+        {
+            if (pair.Value?.Renderer == null) throw new VelocityException("Element renderer undefined ");
+            pair.Value.Renderer.Draw();
+        }
+    }
+}
+```
+
+> I did not encounter any errors in this section as its merging elements from previous menus, all was previously working.
+
+### Win screen & end screen
+Next will be the win screen, this will be responsible for displaying the the players score, coins, and giving them the option to progress, exit, or restart the current level.
+It will need:
+
+The code will look like this (for both the win screen and the end screen):
+```csharp
+
+using Raylib_cs;
+using Velocity.Game.Statistics;
+using Velocity.Ui.Misc;
+using Velocity.Math;
+using Velocity.Ui.Render;
+using Velocity.Window;
+
+namespace Velocity.Ui.Screens;
+
+public class WinScreen : Window
+{
+    public new static readonly int UiId = 4; // The ui id 
+
+    public readonly Dictionary<int, Button?> Buttons = new(); // The buttons
+
+    private readonly WinScreenRenderer _renderer; // The renderer
+
+    public WinScreen() // The constructor
+    {
+        _renderer = new WinScreenRenderer(this); // Set the renderer
+        Renderer = _renderer; // Set the renderer
+        
+        RegisterButtons(); // Register the buttons
+    }
+
+    public override void OnDisplay(int? previous)
+    {
+        _renderer.Count = 0; // Reset the count
+        _renderer.Step = 0; // Reset the step
+
+        if (Loader.Game.Level == null || Loader.Game.LevelManager.GetLevels().Count != Loader.Game.Level.Id - 1) return; // If the level is null or the level id is not the last level, return
+        Loader.Game.MenuManager.SetActiveWindow(EndScreen.UiId);  // Set the end screen as the active window
+    }
+
+    public override void Tick() // Tick the win screen
+    { 
+        foreach (var pair in Buttons.Where(pair => pair.Value == null || pair.Value.IsClicked())) // For each button and if the button is clicked 
+        {
+            switch (pair.Key) // Switch the button id
+            {
+                case 0: // Restart
+                    Loader.Game.Reset(); // Reset the game
+                    Loader.Game.MenuManager.DisableAll(); // Disable all menus
+                    Loader.Game.ColoredFlashRenderer.Trigger(20, Color.BLACK); // Trigger a black flash
+                    break;
+                case 1: // Main Menu
+                    Loader.Game.Stop(); // Stop the game
+                    Loader.Game.MenuManager.SetActiveWindow(LoadingScreen.UiId, UiId); // Set the loading screen as the active window
+                    LoadingScreen.Trigger("Returning to Main Menu", 
+                        "Please wait...",
+                        () =>
+                        {
+                            Loader.Game.MenuManager.SetActiveWindow(MainMenuScreen.UiId);
+                            return 0;
+                        }, false, 140); // Trigger the loading screen with the text "Returning to Main Menu" and the subtext "Please wait..." and the callback to set the main menu as the active window
+                    
+                    break;
+                /* Win screen only */
+                case 2: // Next Level
+                    Loader.Game.Stop(); // Stop the game
+                    Loader.Game.MenuManager.SetActiveWindow(LoadingScreen.UiId, UiId); // Set the loading screen as the active window
+
+                    if (Loader.Game.Level != null) // If the level is not null
+                    {
+                        Level.Level next = Loader.Game.LevelManager.GetLevelById(Loader.Game.Level.Id + 1); // Get the next level
+                    
+                        LoadingScreen.Trigger(next.Name,
+                            "Time to beat: " + StatisticManager.SteraliseTime(StatisticManager.GetLevelBestTime(next.Id)),
+                            () =>
+                            {
+                                Loader.Game.LevelManager.LoadNextLevel();
+                                Loader.Game.Run();
+                                Loader.Game.MenuManager.DisableAll();
+                                Loader.Game.ColoredFlashRenderer.Trigger(20, Color.BLACK);
+                                return 0;
+                            }); // Trigger the loading screen with the text of the next level and the subtext of the time to beat
+                    }
+
+                    break;
+                /* End win screen only */
+            }
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE)) Loader.Game.MenuManager.SetActiveWindow(MainMenuScreen.UiId); // If the escape key is pressed, set the main menu as the active window
+    }
+    
+    private void RegisterButtons()
+    {
+        AddButton(0, "Restart"); // Add the restart button
+        AddButton(1, "Main Menu"); // Add the main menu button
+        AddButton(2, "Next Level"); // Add the next level button (win screen only)
+    }
+
+
+    private void AddButton (int id, string text) // Add a button
+    {
+        Text buttonText = new Text
+        {
+            Color = Color.WHITE,
+            FontSize = 48,
+            Data = text,
+            Font = FontUtils.ButtonFont
+        }; // The button text
+        
+        int x = WindowManager.Width / 2 - 675 + (id * (450 + 20)); // The x position of the button (win screen)
+        int x = WindowManager.Width / 2 - 275 + (id * (450 + 20)); // The x position of the button (end screen)
+        
+        Button button = new Button(buttonText, new Vector2(x, WindowManager.Height - 230), new Vector2(400, 120))
+        {
+            BgColor = new Color(40, 40, 40, 200),
+            BorderColor = Color.WHITE
+        }; // Create the button with the text, position, and size
+        
+        Buttons.Add(id, button); // Add the button
+    }
+}
+```
+
+And the renderer which will be responsible for rendering the buttons and the text for this menu:
+It will render the buttons at the bottom of the screen and the text at the center of the screen.
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Screens;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render;
+
+public class WinScreenRenderer : UiRenderer
+{
+    private readonly WinScreen _parent;
+    public int Count;
+    public int Step;
+    private int _stay = 20;
+
+    public WinScreenRenderer(WinScreen parent) : base("velocity:window." + WinScreen.UiId)
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        switch (Step)
+        {
+            case 0:
+                if (Count < 100) Count += 5;
+                if (Count == 100) Step = 1;
+                break;
+            case 1:
+                _stay--;
+                if (_stay == 0)
+                {
+                    _stay = 20;
+                    Step = 2;
+                }
+                break;
+            case 2:
+                if (Count > 0) Count -= 5;
+                if (Count == 0) Step = 3;
+                break;
+        }
+        
+
+        if (Step is 2 or 3)
+        {
+            Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, new Color(10, 10, 30, 200));
+
+            foreach(Button? button in _parent.Buttons.Values)
+            {
+                button?.Renderer?.Draw();
+            }
+        
+            Raylib.DrawTextEx(FontUtils.Font, "Level Completed!", new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.Font, "Level Completed!", 65, 2).X / 2, 300), 65, 2, Color.WHITE); // (Win screen)
+            Raylib.DrawTextEx(FontUtils.Font, "Thank you for playing!\nMade by Reuben Yates", new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.Font, "Thank you for playing!\nMade by Reuben Yates", 65, 2).X / 2, 300), 65, 2, Color.WHITE); // (End screen)
+
+            TimeSpan tspan = Loader.Game.Timer.Elapsed;
+            string text = $"{tspan.Minutes:00}:{tspan.Seconds:00}.{tspan.Milliseconds / 10:00}";
+            Raylib.DrawTextEx(FontUtils.Font, "Time: " + text, new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.Font, "Time: " + text, 55, 2).X / 2, 410), 55, 2, Color.WHITE);
+            Raylib.DrawTextEx(FontUtils.Font, "Coins: " + Loader.Game.Coins, new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.Font, "Coins: " + Loader.Game.Coins, 55, 2).X / 2, 460), 55, 2, Color.WHITE);
+        } 
+
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, new Color(0, 0, 0, (int)(255d * (Count / 100d))));
+    }
+}
+```
+
+Thus concluding the menus.
+
+## Section 9 review
+
+### What has been achieved
+A way to save and compair times for levels so you can compeate and get better times.
+A loading screen, that fades in, hangs, and fades out, with a callback to trigger the next screen.
+A working pause menu, that you can resume, restart or quit from. Along with accessing the settings in-game.
+A working win/end screen, that displays your time and coins collected, and gives you the option to progress, restart or quit.
+
+### How we have tested
+After implimenting each menu we registered it to the menu manager and then called the open function. Fixing any bugs as we find them.
+Then adding/removing or moving elements as we see fit.
+Then performing iterative testing until all of the bugs were fixed.
+Then performing a final test to validate it is working as a compleate unit.
+
+### Design changes
+Changed the apply revert and close buttons, to just close and reset the settings, as the user can just close the menu to revert the changes, no need for applying.
+
+### How it fills our success criteria
+- [x] The game has a working loading screen to increase smoothness and professionalism
+- [x] The game has a working pause menu to allow the user to pause the game
+- [x] The game has a working win screen to allow the user to progress to the next level
+- [x] The game has a working end screen to allow the user to restart or quit the game
+
+### Meeting the criteria of:
+A loading screen, pause menu, win screen and end screen.
+
+## Section 10: project review & final testing
+
+First thing we need to do is check all usability features are working as intended. Therefor buttons are nice and big, fonts are bold and clear, and the user can navigate the menus with ease.
+This was the perpouse of the borders around the control values, so you can easily tell that they are keys you have to press.
+
+![](https://i.imgur.com/WOk31KT.png)
+![](https://i.imgur.com/7KSKvAa.png)
+
+Then I tested all the buttons and removed ones I didnt have time to impliment (e.g. the statistics screen button wasnt needed in the end)
+
+Any final and outlying bugs that I found were fixed and pushed to github so its working on all platforms.
+Had a weird bug with mac in windowed mode in the level menu, where the buttons were offset, so implimented a platform check and an offset value.
+
+Then there is the input validation of the control fields. They needed to be validated. So they display the correct text when a key is invalid or taken.
+
+![](https://i.imgur.com/fFZ3hen.png)
+![](https://i.imgur.com/h3ZFyaA.png)
+
+Once this had been done we checked all the inputs of the ui elements, and noticed that they wouldnt move if you clicked but moved the mouse off them. So implimented a `_held` var, so we can keep track of if the mouse is still down, and it was activated.
+
+Then we finally moved on to testing the game as a compleate game, and found one or two erros that needed fixing. Once those were gone, we got a finished and working game!
+
+`WOOHOO FINALY DONE W THIS WELL DONE`
+
+# Evaluation
+
+## Success criteria
+| Criteria                                                                                                             | Met? |
+|----------------------------------------------------------------------------------------------------------------------|------|
+| 1. A window that can have its preferences changed within a settings menu                                             | ✓    |
+| 2. Main menu with 4 buttons and a title, including game version information and my copywrite                         | ✓    |
+| 3. Settings screen with at least 3 sections, that include controls, video settings, audio settings                   | ✓    |
+| 4. Working camera system that smoothly follows the player wherever they go on the game canvas                        | ✓    |
+| 5. A working physics system that can be applied to any object, with gravity, drag, and collision calculations        | ✓    |
+| 6. A working player that can be moved using the control scheme, with velocity and appropriate drag calculations      | ✓    |
+| 7. Working texture and audio loading system                                                                          | ✓    |
+| 8. Working parallax background renderer that infinitely draws around the camera                                      | ✓    |
+| 9. A working object system for adding game objects such as collidable objects and item power-ups                     | ✓    |
+| 10. A working level system that can load and save level stats, and load the next level when the player completes one | ✓    |
+| 11. A working ai that chases the player                                                                              |      | 
+
+
+## Evidence
+
+### 1. A window that can have its preferences changed within a settings menu
+![](https://i.imgur.com/EUAUjHG.png)
+Here we can clearly see a window, created by my code, that is created in the operating system, and displayed to the user
+
+![](https://i.imgur.com/2zFCXs4.png)
+And here we can see a settings menu, dedicated to changing the display settings, resolution, fullscreen, etc.
+
+### 2. Main menu with 4 buttons and a title, including game version information and my copywrite
+- Got rid of one of the buttons for statistics as didnt have time to implement
+- Added a character apperance selector
+![](https://i.imgur.com/RFjnJLd.png)a
+
+### 3. Settings screen with at least 3 sections, that include controls, video settings, audio settings
+![](https://i.imgur.com/2zFCXs4.png)
+![](https://i.imgur.com/BdoKtOJ.png)
+![](https://i.imgur.com/LK1INwn.png)
+Here we can see the three menus I implimented.
+One for changing the display settings of the game, so the user can customise the visual experience.
+One for changing the different audio settings, so the user can customise the audio experience.
+And one for changing the controls, so the user can customise the control scheme.
+
+### 4. Working camera system that smoothly follows the player wherever they go on the game canvas
+![](https://imgur.com/TdhZi9c.gif)
+We can see that we have a working camera system that follows the player wherever they go in the game.
+We also added a zoom feature, so the user can zoom in and out of the game. 
+And we added a camera smoothness slider to settings so we can change how smooth the camera is.
+
+### 5. A working physics system that can be applied to any object, with gravity, drag, and collision calculations
+![](https://imgur.com/lW6o0mQ.gif)
+Here we can see a working physics, making use of velocity, air and ground resistance, and gravity.
+We can also see working collision detection up against the obsicals and the floor.
+We further inforce that we need to use our velocity and momentum to our advantage, not being able to make certain jumps with low velocity.
+This wouldn't be possible without the physics system I implemented.
+
+### 6. A working player that can be moved using the control scheme, with velocity and appropriate drag calculations
+![](https://imgur.com/P7knN8Y.gif)
+Here I have added these lines of code to the debug renderer so we can visually see the keyboard inputs.
+```csharp
+        List<string> keys = new ();
+        foreach (KeyboardKey key in Enum.GetValues(typeof(KeyboardKey)))
+        {
+            if (!Raylib.IsKeyDown(key))
+            {
+                continue;
+            }
+            
+            if (KeyParser.ToKey(key.ToString().Replace("KEY_", "")) == KeyboardKey.KEY_NULL) // If it is not deemed valid by KeyParser:
+            {
+                continue;
+            }
+            
+            keys.Add(key.ToString());
+            
+            Raylib.DrawText(key.ToString(), WindowManager.Width / 2 - 100, 120 + (keys.Count * 35), 32, Color.WHITE);
+        }
+```
+And we can clearly see that the player is moving when we press the assigned keys, and the velocity and drag are working as intended.
+![](https://imgur.com/Ak72U5M.gif)
+And here we can see the menu were we can re-assign those controls.
+Adding input validation and a key parser gave us the abillity to only use character keys, shift and space.
+It also provides us a way to tell our user that these keys are invalid or taken already, so the user doesnt get confused.
+These are both working smoothly and as intended.
+
+### 7. Working texture and audio loading system
+[Click here for video of audio](https://imgur.com/zTPL4zP)
+
+We can clearly see that the texture system is loaded, as the game is displaying the barrel, crate, player, item and background textures.
+We can also see that the audio system is working, as we can hear the sound effects and ui sounds.
+These have all the intended functionality, loading and setting volumes of different types of sounds, and loading the correct background and player textures for said level and appearance.
+
+### 8. Working parallax background renderer that infinitely draws around the camera
+![](https://imgur.com/caJIVKz.gif)
+By removing the limits to the zoom we can zoom out and see the parallax layers in action.
+We can see that all the layers move at the correct speed in reference to the camera. And the clouds infinitely scroll.
+We can also see that the layers get possitioned correctly when the camera moves, so they are always drawn inside the cameras view plane.
+
+# Code
+
+
+## AssetManager.cs
+**Location:** `Velocity-NEA\Velocity\Asset\AssetManager.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Utils;
+
+namespace Velocity.Asset;
+
+public class AssetManager
+{
+    // List of all assets to load
+    public string[] TextureLocations =
+    {
+        "background\\1\\layer07.png",
+        "background\\1\\layer06.png",
+        "background\\1\\layer05.png",
+        "background\\1\\layer04.png",
+        "background\\1\\layer03.png",
+        "background\\1\\layer02.png",
+        "background\\1\\layer01.png",
+        "background\\2\\layer07.png",
+        "background\\2\\layer06.png",
+        "background\\2\\layer05.png",
+        "background\\2\\layer04.png",
+        "background\\2\\layer03.png",
+        "background\\2\\layer02.png",
+        "background\\2\\layer01.png",
+        "background\\3\\layer07.png",
+        "background\\3\\layer06.png",
+        "background\\3\\layer05.png",
+        "background\\3\\layer04.png",
+        "background\\3\\layer03.png",
+        "background\\3\\layer02.png",
+        "background\\3\\layer01.png",
+        "background\\mainmenu.png",
+        "obj\\crate.png",
+        "obj\\barrel.png",
+        "particle\\particle_map.png",
+        "item\\power_ups.png",
+        "item\\coin.png",
+        "ui\\heart.png",
+        "player\\1\\walk.png",
+        "player\\1\\run.png",
+        "player\\1\\idle.png",
+        "player\\1\\jump.png",
+        "player\\2\\walk.png",
+        "player\\2\\run.png",
+        "player\\2\\idle.png",
+        "player\\2\\jump.png",
+        "player\\3\\walk.png",
+        "player\\3\\run.png",
+        "player\\3\\idle.png",
+        "player\\3\\jump.png"
+    };
+
+    public Dictionary<string, Texture2D> Textures = new();
+    
+    public AssetManager()
+    {
+        LoadAssets();
+    }
+
+    // Load all assets into memory
+    private void LoadAssets()
+    {
+        foreach (var textureLocation in TextureLocations)
+        {
+            Texture2D tempTexture = Raylib.LoadTexture(Utils.Path.AssetLocation + textureLocation.Replace("\\", OsVersion.GetDirSeperator()));
+
+            string name = textureLocation.Split(".")[0].Replace("\\", ".");
+            
+            Textures.Add(name, tempTexture);
+        }    
+    }
+
+    // Return a loaded texture with anti-aliasing
+    public Texture2D GetTexture(string name)
+    {
+        Textures.TryGetValue(name, out Texture2D texture);
+        // Raylib.SetTextureFilter(texture, TextureFilter.TEXTURE_FILTER_ANISOTROPIC_16X);
+        return texture;
+    }
+
+    public Texture2D GetPlayerTexture(int player, string name)
+    {
+        return GetTexture("player." + player + "." + name);
+    }
+    
+    public Texture2D GetBackgroundTexture(int background, string name)
+    {
+        return GetTexture("background." + background + "." + name);
+    }
+}
+```
+
+## VelocityException.cs
+**Location:** `Velocity-NEA\Velocity\Exception\VelocityException.cs`
+
+```csharp
+namespace Velocity.Exception;
+
+public class VelocityException : System.Exception
+{
+    public VelocityException(string message) : base(message)
+    {}
+}
+```
+
+## CameraController.cs
+**Location:** `Velocity-NEA\Velocity\Game\CameraController.cs`
+
+```csharp
+using Velocity.Math;
+using Raylib_cs;
+using Velocity.Game.Object;
+using Velocity.Input;
+using Velocity.Window;
+
+namespace Velocity.Game;
+
+public class CameraController : IControllable
+{ 
+    private readonly Game _game; // The game instance
+     
+    private Vector2 _smoothedPosition = Vector2.Zero(); // The smoothed position of the camera
+    private Vector2 _prevPosition = Vector2.Zero(); // The previous position of the camera
+
+    private float _zoom = 1.0f; // The zoom of the camera
+    private float _zoomOffset = 0.0f; // The zoom offset of the camera
+    private float _smoothedZoom = 1.0f; // The smoothed zoom of the camera
+    private float _prevZoom = 1.0f; // The previous zoom of the camera
+
+
+    public CameraController(Game game) // Constructor
+    {
+        _game = game; // Set game
+        Loader.WindowManager.Camera.offset = new System.Numerics.Vector2(WindowManager.Width / 2 - (WindowManager.Width / 8), WindowManager.Height / 2 + WindowManager.Height / 3); // Set camera offset to center of screen
+        Loader.WindowManager.Camera.target = new System.Numerics.Vector2(0, Game.FloorHeight); // Set camera target the floor
+    }
+
+    public void Init()
+    {
+        _smoothedPosition.X = _game.Player.Position.X; // Set smoothed position x to player x
+        _smoothedPosition.Y = _game.Player.Position.Y; // Set smoothed position y to player y
+
+        Loader.WindowManager.Camera.target = new System.Numerics.Vector2(Convert.ToSingle(_smoothedPosition.X), Convert.ToSingle(_smoothedPosition.Y)); // Set camera target to smoothed position
+        Loader.WindowManager.Camera.zoom = _smoothedZoom; // Set camera zoom to smoothed zoom
+    }
+    
+    public void Tick()
+    {
+        ApplySmoothing(_game.Player.Position); // Apply smoothing to the player position
+        
+        Loader.WindowManager.Camera.target = new System.Numerics.Vector2( 
+            Convert.ToSingle(_smoothedPosition.X), Convert.ToSingle(
+                Game.FloorHeight - ((Game.FloorHeight - _game.Player.Position.Y) / 2) * (1 + _zoomOffset) / 2) // Set camera target to smoothed position with zoom offset applied so that the camera zooms out when the player is higher up
+            );
+        Loader.WindowManager.Camera.zoom = _smoothedZoom; // Set camera zoom to smoothed zoom
+    }
+
+    private void ApplySmoothing(Vector2 to) // Apply smoothing to the player position
+    { 
+        double ratio = 1 - Loader.Settings.CameraLinearity;  // Calculate the smoothing ratio
+
+        float zoomOffset = Convert.ToSingle((_game.Player.Position.Y + _game.Player.Dimensions.Y / 4) /
+                                                            (Game.FloorHeight - WindowManager.Height / 2)); // Calculate the zoom offset based on the player position and the floor height
+        
+        _zoom = zoomOffset < 1 ? float.Pow(zoomOffset, 3.6f * (0.9f + _zoomOffset)) : 1; // Calculate the zoom based on the zoom offset
+
+        _zoom += _zoomOffset; // Add the zoom offset to the zoom
+        
+        _smoothedPosition.X = Convert.ToInt32(to.X * ratio + _prevPosition.X * Loader.Settings.CameraLinearity); // Calculate the smoothed position x
+        _smoothedPosition.Y = Convert.ToInt32(to.Y * ratio + _prevPosition.Y * Loader.Settings.CameraLinearity); // Calculate the smoothed position y
+        _prevPosition = _smoothedPosition; // Set the previous position to the smoothed position
+        
+        _smoothedZoom = _zoom * 0.15f + _prevZoom * 0.85f; // Calculate the smoothed zoom
+        _prevZoom = _smoothedZoom; // Set the previous zoom to the smoothed zoom
+    }
+
+    public void OnZoomIn() // Zoom in
+    {
+        if (_zoomOffset < 0.1f) _zoomOffset += 0.01f; // If the zoom offset is less than 0.1, add 0.01 to the zoom offset
+    }
+
+    public void OnZoomOut() // Zoom out
+    {
+        if (_zoomOffset > -0.2f) _zoomOffset -= 0.01f; // If the zoom offset is greater than -0.2, subtract 0.01 from the zoom offset
+    }
+}
+```
+
+## Game.cs
+**Location:** `Velocity-NEA\Velocity\Game\Game.cs`
+
+```csharp
+using System.Diagnostics;
+using Velocity.Math;
+using Velocity.Level;
+using Velocity.Ui;
+using Raylib_cs;
+using Velocity.Game.Misc;
+using Velocity.Game.Object;
+using Velocity.Game.Object.FloatingText;
+using Velocity.Game.Object.Renderer;
+using Velocity.Game.Physics;
+using Velocity.Game.Statistics;
+using Velocity.Ui.Overlay.Render;
+using Velocity.Ui.Screens;
+using Velocity.Window.Render;
+
+namespace Velocity.Game;
+
+public class Game
+{
+    // Constants
+    public const int FloorHeight = 10000;
+    
+    // Integer properties
+    public int Coins;
+    private int _counter;
+    
+    // Int array properties
+    public int[] PowerUps =
+    {
+        0,
+        0,
+        0
+    };
+    
+    // Boolean properties
+    public bool IsRunning;
+    public bool Closed = false;
+
+    // Readonly properties
+    public readonly Stopwatch Timer;
+    public readonly Player.Player Player;
+    private readonly CameraController _cameraController;
+    
+    public readonly MenuManager MenuManager;
+    public readonly ObjectManager ObjectManager;
+    public readonly LevelManager LevelManager;
+    private readonly RenderManager _renderManager;
+    private readonly PhysicsManager _physicsManager;
+    private readonly FloatingTextManager _floatingTextManager;
+    
+    // Object properties
+    public Level.Level? Level;
+    
+    // Render properties
+    public readonly TextOverlayRenderer TextRenderer;
+    public readonly ParallaxRenderer BackgroundRenderer;
+    public readonly ColoredFlashRenderer ColoredFlashRenderer = new ();
+
+    private readonly HudRenderer _hudRenderer;
+    private readonly TimerRenderer _timerRenderer;
+    private readonly ObjectRenderer _objectRenderer;
+    private readonly PowerUpRenderer _powerUpRenderer;
+    private readonly DistanceLimitRenderer _distanceLimitRenderer;
+    
+
+    /**
+     * Constructor to register all the managers and controllers, and to render the static elements of the screen.
+     */
+    public Game()
+    {
+        // Register renderer manager and camera controller
+        _renderManager = new RenderManager();
+        _cameraController = new CameraController(this);
+        Loader.ControlManager.RegisterController(_cameraController);
+
+        // Register managers
+        LevelManager = new LevelManager();
+        MenuManager = new MenuManager();
+        ObjectManager = new ObjectManager();
+        _physicsManager = new PhysicsManager();
+        _floatingTextManager = new FloatingTextManager();
+
+        // Register renderers
+        BackgroundRenderer = new ParallaxRenderer();
+        TextRenderer = new TextOverlayRenderer();
+        _hudRenderer = new HudRenderer(this);
+        _timerRenderer = new TimerRenderer();
+        _objectRenderer = new ObjectRenderer(this);
+        _powerUpRenderer = new PowerUpRenderer(this);
+        _distanceLimitRenderer = new DistanceLimitRenderer();
+        
+        // Register player
+        Player = new Player.Player(new Vector2(-200 * (Velocity.Level.Level.LevelWidth / 2 + 1), FloorHeight - 300));
+
+        // Pass renderer of static elements
+        _renderManager.RenderUiElement(_hudRenderer);
+        _renderManager.RenderUiElement(TextRenderer);
+        _renderManager.RenderUiElement(_timerRenderer);
+        _renderManager.RenderUiElement(_distanceLimitRenderer);
+        _renderManager.RenderUiElement(ColoredFlashRenderer);
+        _renderManager.RenderBackgroundElement(BackgroundRenderer);
+        _renderManager.RenderPlayer(Player);
+
+        // Register timer
+        Timer = new Stopwatch();
+    }
+
+    // Begin function that is called after the level loads
+    public void Run()
+    {
+        // Enable the player and pass to the physics manager
+        Player.IsEnabled = true;
+        _physicsManager.RegisterObject(Player);
+
+        // Register all the floating texts (Last thing thats registered)
+        foreach (var floatingTextData in Level?.FloatingTexts.ToArray()!)
+        {
+            _floatingTextManager.RegisterText(floatingTextData.Position , floatingTextData.Text, Color.WHITE);
+        }
+
+        // Render the elements and begin the game.
+        RenderElements();
+        Resume(true);
+
+        Loader.WindowManager.Renderer.Dump();
+    }
+
+    /**
+     * Pause the game on pause menu enter
+     */
+    private void Pause()
+    {
+        // Disable player logic, begin the game, and activate the hud renderer
+        Player.IsEnabled = false;
+        IsRunning = false;
+        _hudRenderer.IsEnabled = false;
+        
+        // Stop the timer
+        Timer.Stop();
+    }
+    
+    /**
+     * Resume the game after pause menu exit
+     */
+    public void Resume(bool isBegin = false)
+    {
+        // Enable player logic, begin the game, and activate the hud renderer
+        Player.IsEnabled = true;
+        IsRunning = true;
+        _hudRenderer.IsEnabled = true;
+        
+        // Enable the timer, unless its the first begin, so it will be triggered by player movement
+        if (!isBegin) Timer.Start();
+    }
+
+    // Stop function that is called when the game is stopped
+    public void Stop()
+    {
+        // Stop close and clear all managers
+        IsRunning = false;
+        _physicsManager.Stop();
+        ObjectManager.Close();
+        _floatingTextManager.Clear();
+        
+        Unrender(); // Unrender everything
+        
+        // Reset player stats, coins and power-ups
+        Player.Reset();
+        Player.IsEnabled = false;
+        PowerUps = new int[3] {0, 0, 0};
+        Coins = 0;
+
+        // Reset times and statistics
+        Timer.Reset();
+        StatisticManager.Save();
+    }
+
+    // Load renderers 
+    private void RenderElements()
+    {
+        // Render non-static elements
+        _renderManager.RenderGameElement(_objectRenderer);
+        _renderManager.RenderGameElement(new FloorRenderer());
+        _renderManager.RenderGameElement(_powerUpRenderer);
+        _renderManager.RenderGameElement(_floatingTextManager.Renderer);
+    
+        // Initialise game components and load textures
+        _cameraController.Init();
+        Player.Renderer?.LoadTextures();
+        BackgroundRenderer.LoadTextures();
+        
+        // Render static elements
+        BackgroundRenderer.IsEnabled = true;
+        _hudRenderer.IsEnabled = true;
+        _timerRenderer.IsEnabled = true;
+        _distanceLimitRenderer.IsEnabled = true;
+        if (Player.Renderer != null) Player.Renderer.IsEnabled = true;
+    }
+    
+    // Unload renderers
+    private void Unrender()
+    {
+        // Un-render non-static elements
+        _renderManager.UnRenderGameElement(new FloorRenderer());
+        _renderManager.UnRenderGameElement(_objectRenderer);
+        _renderManager.UnRenderGameElement(_powerUpRenderer);
+        _renderManager.UnRenderGameElement(_floatingTextManager.Renderer);
+
+        // Un-render static elements
+        BackgroundRenderer.IsEnabled = false;
+        _hudRenderer.IsEnabled = false;
+        TextRenderer.IsEnabled = false;
+        _timerRenderer.IsEnabled = false;
+        _distanceLimitRenderer.IsEnabled = false;
+        if (Player.Renderer != null) Player.Renderer.IsEnabled = false;
+    }
+
+    // Remove all level data
+    public void Reset()
+    {
+        // Stop the game, re-register the level, and run the game
+        Stop();
+        int levelId = Level.Id;
+        Level = null;
+        LevelManager.SelectLevel(levelId);
+        Run();
+    }
+    
+    // Win state
+    public void Win()
+    {
+        Pause();
+        if (Timer.Elapsed.TotalSeconds <= StatisticManager.GetLevelBestTime(Level.Id) || StatisticManager.GetLevelBestTime(Level.Id) == 0) // Check to see if best time is greater than current time, if so replace the value
+        {
+            StatisticManager.SetLevelBestTime(Level.Id, (int)Timer.Elapsed.Ticks);
+        }
+        
+        MenuManager.SetActiveWindow(WinScreen.UiId);
+    }
+
+    // Tick() function in all files executes the main logic for that frame
+    public void Tick()
+    {
+        if (Closed) return; // Dont do anything if the game is considered closed.
+
+        if (MenuManager.IsScreenActive()) // Handle menus if one is active
+        {
+            MenuManager.Tick();
+            return;
+        }
+        
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE)) // Pause the game if escape is pressed
+        {
+            Pause();
+            MenuManager.SetActiveWindow(PauseScreen.UiId);
+            return;
+        }
+
+
+        if (!IsRunning) return; // Dont run logic if the game is not running.
+
+        _counter++;
+        if (_counter == Raylib.GetFPS()) // Decrement all the power-ups every second
+        {
+            _counter = 0;
+            if (PowerUps[0] > 0) PowerUps[0]--;
+            if (PowerUps[1] > 0) PowerUps[1]--;
+            if (PowerUps[2] > 0) PowerUps[2]--;
+        } 
+        
+        // Tick all the managers for there respective components to work
+        _physicsManager.Tick();
+        ObjectManager.CoinHandle.Update();
+        _cameraController.Tick();
+        _floatingTextManager.Tick();
+        
+        // If the player has moved outside of there starting position: start the timer
+        if (!Timer.IsRunning && System.Math.Abs(Player.Position.X - -200 * (Velocity.Level.Level.LevelWidth / 2 + 1)) != 0) Timer.Start();
+        
+        // If the player is outside of the game area bounds
+        if (Double.Abs(Player.Position.X) > (Velocity.Level.Level.LevelWidth / 2 + 8) * 200)
+        {
+            if (Player.Position.X > 0) Win(); // If there at the far right trigger win
+            else // If there at the far left, teleport the player to the start position, and fade from black
+            {
+                Player.Position.X = -(Velocity.Level.Level.LevelWidth / 2 + 1) * 200;
+                ColoredFlashRenderer.Trigger(20, Color.BLACK);
+            }
+        }
+        
+        // Move the player continuously once the player has left the game area bounds, so they either win, or get teleported back.
+        if (Player.Position.X > (Velocity.Level.Level.LevelWidth / 2 + 1) * 200) Player.Velocity.X = PhysicsConst.MaxAcceleration; 
+        if (Player.Position.X < -(Velocity.Level.Level.LevelWidth / 2 + 3) * 200) Player.Velocity.X = -PhysicsConst.MaxAcceleration;
+
+    }
+    
+}
+
+
+```
+
+## FloorRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Game\Misc\FloorRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Misc;
+
+public class FloorRenderer : ElementRenderer
+{
+    private Texture2D _floorTexture; // The floor texture
+    
+    public FloorRenderer() : base("velocity:floor") // Constructor
+    {
+        LoadTextures(); // Load textures
+    }
+
+    private void LoadTextures()
+    {
+        if (Loader.Game.Level == null) return; // Return if the level is null
+        _floorTexture = Loader.AssetManager.GetBackgroundTexture(Loader.Game.Level.Background, "layer01");  // Get the background texture
+    }
+
+    
+    public override void Draw()
+    {
+        for (int i = -13; i < 13; i++) // Draw the floor
+        {
+            Raylib.DrawTexturePro(_floorTexture, new Rectangle(0, 0, _floorTexture.width, _floorTexture.height), new Rectangle((WindowManager.Width / 3) * i, Game.FloorHeight - WindowManager.Width / 6 + 12, WindowManager.Width / 3, WindowManager.Height / 3), new Vector2(), 0, Color.WHITE); // Draw the floor texture
+
+            Raylib.DrawRectangleGradientV((WindowManager.Width / 3) * i, Game.FloorHeight - 10, (WindowManager.Width / 3), 10, new Color(1, 20, 71, 0), new Color(0, 5, 50, 25)); // Draw the floor gradient
+            Raylib.DrawRectangleGradientV((WindowManager.Width / 3) * i, Game.FloorHeight,(WindowManager.Width / 3), 48, new Color(0, 5, 50, 25), new Color(0, 0, 0, 200)); // Draw the floor gradient
+            Raylib.DrawRectangleGradientV((WindowManager.Width / 3) * i, Game.FloorHeight + 48, (WindowManager.Width / 3), 5, new Color(0, 0, 0, 200), new Color(0, 0, 0, 255)); // Draw the floor gradient
+            Raylib.DrawRectangle((WindowManager.Width / 3) * i, Game.FloorHeight + 52, (WindowManager.Width / 3), WindowManager.Height / 2, new Color(0, 0, 0, 255)); // Draw the footer for the floor
+        }
+    }
+}
+```
+
+## ParallaxRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Game\Misc\ParallaxRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Misc;
+
+public class ParallaxRenderer : BackgroundRenderer
+{
+    private readonly Texture2D[] _parallaxTextures = new Texture2D[5]; // Background textures: 0 = layer02, 1 = layer03, 2 = layer04, 3 = layer05, 4 = layer06
+
+    private Vector2 _lastPosition = Vector2.Zero; // Last camera position
+    private Rectangle _textureBounds; // Texture bounds
+
+    private int _cloudOffset; // Cloud offset
+    
+    private readonly int[] _yOffsets =
+    {
+        -60,
+        0,
+        0,
+        -40,
+        0
+    }; // Y offsets for each layer so we can position them per layer
+
+    private readonly Vector2[] _layerPositions = new Vector2[5]; // Positions of each layer
+    
+    public ParallaxRenderer() : base("velocity:background", false) // Register the renderer
+    {
+        GenerateNewPositions(); // Generate the positions
+    }
+    
+    public void LoadTextures() // Load the textures
+    {
+        int bg = Loader.Game.Level == null ? (new Random()).Next(1, 3) : Loader.Game.Level.Background; // Get the background id (random if no level is loaded) 
+        _parallaxTextures[0] = Loader.AssetManager.GetBackgroundTexture(bg, "layer02"); // Load the the first layer        (offset of 1 as we are not using the background plane as this renderer will not drawn at the correct stage in the loop)
+        _parallaxTextures[1] = Loader.AssetManager.GetBackgroundTexture(bg, "layer03"); // Load the the second layer
+        _parallaxTextures[2] = Loader.AssetManager.GetBackgroundTexture(bg, "layer04"); // Load the the third layer
+        _parallaxTextures[3] = Loader.AssetManager.GetBackgroundTexture(bg, "layer05"); // Load the the fourth layer
+        _parallaxTextures[4] = Loader.AssetManager.GetBackgroundTexture(bg, "layer06"); // Load the the fifth layer
+        
+        _textureBounds = new Rectangle(0.0f, 0.0f, _parallaxTextures[1].width, _parallaxTextures[1].height); // Set the texture bounds
+    }
+
+    public override void Draw()
+    {
+        if (System.Math.Abs(_lastPosition.X - Loader.WindowManager.Camera.target.X) != 0 ||
+            System.Math.Abs(_lastPosition.Y - Loader.WindowManager.Camera.target.Y) != 0) // Check if the camera has moved
+        {
+            GenerateNewPositions(); // Generate new positions
+
+            _lastPosition = Loader.WindowManager.Camera.target; // Set the last position of the camera to the current position of the camera
+        }
+
+        _cloudOffset += 1; // Increment the cloud offset (make them move to the right)
+        if (_cloudOffset > WindowManager.Width / 2) _cloudOffset = -(WindowManager.Width / 2); // Reset the cloud offset if it is greater than half the width of the window (loop pefrectly
+
+        // Generate the rectangles for each layer (x, y, width and height) 
+        // The cloud layer is offset by the cloud offset
+        Rectangle rectangle0 = GenerateRectangle(_layerPositions[0]); 
+        Rectangle rectangle1 = GenerateRectangle(_layerPositions[1]); 
+        Rectangle rectangle2 = GenerateRectangle(_layerPositions[2]);
+        Rectangle rectangle3 = GenerateRectangle(Vector2.Add(_layerPositions[3], new Vector2(_cloudOffset, 0)));
+        Rectangle rectangle4 = GenerateRectangle(_layerPositions[4]);
+
+        
+        // Will draw the layers in reverse order (so the first layer is drawn last)
+        // Draw the first layer (layer02) 3 times (one in the middle and one on each side) with y offsets, with its origin being in the center of the texture
+        Raylib.DrawTexturePro(_parallaxTextures[4], _textureBounds, OffsetRectangle(rectangle4, 0, _yOffsets[4]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[4], _textureBounds, OffsetRectangle(rectangle4, WindowManager.Width, _yOffsets[4]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[4], _textureBounds, OffsetRectangle(rectangle4, -WindowManager.Width, _yOffsets[4]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        
+        // Do the same for the clouds (7 layers to increase the density) while being symmetrical and loop able
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, 0, _yOffsets[3]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, WindowManager.Width, _yOffsets[3]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, -WindowManager.Width, _yOffsets[3]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, WindowManager.Width / 2, _yOffsets[3] - WindowManager.Height / 4), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, -WindowManager.Width / 2, _yOffsets[3] - WindowManager.Height / 4), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, WindowManager.Width + WindowManager.Width / 2, _yOffsets[3] - WindowManager.Height / 4), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[3], _textureBounds, OffsetRectangle(rectangle3, -WindowManager.Width - WindowManager.Width / 2, _yOffsets[3] - WindowManager.Height / 4), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        
+        // Do the same for the other layers
+        Raylib.DrawTexturePro(_parallaxTextures[2], _textureBounds, OffsetRectangle(rectangle2, 0, _yOffsets[2]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[2], _textureBounds, OffsetRectangle(rectangle2, WindowManager.Width, _yOffsets[2]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE); 
+        Raylib.DrawTexturePro(_parallaxTextures[2], _textureBounds, OffsetRectangle(rectangle2, -WindowManager.Width, _yOffsets[2]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        
+        Raylib.DrawTexturePro(_parallaxTextures[1], _textureBounds, OffsetRectangle(rectangle1, 0, _yOffsets[1]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[1], _textureBounds, OffsetRectangle(rectangle1, WindowManager.Width, _yOffsets[1]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[1], _textureBounds, OffsetRectangle(rectangle1, -WindowManager.Width, _yOffsets[1]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        
+        Raylib.DrawTexturePro(_parallaxTextures[0], _textureBounds, OffsetRectangle(rectangle0, 0, _yOffsets[0]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[0], _textureBounds, OffsetRectangle(rectangle0, WindowManager.Width, _yOffsets[0]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+        Raylib.DrawTexturePro(_parallaxTextures[0], _textureBounds, OffsetRectangle(rectangle0, -WindowManager.Width, _yOffsets[0]), new Vector2(-_parallaxTextures[2].width / 2, 0), 0, Color.WHITE);
+    }
+
+    private void GenerateNewPositions() // Generate new positions for the layers
+    {
+        // Get the render position for each layer
+        _layerPositions[0] = GetRenderPosition(2, 2); // Movement offset multiplier being 2 so its camera position / 2
+        _layerPositions[1] = GetRenderPosition(3, 5); // Same again but with 3 and 5
+        _layerPositions[2] = GetRenderPosition(4, 6); // Same again but with 4 and 6
+        _layerPositions[3] = GetRenderPosition(6, 8); // Same again but with 6 and 8
+        _layerPositions[4] = GetRenderPosition(8, 10); // Same again but with 8 and 10
+    }
+    
+
+    private Rectangle OffsetRectangle(Rectangle subject, int x = 0, int y = 0) // Offset a rectangle by x and y
+    {
+        subject.x += x; // Offset the x
+        subject.y += y; // Offset the y
+        return subject; // Return the rectangle
+    }
+
+    private Rectangle GenerateRectangle(Vector2 at) // Generate a rectangle at a position
+    {
+        return new Rectangle(at.X, at.Y, WindowManager.Width, WindowManager.Height); // Generate a rectangle at a position with the width and height of the window
+    }
+    
+    private Vector2 GetRenderPosition(int rx, int ry) // Get the render position of a layer
+    {
+        int x = Convert.ToInt32(Loader.WindowManager.Camera.target.X - Loader.WindowManager.Camera.offset.X) + WindowManager.Width / 2 - Convert.ToInt32(Loader.WindowManager.Camera.target.X / rx); // Get the x position of the layer (offset by the camera offset) and offset by the camera position / rx (rx being the movement offset multiplier) 
+        int y = Convert.ToInt32(Loader.WindowManager.Camera.target.Y - Loader.WindowManager.Camera.offset.Y) + WindowManager.Height / 2 + (Game.FloorHeight - Convert.ToInt32(Loader.WindowManager.Camera.target.Y)) / ry; // Get the y position of the layer (offset by the camera offset) and offset by the camera position / ry (ry being the movement offset multiplier)
+
+        return new Vector2(CheckRenderOffset(rx, x) - WindowManager.Width / 2, y - WindowManager.Height / 2); // Return the render position with render offset if is too far away from camera position (offset by the width and height of the window / 2)
+    }
+
+    // Checks to see if the render position is too far away from the camera position
+    // If it is then it will offset the render position by the width of the window * the movement offset multiplier
+    // This is so the layers loop perfectly
+    private int CheckRenderOffset(int rx, int x) 
+    {
+        var multiplier= Convert.ToInt32(Loader.WindowManager.Camera.target.X) / WindowManager.Width / rx + (Loader.WindowManager.Camera.target.X < 0 ? -1 : 0); // Get the movement offset multiplier (camera position / width of the window / rx + if the camera position is less than 0 then -1 else 0)
+        x += WindowManager.Width * multiplier; // Offset the x by the width of the window * the movement offset multiplier
+ 
+        return x; // Return the x
+    }
+}
+```
+
+## Barrel.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\Barrel.cs`
+
+```csharp
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class Barrel : TexturedObject
+{
+    public Barrel(Vector2 position) : base(ObjectIds.Barrel, Loader.AssetManager.GetTexture("obj.barrel"), position, new Vector2(150, 200))
+    {
+        Collidable = true;
+    }
+}
+```
+
+## Coin.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\Coin.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class Coin : ItemObject
+{
+    public Coin (int id, Texture2D texture, Vector2 position, Vector2 dimensions) : base(0, Loader.AssetManager.GetTexture("item.coin"), position, new Vector2(50, 50))
+    {
+        Id = (byte)id; // Set the id
+        Collidable = false; // Set collidable
+    }
+
+    public void CheckForPickup() // Check if the coin is in range of the player
+    {
+        if (!InRange(Loader.Game.Player.Position)) return; // Check if the player is in range of the coin
+        Loader.Game.ObjectManager.RemoveItemObject(this); // Remove the coin from the item object list
+        Loader.AudioManager.PlaySound("game.coin"); // Play the coin sound
+        Loader.Game.Coins += 1 * (Loader.Game.PowerUps[0] > 0 ? 2 : 1); // Add 1 coin to the player's coin count
+    }
+    
+    public new void OnInteract()
+    {
+    }
+}
+```
+
+## CoinHandle.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\CoinHandle.cs`
+
+```csharp
+namespace Velocity.Game.Object;
+
+public sealed class CoinHandle
+{
+    private readonly List<Coin> _coins = new();
+
+    public void Add(Coin coin)
+    {
+        _coins.Add(coin);
+    }
+    
+    public void Remove(Coin coin)
+    {
+        _coins.Remove(coin);
+    }
+
+    public void Clear()
+    {
+        _coins.Clear();
+    }
+
+    public void Update()
+    {
+        foreach (var coin in _coins.ToArray())
+        {
+            coin.CheckForPickup();
+        }
+    }
+}
+```
+
+## Crate.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\Crate.cs`
+
+```csharp
+using Velocity.Game.Physics;
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class Crate : TexturedObject
+{
+    public Crate(Vector2 position) : base(ObjectIds.Crate, Loader.AssetManager.GetTexture("obj.crate"), position, new Vector2(200, 200))
+    {
+        Collidable = true;
+    }
+}
+```
+
+## FloatingText.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\FloatingText\FloatingText.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Game.Object.FloatingText.Renderer;
+using Velocity.Math;
+
+namespace Velocity.Game.Object.FloatingText;
+
+public class FloatingText
+{
+    public Vector2 Position { get; set; }
+    public string Text { get; set; }
+    public Color TextColor { get; set; }
+    public Color BackgroundColor { get; set; }
+    public Color BorderColor { get; set; }
+
+    public bool IsInRange = false;
+
+    public TextRenderer Renderer;
+    
+    public FloatingText(Vector2 position, string text, Color textColor, Color? backgroundColor = null, Color? borderColor = null)
+    {
+        Position = position;
+        Text = text;
+        TextColor = textColor;
+        BackgroundColor = backgroundColor ?? new Color(60, 60, 60, 200);
+        BorderColor = borderColor ?? textColor;
+
+        Renderer = new TextRenderer(this);
+    }
+
+    public void Tick()
+    {
+        IsInRange = CheckInRange(Loader.Game.Player.Position, 500);
+    }
+
+    private bool CheckInRange(Vector2 position, int range)
+    {
+        return position.X >= Position.X - range &&
+                position.X <= Position.X + range &&
+                position.Y >= Position.Y - range &&
+                position.Y <= Position.Y + range;
+    }
+}
+```
+
+## FloatingTextManager.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\FloatingText\FloatingTextManager.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Game.Object.Renderer;
+using Velocity.Math;
+
+namespace Velocity.Game.Object.FloatingText;
+
+public class FloatingTextManager
+{
+    public readonly List<FloatingText> FloatingTexts = new();
+    public readonly FloatingTextRenderer Renderer;
+
+    public FloatingTextManager()
+    {
+        Renderer = new(this);
+    }
+    
+    public void RegisterText(Vector2 position, string text, Color textColor, Color? backgroundColor = null, Color? borderColor = null)
+    {
+        FloatingTexts.Add(new FloatingText(position, text, textColor, backgroundColor, borderColor));
+    }
+
+    public void Clear()
+    {
+        FloatingTexts.Clear();
+    }
+
+    public void Tick()
+    {
+        foreach (FloatingText floatingText in FloatingTexts.ToArray())
+        {
+            floatingText.Tick();   
+        }
+    }
+}
+```
+
+## TextRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\FloatingText\Renderer\TextRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Object.FloatingText.Renderer;
+
+public class TextRenderer : ConditionalRenderer
+{
+    private readonly FloatingText _parent;
+    private int _alpha;
+    
+    public TextRenderer (FloatingText parent) : base("velocity:game.object.floating-text." + Guid.NewGuid())
+    {
+        _parent = parent;
+    }
+    
+    public override void Draw()
+    {
+        if (_parent.IsInRange && _alpha < 255) _alpha += 5;
+        else if (_alpha > 0) _alpha -= 5;
+        else return;
+        int x = (int) (_parent.Position.X - Raylib.MeasureTextEx(Raylib.GetFontDefault(), _parent.Text, 28, 2).X / 2);
+        int y = (int) (_parent.Position.Y - Raylib.MeasureTextEx(Raylib.GetFontDefault(), _parent.Text, 28, 2).Y / 2);
+
+        Raylib.DrawRectangle(x - 10, y - 10, (int)Raylib.MeasureTextEx(Raylib.GetFontDefault(), _parent.Text, 28, 2).X + 20, (int)Raylib.MeasureTextEx(Raylib.GetFontDefault(), _parent.Text, 28, 2).Y + 20, _parent.BackgroundColor with { a = (byte)(200d * _alpha / 255d) });
+        Raylib.DrawText(_parent.Text, x, y, 28, _parent.TextColor with { a = Convert.ToByte(_alpha) });
+    }
+}
+```
+
+## GameObject.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\GameObject.cs`
+
+```csharp
+using System.Numerics;
+using Velocity.Game.Physics;
+using Vector2 = Velocity.Math.Vector2;
+
+namespace Velocity.Game.Object;
+
+public abstract class GameObject
+{
+    public int Id; // Item/object id
+    public bool Collidable; // Can the object be collided with?
+    public readonly Vector2 Position; // Position of the object
+    public readonly Vector2 Dimensions; // Dimensions of the object
+
+    protected GameObject(int id, Vector2 position, Vector2 dimensions, bool isCollidable = true) // Constructor
+    {
+        Id = id; // Set id
+        Position = position; // Set position
+        Dimensions = dimensions; // Set dimensions
+        Collidable = isCollidable; // Set if the object is collidable
+    }
+
+    public bool CheckRange(Collidable target) // Check if the object is in range of the player (collidable)
+    {
+        return target.Position.X + target.Dimensions.X / 2 >= Position.X - (PhysicsConst.MaxVelocity * 1.5) &&
+               target.Position.X - target.Dimensions.X / 2 <= Position.X + Dimensions.X + (PhysicsConst.MaxVelocity * 1.5) &&
+               target.Position.Y - target.Dimensions.Y / 2 <= Position.Y + Dimensions.Y + (PhysicsConst.MaxVelocity * 1.5) &&
+               target.Position.Y + target.Dimensions.Y / 2 >= Position.Y - (PhysicsConst.MaxVelocity * 1.5);
+    }
+
+    public bool InXBounds(Collidable target, int offset = 0) // Check if the object is in the x bounds of the player (collidable)
+    {
+        return target.Position.X + target.Dimensions.X / 2 >= Position.X - offset && 
+               target.Position.X - target.Dimensions.X / 2 <= Position.X + Dimensions.X + offset;
+    }
+
+    public bool InYBounds(Collidable target, int offset = 0) // Check if the object is in the y bounds of the player (collidable)
+    {
+        return target.Position.Y + target.Dimensions.Y / 2 >= Position.Y - offset &&
+               target.Position.Y - target.Dimensions.Y / 2 <= Position.Y + Dimensions.Y + offset;
+    }
+}
+```
+
+## ItemIds.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\ItemIds.cs`
+
+```csharp
+namespace Velocity.Game.Object;
+
+public class ItemIds
+{
+    public const int Coin = 4;
+    public const int Speed = 3;
+    public const int Health = 2;
+    public const int CoinMult = 1;
+}
+```
+
+## ItemObject.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\ItemObject.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Game.Object.Renderer;
+using Velocity.Input;
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class ItemObject : TexturedObject, IControllable
+{
+    public byte Id; // Item id
+    private int _range = 50; // Range of the item
+    private const int Cooldown = 40; // Cooldown of the item
+
+    public Color Color = Color.WHITE; // Color of the item
+    public ParticleRenderer ParticleRenderer; // Particle renderer of the item
+    public InfoCardRenderer InfoCardRenderer; // Info card renderer of the item
+
+    private bool _enabled = true; // Is the item enabled?
+    
+    public ItemObject(byte id, Texture2D texture, Vector2 position, Vector2 dimensions) : base(id, texture, position, dimensions) // Constructor
+    {
+        Id = id; // Set id
+        Collidable = false; // Set collidable
+    }
+
+    public void SetInteractRange(int pixels) // Set the interact range
+    {
+        _range = pixels; // Set the range
+    }
+
+    public void SetColor(Color color) // Set the color
+    {
+        Color = color; // Set the color
+        ParticleRenderer =
+            new ParticleRenderer(
+                new System.Numerics.Vector2(Convert.ToSingle(Position.X + 25), Convert.ToSingle(Position.Y + 25)),
+                Color); // Set the particle renderer with the color
+        InfoCardRenderer = new InfoCardRenderer(this); // Set the info card renderer (must be registered after color info is set)
+    }
+
+    public static Color GetColorFor(int id) // Get the color for the item
+    {
+        return id switch
+        {
+            1 => new Color(0, 105, 10, 255),
+            2 => new Color(158, 0, 93, 255),
+            3 => new Color(167, 196, 0, 255),
+            _ => Color.WHITE
+        }; // Return the color for the item
+    }
+
+    public bool InRange(Vector2 position) // Check if the item is in range of the player
+    {
+        return
+        position.X <= Position.X + Dimensions.X + _range &&
+            position.X >= Position.X - _range &&
+            position.Y <= Position.Y + Dimensions.Y + _range &&
+            position.Y >= Position.Y - _range; // Return if the player is in range of the item by checking if the player is in the x and y bounds of the item with the range
+    }
+
+    public void OnInteract() // On interact
+    {
+        if (!InRange(Loader.Game.Player.Position)) return; // If the player is not in range, return
+        if (!_enabled) return; // If the item is not enabled, return
+            
+        switch (Id)
+        {
+            case 2: // If the item is a health item
+                Loader.Game.Player.Health += 1; // Add 1 to the player's health
+                break;
+            default: // If the item is not a health item
+                Loader.Game.PowerUps[Id - 1] += Cooldown; // Add the cooldown to the power up
+                break;
+        } 
+
+        _enabled = false;
+        Loader.Game.TextRenderer.TriggerOverlay(InfoCardRenderer._text[Id - 1] + " activated", new Color(255, 255, 0, 255), 3);
+        Loader.AudioManager.PlaySound("game.collect");
+        
+        Remove();
+    }
+    
+    private void Remove ()
+    {
+        Loader.ControlManager.UnRegisterController(this);
+        Loader.Game.ObjectManager.RemoveItemObject(this);
+    }
+}
+```
+
+## ObjectIds.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\ObjectIds.cs`
+
+```csharp
+namespace Velocity.Game.Object;
+
+public class ObjectIds
+{
+    public static int Crate = 1;
+    public static int Barrel = 2;
+}
+```
+
+## ObjectManager.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\ObjectManager.cs`
+
+```csharp
+using System.Reflection;
+using Raylib_cs;
+using Velocity.Exception;
+using Velocity.Game.Object.Renderer;
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class ObjectManager
+{ 
+    private readonly Dictionary<int, Type> _registeredItems = new(); // Registered items
+    private readonly Dictionary<int, Type> _registeredObjects = new(); // Registered objects
+    
+    public readonly List<TexturedObject> LoadedTextureObjects = new(); // Loaded objects
+    public readonly List<ItemObject?> LoadedItemObjects = new(); // Loaded items
+    
+    public readonly CoinHandle CoinHandle = new(); // Coin handle
+
+    public ObjectManager() // Register default items and objects
+    {
+        RegisterDefaultItems(); // Register default items
+        RegisterDefaultObjects();  // Register default objects
+    }
+
+    private void RegisterDefaultItems() // Register default items
+    {
+        RegisterItem(ItemIds.Speed, typeof(ItemObject)); // Register speed item
+        RegisterItem(ItemIds.Health, typeof(ItemObject)); // Register health item
+        RegisterItem(ItemIds.CoinMult, typeof(ItemObject));  // Register coin multiplier item
+        RegisterItem(ItemIds.Coin, typeof(Coin)); // Register coin item
+    }
+
+    private void RegisterDefaultObjects () // Register default objects
+    {
+        RegisterObject(ObjectIds.Crate, typeof(Crate)); // Register crate object
+        RegisterObject(ObjectIds.Barrel, typeof(Barrel)); // Register barrel object
+    }
+
+    private void RegisterItem(int id, Type item) // Register item
+    {
+        _registeredItems.Add(id, item); // Add item to registered items
+    }
+    
+    private void RegisterObject(int id, Type item) // Register object
+    {
+        _registeredObjects.Add(id, item); // Add object to registered objects
+    }
+    
+    public void AddItemObject(int id, Vector2 at) // Add item object
+    {
+        if (id == 0) return;
+        ItemObject? itemObject = Activator.CreateInstance(_registeredItems[id], 
+            (byte)id,
+            Loader.AssetManager.GetTexture("item.power_ups"),
+            new Vector2(at.X, Game.FloorHeight - at.Y),
+            new Vector2(50, 50)) as ItemObject; // Create item object with its initial values and set it to the item object variable (activator because we are dealing with types rather than instances)
+        
+        if (itemObject == null) throw new VelocityException("Cannot add item object that has not been registered."); // Throw exception if item object is null
+
+        itemObject.SetColor(ItemObject.GetColorFor(id)); // Set the color of the item object
+        LoadedItemObjects.Add(itemObject); // Add item object to loaded item objects
+        Loader.ControlManager.RegisterController(itemObject); // Register item object as a controller
+
+        if (id == 4) CoinHandle.Add((Coin)itemObject); // Add coin to coin handle if the item id is 4
+    }
+
+    public void AddObject(int id, Vector2 at) // Add object
+    {
+        TexturedObject? gameObject = 
+            Activator.CreateInstance(_registeredObjects[id], new Vector2(at.X, Game.FloorHeight - at.Y)) as TexturedObject; // Create object with its initial values and set it to the object variable (activator because we are dealing with types rather than instances)
+        
+        if (gameObject == null) throw new VelocityException("Cannot add item object that has not been registered."); // Throw exception if object is null
+        
+        LoadedTextureObjects.Add(gameObject); // Add object to loaded objects
+    }
+
+    public void Close() // Close
+    {
+        LoadedItemObjects.Clear(); // Clear loaded item objects
+        LoadedTextureObjects.Clear(); // Clear loaded objects
+        CoinHandle.Clear(); // Clear coins
+    }
+
+    public void RemoveItemObject(ItemObject itemObject) // Remove item object
+    {
+        LoadedItemObjects.Remove(itemObject); // Remove item object from loaded item objects
+        if (itemObject.Id == ItemIds.Coin) CoinHandle.Remove((Coin)itemObject); // Remove coin from coin handle if the item id is 4
+    }
+}
+```
+
+## CoinRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\Renderer\CoinRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Object.Renderer;
+
+public class CoinRenderer : ConditionalRenderer
+{
+    private int _currentFrame; // The current frame of the animation
+    private int _frameCount; // The current frame count
+    private const int FrameSpeed = 8; // The speed of the animation (every 8 frames)
+
+    private Texture2D _texture; // The texture of the coin
+    private Rectangle _sourceRectangle; // The source rectangle of the coin
+    
+    public CoinRenderer() : base("velocity.item.coin") // Set the render id
+    {
+        LoadTexture(); // Load the texture
+    }
+
+    private void LoadTexture () // Load the texture
+    {
+        _texture = Loader.AssetManager.GetTexture("item.coin"); // Get the texture from the asset manager
+        _sourceRectangle = new Rectangle(0, 0, _texture.width / 5, _texture.height); // Set the source rectangle to the first frame of the animation
+    }
+
+    public override void Draw() // Draw the coin
+    {
+        _frameCount++; // Increment the frame count
+        if (_frameCount >= 60 / FrameSpeed) // If the frame count is greater than or equal to 60 / FrameSpeed (60 frames per second / FrameSpeed)
+        {
+            _frameCount = 0; // Reset the frame count
+            _currentFrame++; // Increment the current frame
+            if (_currentFrame > 5) _currentFrame = 0; // If the current frame is greater than 5, reset it to 0
+            _sourceRectangle = new Rectangle(_currentFrame * (_texture.width / 5), 0, _texture.width / 5, _texture.height); // Set the source rectangle to the current frame
+        }
+        
+        foreach (var item in Loader.Game.ObjectManager.LoadedItemObjects.OfType<ItemObject>().Where(item => item.Id == ItemIds.Coin)) // Loop through all coins
+        {
+            Raylib.DrawTexturePro(_texture, _sourceRectangle, new Rectangle(
+                Convert.ToInt32(item.Position.X - item.Dimensions.X / 2), 
+                Convert.ToInt32(item.Position.Y - item.Dimensions.Y / 2),
+                Convert.ToInt32(item.Dimensions.X),
+                Convert.ToInt32(item.Dimensions.X)), new Vector2(0, 0), 0, new Color(255, 255, 255, 255)); // Draw the coin
+        }
+    }
+}
+```
+
+## FloatingTextRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\Renderer\FloatingTextRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Game.Object.FloatingText;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Object.Renderer;
+
+public class FloatingTextRenderer : ElementRenderer
+{
+    private readonly FloatingTextManager _manager;
+    public FloatingTextRenderer(FloatingTextManager manager) : base("velocity:game.object.floatingtext")
+    {
+        _manager = manager;
+    }
+
+    public override void Draw()
+    {
+        foreach (var floatingText in _manager.FloatingTexts)
+        {
+            floatingText.Renderer.Draw();
+        }
+    }
+}
+```
+
+## InfoCardRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\Renderer\InfoCardRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Object.Renderer;
+
+public class InfoCardRenderer : ConditionalRenderer
+{
+    private ItemObject _item;
+    
+    private int _lastAMultiplier = 0;
+
+    public int Alpha = 0;
+    public int TextAlpha = 0;
+
+    public string[] _text =
+    {
+        "+1 Coin Multiplier",
+        "+1 Health",
+        "+15% Speed"
+    };
+    
+    public InfoCardRenderer(ItemObject item) : base("velocity.item.infocard." + item.Position.X + "." + item.Position.Y)
+    {
+        _item = item;
+    }
+
+    public override void Draw()
+    {
+        if (_item.InRange(Loader.Game.Player.Position))
+        {
+            if (Alpha < 100) Alpha += 5;
+        }
+        else
+        {
+            if (Alpha > 0) Alpha -= 5;
+        }
+
+        if (Alpha == 100)
+        {
+            if (TextAlpha < 100) TextAlpha += 20;
+            if (TextAlpha >= 100) TextAlpha = 100;
+        }
+        else
+        {
+            if (TextAlpha > 0) TextAlpha -= 25;
+            if (TextAlpha <= 0) TextAlpha = 0;
+        }
+        
+        
+        if (Alpha <= 0) return;
+        
+        double aMultiplier = Convert.ToDouble(Alpha) / 100d;
+        double textAMultiplier = Convert.ToDouble(TextAlpha) / 100d;
+        
+        Raylib.DrawRectangleRounded(new Rectangle(Convert.ToInt32(_item.Position.X + _item.Dimensions.X / 2 - 107), Convert.ToInt32(_item.Position.Y - 30) - Convert.ToInt32(100d * aMultiplier), 215, Convert.ToInt32(100d * aMultiplier)), 0.3f, 4, new Color(0, 20, 40, Convert.ToInt32(150 * aMultiplier)));
+        Raylib.DrawRectangleRoundedLines(new Rectangle(Convert.ToInt32(_item.Position.X + _item.Dimensions.X / 2 - 107), Convert.ToInt32(_item.Position.Y - 30) - Convert.ToInt32(100d * aMultiplier), 215, Convert.ToInt32(100d * aMultiplier)), 0.3f, 4, 3f, _item.Color with{ a = Convert.ToByte(255 * aMultiplier) });
+        Raylib.DrawRectangleRoundedLines(new Rectangle(Convert.ToInt32(_item.Position.X + _item.Dimensions.X / 2 - 97), Convert.ToInt32(_item.Position.Y - 130 + 10), 35, 36), 0.3f, 4, 2f, new Color(255, 255, 255, Convert.ToInt32(255 * textAMultiplier)));
+        Raylib.DrawText(Loader.Settings.Keybind.Interact.ToString().Replace("KEY_", ""), Convert.ToInt32(_item.Position.X + _item.Dimensions.X / 2 - 89), Convert.ToInt32(_item.Position.Y - 130 + 14), 32, Color.WHITE with {a = Convert.ToByte(255 * textAMultiplier)});
+        Raylib.DrawText("to Interact", Convert.ToInt32(_item.Position.X + _item.Dimensions.X / 2 - 50), Convert.ToInt32(_item.Position.Y - 112), 24, Color.WHITE with {a = Convert.ToByte(255 * textAMultiplier)});
+        Raylib.DrawText(_text[_item.Id - 1], Convert.ToInt32(_item.Position.X + _item.Dimensions.X / 2 - 98), Convert.ToInt32(_item.Position.Y - 65), 24, Color.WHITE with {a = Convert.ToByte(255 * textAMultiplier)});
+    }
+}
+```
+
+## ObjectRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\Renderer\ObjectRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Object.Renderer;
+
+public class ObjectRenderer : ElementRenderer
+{
+    private readonly Game _game;
+    
+    public ObjectRenderer(Game game, string renderId = "velocity:game_objects") : base(renderId) 
+    {
+        _game = game; // Set the game
+    }
+
+    public override void Draw() 
+    {
+        if (_game.ObjectManager.LoadedTextureObjects.Count == 0) return; // Don't draw if there are no objects to draw
+        
+        foreach (var textureObject in _game.ObjectManager.LoadedTextureObjects) // Draw all objects
+        {
+            Rectangle source =
+                new Rectangle(0, 0, 
+                    textureObject.Texture.width,
+                    textureObject.Texture.height
+                    ); // Source rectangle is the entire texture
+
+            Rectangle rectangle = new Rectangle(
+                (int)textureObject.Position.X,
+                (int)textureObject.Position.Y,
+                (int)textureObject.Dimensions.X,
+                (int)textureObject.Dimensions.Y
+            ); // Destination rectangle is the object's position and dimensions
+            
+            Raylib.DrawTexturePro(textureObject.Texture, source, rectangle, new Vector2(0, 0), 0, Color.WHITE); // Draw the object
+        }
+    }
+}
+```
+
+## ParticleRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\Renderer\ParticleRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Game.Physics;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game.Object.Renderer;
+
+public class ParticleRenderer : ConditionalRenderer
+{
+    private const int MaxParticles = 200; // Max particles to render at one time
+    
+    private readonly Vector2 _position; // Position of the particle spawner
+    private readonly Color _color; // Color of the particle
+
+    private int _currentFrame; // Current frame of the particle
+    private readonly int _frameSpeed = 8; // Speed of the particle animation
+
+    private Texture2D _particleMap; // Texture of the particle
+
+    private readonly Particle[] _particles = new Particle[MaxParticles]; // Array of particles
+
+    private struct Particle
+    {
+        public Rectangle Source;
+        public Vector2 Offset;
+        public Vector2 OffsetMultiple;
+        public float Alpha;
+        public float Size;
+        public float Rotation;
+        public float RotationMultiple;
+        public bool Active;
+    } // Particle struct
+
+    public ParticleRenderer(Vector2 position, Color color) : base("velocity.particle." + Guid.NewGuid()) // Constructor
+    {
+        _position = position; // Set the position
+        _color = color; // Set the color
+        
+        LoadTexture(); // Load the texture
+        
+        for (int i = 0; i < MaxParticles; i++) // Initialize the particles
+        {
+            Random rnd = new Random(); // Create a random instance
+
+            _particles[i].Source = GenerateNewSourcePosition(); // Generate a new source position
+            _particles[i].Offset = new Vector2(0, 1);  // Set the offset
+            _particles[i].OffsetMultiple = new Vector2(rnd.Next(0, 7) - 3, -rnd.Next(0, 8) + 4); // Set the offset multiple (for random scattering)
+            _particles[i].Alpha = 1.0f; // Set the alpha
+            _particles[i].Size = 1.0f; // Set the size
+            _particles[i].Rotation = 0.0f; // Set the rotation
+            _particles[i].RotationMultiple = rnd.Next(0, 9) - 4; // Set the rotation multiple (for random rotation)
+            _particles[i].Active = false; // Set the particle to inactive
+        }
+    }
+
+    private void LoadTexture() // Load the texture
+    {
+        _particleMap = Loader.AssetManager.GetTexture("particle.particle_map"); // Get the texture
+        
+        GenerateNewSourcePosition(); // Generate a new source position
+    }
+
+    private Rectangle GenerateNewSourcePosition() // Generate a new source position
+    {
+        Random rnd = new Random(); // Create a random instance
+
+        return new Rectangle((_particleMap.width / 4) * rnd.Next(0, 4), (_particleMap.height / 4) * rnd.Next(0, 8),
+            _particleMap.height / 4, _particleMap.height / 4); // Return the new source position (for random particle asset, stored in a tile grid)
+    }
+
+    public override void Draw() // Draw the particle
+    {
+        _currentFrame++; // Increment the current frame
+        if (_currentFrame >= 60 / _frameSpeed) // If the current frame is greater than or equal to the frame speed
+        {
+            _currentFrame = 0; // Reset the current frame
+            for (int i = 0; i < MaxParticles; i++) // Loop through all particles
+            {
+                if (!_particles[i].Active) // If the particle is not active
+                {
+                    _particles[i].Offset = Vector2.Zero; // Set the offset to zero
+                    _particles[i].Active = true; // Set the particle to active
+                    _particles[i].Size = 1.0f; // Set the size to 1
+                    _particles[i].Rotation = 0; // Set the rotation to 0
+
+                    i = MaxParticles; // Break the loop
+                }
+            }
+        }
+        
+        
+        for (int i = 0; i < MaxParticles; i++) // Loop through all particles
+        {
+            if (!_particles[i].Active) continue; // If the particle is not active, continue
+            _particles[i].Offset.X += _particles[i].OffsetMultiple.X; // Add the offset multiple to the offset
+            _particles[i].Offset.Y += _particles[i].OffsetMultiple.Y; // Add the offset multiple to the offset
+            _particles[i].Size -= 0.02f; // Decrease the size by 0.02
+
+            if (_particles[i].Size <= 0.0f) _particles[i].Active = false; // If the size is less than or equal to 0, set the particle to inactive
+
+            _particles[i].Rotation += _particles[i].RotationMultiple; // Add the rotation multiple to the rotation
+            
+            int width = Convert.ToInt32(40 * _particles[i].Size / 2); // Calculate the width
+            int height = Convert.ToInt32(40 * _particles[i].Size / 2); // Calculate the height
+
+            Rectangle dest = new Rectangle((_position.X + _particles[i].Offset.X) - width / 2, 
+                _position.Y + _particles[i].Offset.Y - height / 2, width, height); // Calculate the destination rectangle
+
+            Raylib.DrawTexturePro(_particleMap,
+                _particles[i].Source,
+                dest,
+                new Vector2(),
+                _particles[i].Rotation,
+                new Color(_color.r, _color.g, _color.b, Convert.ToByte(_color.a * _particles[i].Alpha))
+            ); // Draw the particle
+        }
+    }
+}
+```
+
+## PowerUpRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\Renderer\PowerUpRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Vector2 = System.Numerics.Vector2;
+
+namespace Velocity.Game.Object.Renderer;
+
+public class PowerUpRenderer : ObjectRenderer
+{
+    private readonly Game _game; // Game instance
+    private Texture2D _texture;  // Texture of the object
+
+    private readonly Rectangle[] _source = new Rectangle[3]; // Source rectangles for the texture
+ 
+    private readonly CoinRenderer _coinRenderer; // Coin renderer
+    public PowerUpRenderer(Game game) : base(game, "velocity:power_ups")  // Constructor
+    {
+        _game = game; // Set the game
+        _coinRenderer = new CoinRenderer(); // Create the coin renderer
+
+        LoadTexture(); // Load the texture
+        RegisterSourceRectangles(); // Register the source rectangles
+    }
+    
+    private void LoadTexture() // Load the texture
+    {
+        _texture = Loader.AssetManager.GetTexture("item.power_ups"); // Get the texture
+    }
+
+    private void RegisterSourceRectangles()
+    {
+        // generate source rectangles
+        _source[0] = new Rectangle(0, _texture.height / 4 * 3, _texture.width / 3, _texture.height / 4);  // First power up texture 
+        _source[1] = new Rectangle(_texture.width / 3, _texture.height / 4 * 2, _texture.width / 3, _texture.height / 4); // Second power up texture
+        _source[2] = new Rectangle(_texture.width / 3 * 2, _texture.height / 4 * 3, _texture.width / 3, _texture.height / 4); // Third power up texture
+    }
+
+    public override void Draw() // Draw the object
+    {
+        foreach (var item in _game.ObjectManager.LoadedItemObjects) // Draw all objects
+        {
+            if (item == null) continue; // Don't draw if the object is null
+            if (item.Id == ItemIds.Coin) continue; // Don't draw if the object is a coin
+            item.ParticleRenderer.Draw(); // Draw the particle renderer
+
+            Raylib.DrawCircle(Convert.ToInt32(item.Position.X + item.Dimensions.X / 2),
+                Convert.ToInt32(item.Position.Y + item.Dimensions.Y / 2),
+                Convert.ToInt32(item.Dimensions.X / 2) + 8, item.Color); // Draw the circle around the object
+
+            Raylib.DrawTexturePro(_texture, _source[item.Id - 1], new Rectangle(
+                Convert.ToInt32(item.Position.X - 4),
+                Convert.ToInt32(item.Position.Y - 6),
+                Convert.ToInt32(item.Dimensions.X) + 8,
+                Convert.ToInt32(item.Dimensions.X) + 8), new Vector2(0, 0), 0, new Color(255, 255, 255, 255)); // Draw the object
+
+            item.InfoCardRenderer.Draw(); // Draw the info card renderer
+        }
+        
+        _coinRenderer.Draw(); // Draw the coin renderer
+    }
+}
+```
+
+## TexturedObject.cs
+**Location:** `Velocity-NEA\Velocity\Game\Object\TexturedObject.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Math;
+
+namespace Velocity.Game.Object;
+
+public class TexturedObject : GameObject
+{
+    public Texture2D Texture; // Texture of the object
+
+    protected TexturedObject(int id, Texture2D texture, Vector2 position, Vector2 dimensions) : base(id, position, dimensions)
+    {
+        Texture = texture;
+    }
+}
+```
+
+## BasePhysics.cs
+**Location:** `Velocity-NEA\Velocity\Game\Physics\BasePhysics.cs`
+
+```csharp
+using Velocity.Math;
+
+namespace Velocity.Game.Physics;
+
+public abstract class BasePhysics
+{
+    public bool IsEnabled = true; // If the physics should be applied
+    public bool HasGravity = false;  // If the physics should have gravity
+    public bool OnFloor; // If the physics object is on the floor
+    
+    public Vector2 Position; // Position of the physics object
+    public readonly Vector2 Dimensions; // Dimensions of the physics object
+    public Vector2 Velocity; // Velocity of the physics object
+
+    protected BasePhysics(Vector2 position, Vector2 dimensions) // Constructor
+    {
+        Position = position; // Set position
+        Velocity = new Vector2(); // Set velocity
+        Dimensions = dimensions; // Set dimensions
+    }
+
+    public void AddVelocity(double x = 0, double y = 0, bool jump = false) // Add velocity to the physics object
+    {
+        if (System.Math.Abs(Velocity.X) + System.Math.Abs(x) > PhysicsConst.MaxVelocity && !jump && !OnFloor) // If the x velocity is greater than the max velocity and the physics object is not jumping and the physics object is not on the floor
+        {
+            double difference = Double.Abs(PhysicsConst.MaxVelocity) - Double.Abs(Velocity.X); // Calculate the difference between the max velocity and the current velocity
+            x = Velocity.X > 0 ? difference : -difference; // Set x to the difference if the velocity is greater than 0, otherwise set x to the negative difference
+
+        } else if (System.Math.Abs(System.Math.Abs(Velocity.X) - PhysicsConst.MaxVelocity) == 0 && !jump && !OnFloor) x = 0; // If the velocity is equal to the max velocity and the physics object is not jumping and the physics object is not on the floor, set x to 0
+        
+        if (System.Math.Abs(Velocity.Y) + System.Math.Abs(y) > PhysicsConst.MaxVelocity && !jump && !OnFloor) // If the y velocity is greater than the max velocity and the physics object is not jumping and the physics object is not on the floor
+        {
+            double difference = Double.Abs(PhysicsConst.MaxVelocity - Velocity.Y); // Calculate the difference between the max velocity and the current velocity
+            y = Velocity.Y > 0 ? difference : -difference; // Set y to the difference if the velocity is greater than 0, otherwise set y to the negative difference
+
+        } else if (System.Math.Abs(System.Math.Abs(Double.Round(Velocity.Y)) - PhysicsConst.MaxVelocity) == 0 && !jump && !OnFloor) y = 0; // If the velocity is equal to the max velocity and the physics object is not jumping and the physics object is not on the floor, set y to 0
+        
+        if (x != 0) Velocity.X += x; // Add x to the velocity if x is not 0
+        if (y != 0) Velocity.Y -= y; // Add y to the velocity if y is not 0
+    }
+
+    public void SetEnabled(bool value = true) // Set if the physics should be applied
+    {
+        IsEnabled = value; // Set if the physics should be applied
+    }
+
+    // Calculate the base physics
+    public virtual void Tick() {
+        if (!IsEnabled) return; // If the physics should not be applied, return
+         
+        if (HasGravity && !OnFloor) Velocity.Y += PhysicsConst.Gravity; // If the physics object has gravity and is not on the floor, add gravity to the y velocity
+
+        double footY = Position.Y + Dimensions.Y / 2; // Calculate the foot y position
+
+        if (footY >= Game.FloorHeight - PhysicsConst.MaxVelocity) // If the foot y position is greater than or equal to the floor height minus the max velocity
+        {
+            if (Convert.ToInt32(footY) == Game.FloorHeight) // If the foot y position is equal to the floor height
+            {
+                if (Velocity.Y >= 0) // If the y velocity is greater than or equal to 0
+                {
+                    Velocity.Y = 0; // Set the y velocity to 0
+                }
+
+                OnFloor = true; // Set on floor to true
+
+            }
+            else if (footY + Velocity.Y >= Game.FloorHeight && footY <= Game.FloorHeight) // If the foot y position plus the y velocity is greater than or equal to the floor height and the foot y position is less than or equal to the floor height
+            {
+                Velocity.Y = 0; // Set the y velocity to 0
+            }
+            else OnFloor = false; // Set on floor to false
+
+            if (Position.Y >= Game.FloorHeight + 200) // If the y position is greater than or equal to the floor height plus 200 (respawn the player if they somehow end up below the floor)
+            {
+                Position.Y = Game.FloorHeight - 100; // Set the y position to the floor height minus 100
+                return; // Return
+            }
+        }
+
+        if (OnFloor) // If the player is on the floor
+        {
+            double frictionLossX = (Velocity.X / PhysicsConst.MaxVelocity) * PhysicsConst.Friction; // Calculate the friction loss for the x velocity (friction constant times the players current velocity over max velocity)
+            Velocity.X -= frictionLossX; // Subtract the friction loss from the x velocity
+        }
+        
+        double airResistanceLossX = (Velocity.X / PhysicsConst.MaxVelocity) * PhysicsConst.AirResistance; // Calculate the air resistance loss for the x velocity (air resistance constant times the players current velocity over max velocity)
+        Velocity.X -= airResistanceLossX; // Subtract the air resistance loss from the x velocity
+        
+        double airResistanceLossY = (Velocity.Y / PhysicsConst.MaxVelocity) * PhysicsConst.AirResistance; // Calculate the air resistance loss for the y velocity (air resistance constant times the players current velocity over max velocity)
+        Velocity.Y -= airResistanceLossY; // Subtract the air resistance loss from the y velocity
+        
+        
+        if (Velocity.X is >= -0.05 and < 0 or <= 0.05 and > 0) Velocity.X = 0.0; // If the x velocity is greater than or equal to -0.05 and less than 0 or less than or equal to 0.05 and greater than 0, set the x velocity to 0 (return to 0 if reaches below 0.05 velocity, loss of accuracy when subtracting numbers from doubles)
+        if (Velocity.Y is >= -0.05 and < 0 or <= 0.05 and > 0) Velocity.Y = 0.0; // If the y velocity is greater than or equal to -0.05 and less than 0 or less than or equal to 0.05 and greater than 0, set the y velocity to 0 (return to 0 if reaches below 0.05 velocity, loss of accuracy when subtracting numbers from doubles)
+
+        
+        if (System.Math.Abs(Velocity.X) is > 0 and > PhysicsConst.MaxVelocity) // If the absolute value of the x velocity is greater than 0 and greater than the max velocity
+            Velocity.X = Velocity.X > 0 ? PhysicsConst.MaxVelocity : -PhysicsConst.MaxVelocity;  // Set the x velocity to the max velocity if the x velocity is greater than 0, otherwise set the x velocity to the negative max velocity (velocity soft-limits)
+        
+        if (System.Math.Abs(Velocity.Y) is > 0 and > PhysicsConst.MaxVelocity) // If the absolute value of the y velocity is greater than 0 and greater than the max velocity
+            Velocity.Y = Velocity.Y > 0 ? -PhysicsConst.MaxVelocity : PhysicsConst.MaxVelocity; // Set the y velocity to the negative max velocity if the y velocity is greater than 0, otherwise set the y velocity to the max velocity (velocity soft-limits)
+    }
+
+    protected void UpdatePosition() // Update the position of the physics object
+    {
+        Position.Change(Double.Round(Velocity.X), Double.Round(Velocity.Y)); // Change the position by the velocity
+    }
+}
+```
+
+## Collidable.cs
+**Location:** `Velocity-NEA\Velocity\Game\Physics\Collidable.cs`
+
+```csharp
+using Velocity.Game.Object;
+using Velocity.Math;
+
+namespace Velocity.Game.Physics;
+
+public class Collidable : BasePhysics
+{
+    public bool HasCollision;
+
+    protected Collidable(Vector2 position, Vector2 dimensions, bool hasCollision = true, bool hasGravity = true) : base(position, dimensions)
+    {
+        HasCollision = hasCollision;
+        HasGravity = hasGravity;
+    }
+
+    public override void Tick()
+    {
+        List<GameObject> nearObjects = new List<GameObject>(); // List of objects near the player
+
+        foreach (var gameObject in Loader.Game.ObjectManager.LoadedTextureObjects) // Loop through all objects
+        {
+            if (gameObject.CheckRange(this)) // If the object is in range of the player (players position + max velocity * 1.5, will always catch objects, if moving at max velocity sometimes it would miss objects)
+            {
+                if (gameObject.Collidable) nearObjects.Add(gameObject); // Add the object to the list of objects near the player
+            }
+        }
+        
+        // Find the position of the bounds of the player
+        double boundDown = Position.Y + Dimensions.Y / 2; // Calculate the bottom bound
+        double boundUp = Position.Y - Dimensions.Y / 2; // Calculate the top bound
+        double boundLeft = Position.X - Dimensions.X / 2; // Calculate the left bound
+        double boundRight = Position.X + Dimensions.X / 2; // Calculate the right bound
+
+        // Held constant for the duration of the loop 
+        bool isCollidingX = false; // Is the player colliding on the x axis?
+        bool isCollidingY = false; // Is the player colliding on the y axis?
+
+        foreach (var nearObject in nearObjects) // Loop through all objects near the player
+        {
+            if (((
+                     boundDown + Velocity.Y >= nearObject.Position.Y - 1 && boundDown <= nearObject.Position.Y - 1 ||
+                     boundUp + Velocity.Y <= nearObject.Position.Y + nearObject.Dimensions.Y + 1 && boundUp >= nearObject.Position.Y + nearObject.Dimensions.Y + 1) && 
+                 nearObject.InXBounds(this, (int)Double.Abs(Velocity.X) - 1))) // If player will be inside or colliding with an object on y axis for the current frame
+            {
+                if (Position.Y < nearObject.Position.Y) Velocity.Y = nearObject.Position.Y - boundDown - 1; // If the player is above the object, set the y velocity to the distance between the player and the object so they will move that amount for the current frame (prevent overshooting)
+                else Velocity.Y = nearObject.Position.Y + nearObject.Dimensions.Y - boundUp + 1; // If the player is below the object, set the y velocity to the distance between the player and the object so they will move that amount for the current frame (prevent overshooting)
+            }
+            else if (((System.Math.Abs(Convert.ToInt32(boundDown) - nearObject.Position.Y) == 0 ||
+                       System.Math.Abs(Convert.ToInt32(boundUp) - (nearObject.Position.Y + nearObject.Dimensions.Y)) == 0)
+                      && nearObject.InXBounds(this, -1)) || isCollidingY) // If the player IS colliding with an object for the current frame
+            {
+                if (Velocity.Y >= 0) // If the y velocity is greater than or equal to 0 (moving down, would prevent jumping if it was just greater than 0)
+                {
+                    Velocity.Y = 0; // Set the y velocity to 0
+                    isCollidingY = true; // Set isCollidingY to true
+                } 
+                
+                if (Position.Y < nearObject.Position.Y) OnFloor = true; // If the player is above the object, set OnFloor to true
+            } else OnFloor = false; // If the player is not colliding with an object for the current frame, set OnFloor to false
+
+
+            if ((
+                    boundRight + Velocity.X >= nearObject.Position.X - 1 && boundRight <= nearObject.Position.X - 1 ||
+                    boundLeft + Velocity.X <= nearObject.Position.X + nearObject.Dimensions.X - 1 && boundLeft >= nearObject.Position.X + nearObject.Dimensions.X - 1) && 
+                nearObject.InYBounds(this, (int)Double.Abs(Velocity.Y))) { // If player will be inside or colliding with an object on x axis for the current frame
+                if (Position.X < nearObject.Position.X) Velocity.X = nearObject.Position.X - boundRight; // If the player is to the left of the object, set the x velocity to the distance between the player and the object so they will move that amount for the current frame (prevent overshooting)
+                else Velocity.X = nearObject.Position.X + nearObject.Dimensions.X - boundLeft;  // If the player is to the right of the object, set the x velocity to the distance between the player and the object so they will move that amount for the current frame (prevent overshooting)
+                isCollidingX = true; // Set isCollidingX to true
+            } else if (
+                ((System.Math.Abs(Convert.ToInt32(boundRight) - nearObject.Position.X) == 0 || 
+                  System.Math.Abs(Convert.ToInt32(boundLeft) - nearObject.Position.X + nearObject.Position.X) == 0) &&
+                 nearObject.InYBounds(this)) || isCollidingX) // If the player IS colliding with an object on y axis for the current frame
+            {
+                if (!(Velocity.X >= 0)) continue; // If the x velocity is less than 0 (moving left), continue (would prevent moving left if it was just less than 0, for some reason, it aint broken dont fix it)
+                Velocity.X = 0; // Set the x velocity to 0
+                isCollidingX = true; // Set isCollidingX to true
+            }
+        }
+
+        base.Tick(); // Call the base tick (apply physics, gravity, etc.)
+        UpdatePosition(); // Update the position
+    }
+}
+```
+
+## PhysicsConst.cs
+**Location:** `Velocity-NEA\Velocity\Game\Physics\PhysicsConst.cs`
+
+```csharp
+namespace Velocity.Game.Physics;
+
+public abstract class PhysicsConst
+{
+    public const double Gravity = 1;
+    public const int MaxVelocity = 80;
+    public const int MaxAcceleration = 14;
+    public const int Acceleration = 2;
+    public const double Friction = 8;
+    public const double AirResistance = 0.5;
+    public const int Jump = 26;
+}
+```
+
+## PhysicsManager.cs
+**Location:** `Velocity-NEA\Velocity\Game\Physics\PhysicsManager.cs`
+
+```csharp
+namespace Velocity.Game.Physics;
+
+public class PhysicsManager
+{
+    private List<BasePhysics> _physicsObjects = new();
+
+    public void RegisterObject (BasePhysics obj) // Register an object to be ticked
+    {
+        _physicsObjects.Add(obj);
+    }
+
+    // TODO: Unregister object (we only really need this for the player, so we dont need this yet)
+    
+    public void Stop() // Stop the physics manager
+    {
+        _physicsObjects = new();
+    }
+    
+    public void Tick() // Tick the physics manager
+    {
+        foreach (var obj in _physicsObjects) obj.Tick(); // Iterate through all physics objects and tick them
+    }
+}
+```
+
+## RenderManager.cs
+**Location:** `Velocity-NEA\Velocity\Game\RenderManager.cs`
+
+```csharp
+using Velocity.Ui.Overlay.Render;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Game;
+
+public class RenderManager
+{
+    public RenderManager()
+    {
+        RegisterDefault();
+    }
+
+    /**
+     * Register default renderers
+     */
+    private void RegisterDefault() 
+    {
+        if (GameConst.Debug) Loader.WindowManager.Renderer.RegisterUiRenderer(new DebugRenderer());
+    }
+    
+    /**
+     * Render the player object
+     */
+    public void RenderPlayer(Player.Player player)
+    {
+        Loader.WindowManager.Renderer.RegisterElementRenderer(player.Renderer);
+    }
+
+    /*
+     * Unused: Unrender the player object
+     */
+    public void UnrenderPlayer(Player.Player player)
+    {
+        Loader.WindowManager.Renderer.UnregisterRenderer(player.Renderer.Identifier);
+    }
+
+    /**
+     * Render a static ui element
+     */
+    public void RenderUiElement(UiRenderer renderer)
+    {
+        Loader.WindowManager.Renderer.RegisterUiRenderer(renderer);
+    }
+
+    /**
+     * Render a game object renderer
+     */
+    public void RenderGameElement(ElementRenderer renderer)
+    {
+        Loader.WindowManager.Renderer.RegisterElementRenderer(renderer);
+    }
+
+    /**
+     * Render a dynamic background object renderer
+     */
+    public void RenderBackgroundElement(BackgroundRenderer renderer)
+    {
+        Loader.WindowManager.Renderer.RegisterBackgroundRenderer(renderer);
+    }
+
+    /**
+     * Unrender any of these object's renderers
+     */
+    public void UnRenderGameElement(ElementRenderer renderer)
+    {
+        Loader.WindowManager.Renderer.UnregisterRenderer(renderer.Identifier);
+    }
+}
+
+
+```
+
+## StatisticManager.cs
+**Location:** `Velocity-NEA\Velocity\Game\Statistics\StatisticManager.cs`
+
+```csharp
+using Velocity.Utils;
+
+namespace Velocity.Game.Statistics;
+
+public class StatisticManager
+{
+    public static Dictionary<int, int> LevelBestTimes = new();
+    public static readonly IniFile TimesFile = new(Directory.GetCurrentDirectory() + "/level/times.ini");
+
+    public static void Load()
+    {
+        foreach (var level
+                 in
+                 Loader.Game.LevelManager.GetLevels())
+        {
+            int time = Convert.ToInt32(TimesFile.GetSetting("times", level.Id.ToString()));
+            LevelBestTimes.Add(level.Id, time);
+        }
+    }
+
+    public static void Save()
+    {
+        foreach (var level in Loader.Game.LevelManager.GetLevels())
+        {
+            TimesFile.AddSetting("times", level.Id.ToString(), LevelBestTimes[level.Id].ToString());
+        }
+        
+        TimesFile.SaveSettings();
+    }
+
+    public static  int GetLevelBestTime(int levelId)
+    {
+        LevelBestTimes.TryGetValue(levelId, out int time);
+        
+        return time;
+    }
+
+    public static void SetLevelBestTime(int levelId, int time)
+    {
+        LevelBestTimes[levelId] = time;
+    }
+
+    public static string SteraliseTime(int time)
+    {
+        TimeSpan ts = new TimeSpan(time);
+        if (time == 0) return "-";
+        return $"{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
+    }
+}
+```
+
+## GameConst.cs
+**Location:** `Velocity-NEA\Velocity\GameConst.cs`
+
+```csharp
+namespace Velocity;
+
+public abstract class GameConst
+{
+    public const string Name = "Velocity";
+    public const string Version = "1.0.0";
+    public const string Author = "Reuben Yates";
+    public const bool Debug = true;
+}
+```
+
+## ControlManager.cs
+**Location:** `Velocity-NEA\Velocity\Input\ControlManager.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Utils;
+
+namespace Velocity.Input;
+
+public class ControlManager
+{
+    // List of the registered controllers
+    private List<IControllable> _controllers = new();
+
+    // Register a controller
+    public void RegisterController(IControllable controller)
+    {
+        _controllers.Add(controller);
+    }
+
+    
+    // Unregister a controller
+    public void UnRegisterController(IControllable controller)
+    {
+        _controllers.Remove(controller);
+    }
+
+    // Tick the controllers
+    public void Tick()
+    {
+        foreach (var controller in _controllers.ToList())
+        {
+            if (Raylib.IsKeyPressed(Loader.Settings.Keybind.Interact)) controller.OnInteract();
+            if (Raylib.IsKeyDown(Loader.Settings.Keybind.Left)) controller.OnLeft(); 
+            if (Raylib.IsKeyDown(Loader.Settings.Keybind.Right)) controller.OnRight();
+            if (Raylib.IsKeyPressed(Loader.Settings.Keybind.Jump)) controller.OnJump();
+            if (Raylib.IsKeyDown(Loader.Settings.Keybind.Down)) controller.OnDown();
+            if (Raylib.IsKeyDown(Loader.Settings.Keybind.ZoomIn)) controller.OnZoomIn();
+            if (Raylib.IsKeyDown(Loader.Settings.Keybind.ZoomOut)) controller.OnZoomOut();
+        }
+    }
+}
+
+
+```
+
+## Controlable.cs
+**Location:** `Velocity-NEA\Velocity\Input\Controlable.cs`
+
+```csharp
+namespace Velocity.Input;
+
+public interface IControllable
+{
+    // Interact with the object
+    public void OnInteract()
+    {}
+    
+    // Move left
+    public void OnLeft ()
+    {}
+    
+    // Move right
+    public void OnRight ()
+    {}
+
+    // Jump
+    public void OnJump ()
+    {}
+    
+    // Move down: TODO: use this for crouching
+    public void OnDown ()
+    {}
+
+    // Zoom the camera in
+    public void OnZoomIn()
+    { }
+     
+    // Zoom the camera out
+    public void OnZoomOut()
+    {}
+    
+}
+```
+
+## Keybind.cs
+**Location:** `Velocity-NEA\Velocity\Input\Keybind.cs`
+
+```csharp
+using Raylib_cs;
+
+namespace Velocity.Input;
+
+public class Keybind : IEquatable<Keybind>
+{
+    // Default keybindings
+    public KeyboardKey Interact = KeyboardKey.KEY_E;
+    public KeyboardKey Left = KeyboardKey.KEY_A;
+    public KeyboardKey Right = KeyboardKey.KEY_D;
+    public KeyboardKey Jump = KeyboardKey.KEY_SPACE;
+    public KeyboardKey Down = KeyboardKey.KEY_S;
+    public KeyboardKey ZoomIn = KeyboardKey.KEY_EQUAL;
+    public KeyboardKey ZoomOut = KeyboardKey.KEY_MINUS;
+
+    // Convert a keybind to its action id
+    public enum ActionId
+    {
+        Interact = 0,
+        Left = 1,
+        Right = 2,
+        Jump = 3,
+        Down = 4,
+        ZoomIn = 5,
+        ZoomOut = 6
+    }
+
+    // Convert an action id to its string value for display
+    public static string IdToString(ActionId id)
+    {
+        return id switch
+        {
+            ActionId.Interact => ActionNames[0],
+            ActionId.Left => ActionNames[1],
+            ActionId.Right => ActionNames[2],
+            ActionId.Jump => ActionNames[3],
+            ActionId.Down => ActionNames[4],
+            ActionId.ZoomIn => ActionNames[5],
+            ActionId.ZoomOut => ActionNames[6],
+            _ => "-"
+        };
+    }
+    
+    // Check to see if a key is taken
+    public bool IsKeyTaken(KeyboardKey key)
+    {
+        return Interact == key || Left == key || Right == key || Jump == key || Down == key || ZoomIn == key || ZoomOut == key;
+    }
+
+    // Internal list of action names
+    private static readonly string[] ActionNames = 
+    {
+        "Interact",
+        "Left",
+        "Right",
+        "Jump",
+        "Down",
+        "ZoomIn",
+        "ZoomOut"
+    };
+    
+    public bool Equals(Keybind? other)
+    {
+        if (ReferenceEquals(null, other)) return false;
+        return Interact == other.Interact && Left == other.Left && Right == other.Right && Jump == other.Jump && Down == other.Down && ZoomIn == other.ZoomIn && ZoomOut == other.ZoomOut;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        // if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((Keybind)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine((int)Interact, (int)Left, (int)Right, (int)Jump, (int)Down, (int)ZoomIn, (int)ZoomOut);
+    }
+}
+```
+
+## Level.cs
+**Location:** `Velocity-NEA\Velocity\Level\Level.cs`
+
+```csharp
+using Newtonsoft.Json;
+using Raylib_cs;
+using Velocity.Game.Object;
+using Velocity.Game.Object.FloatingText;
+using Velocity.Math;
+using Velocity.Utils;
+
+namespace Velocity.Level;
+
+public class FloatingTextData
+{
+    public Vector2 Position { get; } // Position of the text
+    public string Text { get; } // Text to display
+    
+    public FloatingTextData(string text, Vector2 position) // Constructor
+    {
+        Text = text; // Set text
+        Position = position; // Set position
+    }
+}
+
+public class Level // Level class
+{
+    public const int LevelWidth = 60; // Width of the level
+    public const int LevelHeight = 6; // Height of the level
+    
+    public readonly string Name;    // Name of the level
+    public readonly int Id;         // Id of the level
+    private readonly string _data;  // Raw level data
+
+    private string[] _levelData = Array.Empty<string>(); // Level data
+    private string[] _itemMap = Array.Empty<string>();   // Item map
+    public Color BackgroundColor;                        // Background color
+    public int Background = 1;                           // Background id
+    public int Difficulty;                               // Difficulty of the level
+    
+    public readonly List<FloatingTextData> FloatingTexts = new (); // List of floating texts
+
+    public Level(int id, string name, string data) // Constructor
+    {
+        Id = id; // Set id
+        Name = name; // Set name
+        _data = data; // Set data
+
+        LoadData(); // Load data
+    } 
+    
+    // Load json _data into data structure 
+    private void LoadData()
+    {
+        dynamic ?levelData = JsonConvert.DeserializeObject(_data); // Deserialize json _data
+
+        if (levelData == null) return; // If level data is null, skip
+
+        _levelData = levelData.objectMap.ToObject<string[]>(); // Get object map
+        
+        _itemMap = levelData.itemMap.ToObject<string[]>(); // Get item map
+
+        Background = levelData.flags.background ?? 1; // Set background id
+        BackgroundColor = levelData.flags.backgroundColor != null ? ColorFormatter.from_string((string)levelData.flags.backgroundColor) :  new Color(0, 200, 255, 255); // Set background color (and handle default)
+        Difficulty = levelData.flags.difficulty ?? 1; // Set difficulty
+
+        foreach (var data in levelData.floatingTexts) // Iterate through floating texts
+        {
+            FloatingTextData floatingTextData = new FloatingTextData((string)data.text, new Vector2((double)data.position[0], Game.Game.FloorHeight - (double)data.position[1])); // Create floating text data
+            
+            FloatingTexts.Add(floatingTextData); // Add floating text data to list
+        }
+    }
+
+    public void Load() // Load level
+    { 
+        LoadObjects(); // Load objects
+        LoadItems();   // Load items
+    }
+
+    public string[] GetObjectMap() // Get object map (for level screen preview)
+    {
+        return _levelData; // Return object map
+    }
+
+    private void LoadObjects() // Load objects
+    {
+        int y = 200 * LevelHeight; // Set y to the top of the level
+        foreach (var row in _levelData) // Iterate through each row in the level
+        {
+            int x = -200 * (LevelWidth / 2); // Set x to the left of the level
+            foreach (var id in row) // Iterate through each colomn in the row
+            {
+                if (Convert.ToInt32(new string(id, 1)) == ObjectIds.Barrel) Loader.Game.ObjectManager.AddObject(Convert.ToInt32(new string(id,1)), new Vector2(x + 25, y)); // If the id is a barrel, add it with a different offset
+                else if (!id.Equals('0')) Loader.Game.ObjectManager.AddObject(Convert.ToInt32(new string(id,1)), new Vector2(x, y)); // Otherwise add it normally
+                x += 200; // Increment x
+            }
+            y -= 200; // Decrement y (load level top to bottom)
+        }
+    }
+
+    private void LoadItems() // Load items
+    {
+        int y = (200 * LevelHeight) + 200; // Set y to the top of the level
+        foreach (var row in _itemMap) // Iterate through each row in the level
+        {
+            int x = -200 * (LevelWidth / 2); // Set x to the left of the level
+            foreach (var id in row) // Iterate through each colomn in the row
+            {
+                if (!id.Equals('0')) Loader.Game.ObjectManager.AddItemObject(Convert.ToInt32(new string(id,1)), new Vector2(x + (id.Equals('4') ? 100 : 75), y - (id.Equals('4') ? 100 : 75))); // Add the item (with correct offsets for item type)
+                x += 200; // Increment x
+            }
+            y -= 200; // Decrement y (load level top to bottom)
+        }
+    }
+}
+
+```
+
+## LevelManager.cs
+**Location:** `Velocity-NEA\Velocity\Level\LevelManager.cs`
+
+```csharp
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using Velocity.Exception;
+using Velocity.Utils;
+
+namespace Velocity.Level;
+
+public class LevelManager
+{
+    private readonly Dictionary<int, Level?> _levels = new(); // List of all levels
+
+    public LevelManager() // Constructor
+    {
+        LoadLevels(); // Load all levels
+    }
+
+    // Read all level data files
+    private void LoadLevels()
+    {
+        string levelDbRaw = File.ReadAllText(Directory.GetCurrentDirectory() + "/level/levels.json".Replace("/", OsVersion.GetDirSeperator())); // Read level database file
+        JObject levelDb = JObject.Parse(levelDbRaw); // Parse level database file
+        
+        // Iterate through every entry in the level database file
+        foreach (var i in levelDb) 
+        {
+            string name = i.Key; // Get level name
+            string? file = i.Value?.ToString(); // Get level file name
+
+            if (file == null) continue; // If file is null, skip
+            
+            RegisterLevel(name, file); // Otherwise register the level
+        }
+    }
+
+    // Validates and registers to database
+    private void RegisterLevel(string name, string file) 
+    {
+        string rawSchema = File.ReadAllText(Directory.GetCurrentDirectory() + "/level/levelSchema.json".Replace("/", OsVersion.GetDirSeperator())); // Read level schema file
+        string levelRaw = File.ReadAllText(Directory.GetCurrentDirectory() + "/level/".Replace("/", OsVersion.GetDirSeperator()) + file); // Read level file
+        JSchema schema = JSchema.Parse(rawSchema); // Parse the data to the schema for validation
+
+        JObject levelObj = JObject.Parse(levelRaw); // Parse the level data to a JObject so we can access its properties
+ 
+        if (!levelObj.IsValid(schema)) return; // If the level data is not valid, skip
+
+        _levels.Add(_levels.Values.Count, new Level(_levels.Values.Count, name, levelRaw)); // Otherwise add the level to the database
+    }
+    
+    public void SelectLevel(int id) // Select a level to load
+    {
+        _levels.TryGetValue(id, out Level? level); // Get the level from the database
+
+        if (level == null) // If the level is null, throw a warning
+        {
+            Console.Error.WriteLine("Failed to load level to canvas: " + id);
+            return;
+        }
+        
+        level.Load(); // Load the level
+
+        Loader.Game.Level = level; // Set the current level to the loaded level
+
+        Loader.WindowManager.BackgroundColor = level.BackgroundColor; // Set the background color to the level's background color
+    }
+
+    public int LoadNextLevel() // Load the next level
+    {
+        if (Loader.Game.Level == null) return -1;  // If the current level is null, return -1
+        int id = Loader.Game.Level.Id + 1; // Get the next level id
+
+        if (LevelExists(id)) // If the next level exists, load it
+        {
+            SelectLevel(id); // Load the level
+            return id + 1; // Return the next level id
+        }
+
+        return -1; // Otherwise return -1
+    }
+
+    private bool LevelExists (int id) // Check if a level exists
+    {
+        return _levels.ContainsKey(id); // Return if the level exists
+    }
+
+    public Dictionary<int, Level?>.ValueCollection GetLevels() // Get all levels
+    {
+        return _levels.Values; // Return all levels
+    }
+
+    public Level GetLevelById(int id) // Get a level by its id
+    {
+        _levels.TryGetValue(id, out Level? level); // Get the level from the database
+
+        if (level == null) throw new VelocityException("Failed to get level by id: " + id);     // If the level is null, throw an error
+
+        return level;   // Otherwise return the level
+    }
+}
+```
+
+## Loader.cs
+**Location:** `Velocity-NEA\Velocity\Loader.cs`
+
+```csharp
+using Velocity.Asset;
+using Velocity.Game.Statistics;
+using Velocity.Sound;
+using Velocity.Input;
+using Velocity.Ui.Screens;
+using Velocity.Window;
+
+namespace Velocity
+{
+    public class Loader
+    {
+        // Entry point
+        public static void Main(string[] args)
+        {
+            // Load settings
+            Settings = new Settings();
+            Settings.Load();
+            
+            // Initialisation
+            
+            ControlManager = new ControlManager();
+            WindowManager = new WindowManager();
+            WindowManager.CreateWindow();
+            
+            AssetManager = new AssetManager(); // For use later
+            AudioManager = new AudioManager(); // For use later
+            
+            Game = new Game.Game(); // For later use
+            Game.MenuManager.RegisterMenus(); // Menus for later use
+            Game.MenuManager.SetActiveWindow(MainMenuScreen.UiId); // Menus for later use
+            
+            StatisticManager.Load();
+            ApplySettings();
+            
+            // Begin game logic
+            WindowManager.DrawLoop();
+            
+            // After window has closed
+            StatisticManager.Save();
+            Settings.Save();
+        }
+        
+        // Apply the user selected settings
+        private static void ApplySettings()
+        {
+            WindowManager.ApplySettingsChange();
+            
+            AudioManager.UpdateVolume();
+            
+            AudioManager.UpdateGameVolume();
+            AudioManager.UpdatePlayerVolume();
+            AudioManager.UpdateUiVolume();
+        }
+
+        // To stop the game and close the window
+        public static void Close()
+        {
+            Game.Closed = true;
+            Settings.Save();
+            StatisticManager.Save();
+        }
+        
+        
+        public static WindowManager WindowManager
+        {
+            get;
+            set;
+        }
+
+        public static Game.Game Game // Not implemented yet (Here for later use)
+        {
+            get;
+            set;
+        }
+        
+        public static Settings Settings // Not implemented yet (Here for later use)
+        {
+            get;
+            set;
+        }
+
+        public static ControlManager ControlManager 
+        {
+            get;
+            set;
+        }
+
+        public static AssetManager AssetManager // Not implemented yet (Here for later use)
+        {
+            get;
+            set;
+        }
+        
+        public static AudioManager AudioManager // Not implemented yet (Here for later use)
+        {
+            get;
+            set;
+        }
+    }
+}
+```
+
+## Vector2.cs
+**Location:** `Velocity-NEA\Velocity\Math\Vector2.cs`
+
+```csharp
+namespace Velocity.Math;
+
+public class Vector2
+{
+    public double X;
+    public double Y;
+
+    public Vector2(double x = 0, double y = 0)
+    {
+        X = x;
+        Y = y;
+    }
+
+    public static Vector2 Zero()
+    {
+        return new Vector2();
+    }
+
+    public double GetX()
+    {
+        return X;
+    }
+
+    public double GetY()
+    {
+        return Y;
+    }
+
+    public Vector2 Add(int x, int y)
+    {
+        return new Vector2(X + x, Y + y);
+    }
+
+    public Vector2 Subtract(int x, int y)
+    {
+        return new Vector2(X - x, Y - x);
+    }
+
+    public void Change(double x, double y)
+    {
+        X += x;
+        Y += y;
+    }
+
+    public System.Numerics.Vector2 ToInternal()
+    {
+        return new System.Numerics.Vector2((float)X, (float)Y);
+    }
+
+    public static Vector2 ToCustom(System.Numerics.Vector2 internalVector)
+    {
+        return new Vector2(internalVector.X, internalVector.Y);
+    }
+}
+```
+
+## Player.cs
+**Location:** `Velocity-NEA\Velocity\Player\Player.cs`
+
+```csharp
+using Velocity.Game.Physics;
+using Velocity.Math;
+
+
+namespace Velocity.Player;
+
+public class Player : Collidable
+{
+    public readonly PlayerRenderer? Renderer; // Renderer for player
+
+    public int Appearance = 2; // Appearance of player
+
+    public PlayerState State; // State of player (Unused)
+ 
+    public double Health = 3; // Health of player
+
+    private int _soundStep; // Step for sound
+
+    public Player(Vector2 spawn) : base(spawn, new Vector2(70, 175)) // Constructor
+    {
+        Renderer = new PlayerRenderer(this); // Create renderer
+        var controller = new PlayerController(this); // Create controller
+
+        State = PlayerState.Alive; // Set state to alive
+        
+        Loader.ControlManager.RegisterController(controller); // Register controller
+    }
+
+    public void Damage() // Damage player
+    {
+        Health -= 1; // Decrement health
+        if (Health <= 0) State = PlayerState.Dead; // Set state to dead if health is 0
+    }
+
+    public void HandleMoveSound() // Handle move sound
+    {
+        _soundStep++; // Increment sound step
+        if (_soundStep >= 18) _soundStep = 0; // Reset sound step if it is greater than 18
+        if (_soundStep % 3 == 0 && OnFloor && Velocity.X != 0) Loader.AudioManager.PlaySound("player.walk"); // Play sound if sound step is divisible by 3 and player is on floor and player is moving
+    }
+
+    public void Reset() // Reset player
+    {
+        State = PlayerState.Alive; // Set state to alive
+        Health = 3; // Set health to 3 
+        Position = new Vector2(-200 * (Level.Level.LevelWidth / 2 + 1), Game.Game.FloorHeight - 300); // Set position to spawn
+        Velocity = new Vector2(); // Set velocity to 0
+        OnFloor = false; // Set on floor to false
+    }
+}
+
+public enum PlayerState // Player state
+{
+    Alive = 1, // Alive = 1
+    Dead = 0 // Dead = 0
+}
+```
+
+## PlayerController.cs
+**Location:** `Velocity-NEA\Velocity\Player\PlayerController.cs`
+
+```csharp
+using System.Diagnostics.Metrics;
+using Velocity.Game.Physics;
+using Velocity.Input;
+using Velocity.Math;
+
+namespace Velocity.Player;
+
+public class PlayerController : IControllable
+{
+    private readonly Player _player; // Player
+    private bool _canJump = true; // If the player can jump
+
+    public PlayerController(Player parent) // Constructor
+    {
+        _player = parent; // Set player
+    }
+    
+    public void OnJump() // Jump
+    {
+        if (!_canJump && _player.OnFloor) _canJump = true; // If the player is on the floor and cannot jump, set can jump to true
+        if (!_canJump) return; // If the player cannot jump, return
+        
+        _player.AddVelocity(0, PhysicsConst.Jump, true); // Add jump velocity to the player
+        Loader.AudioManager.PlaySound("player.jump"); // Play jump sound
+        _canJump = false; // Set can jump to false
+    }
+
+    public void OnLeft() // Left mvoement
+    {
+        if (_player.Velocity.X > (-PhysicsConst.MaxAcceleration - (Loader.Game.PowerUps[2] > 0 ? 1 : 0) * (PhysicsConst.MaxAcceleration / 6.66)) / (_player.OnFloor ? 1 : 1.5)) _player.AddVelocity((-PhysicsConst.Acceleration + (Loader.Game.PowerUps[2] > 0 ? 1 : 0) * (-PhysicsConst.MaxAcceleration / 6)) / (_player.OnFloor ? 1 : 1.5)); // Add left velocity to the player if the player is on the floor and the player's x velocity is less than the max velocity or the player is not on the floor with multipliers if the player has the speed powerup
+    }
+
+    public void OnRight() // Right movement
+    {
+        if (_player.Velocity.X < (PhysicsConst.MaxAcceleration + (Loader.Game.PowerUps[2] > 0 ? 1 : 0) * (PhysicsConst.MaxAcceleration / 6.66)) / (_player.OnFloor ? 1 : 1.5)) _player.AddVelocity((PhysicsConst.Acceleration + (Loader.Game.PowerUps[2] > 0 ? 1 : 0) * (PhysicsConst.MaxAcceleration / 6))  / (_player.OnFloor ? 1 : 1.5));  // Add right velocity to the player if the player is on the floor and the player's x velocity is less than the max velocity or the player is not on the floor with multipliers if the player has the speed powerup
+    }
+
+    public void OnDown() // TODO: Use for crouching
+    {
+        if (_player is { HasGravity: false, Velocity.Y: > -PhysicsConst.MaxAcceleration }) _player.AddVelocity(0, -PhysicsConst.Acceleration); // Add down velocity to the player if the player has gravity and the player's y velocity is less than the max velocity
+    }
+}
+```
+
+## PlayerRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Player\PlayerRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Velocity.Window.Render.Renderers;
+using Raylib_cs;
+using Velocity.Game.Physics;
+
+namespace Velocity.Player;
+
+public class PlayerRenderer : ElementRenderer
+{
+    private const int MaxSpeed = 12; // The maximum speed of the animation
+    private const int MinSpeed = 5; // The minimum speed of the animation
+
+    private int _currentFrame; // The current frame of the animation
+    private int _frameCount; // The current frame count
+    private int _frameSpeed = 8; // The speed of the animation
+
+    private readonly Dictionary<int, Dictionary<string, int>?> _tileCount = new()
+    {
+        { 
+            1, new Dictionary<string, int> {
+                { "idle", 8 },
+                { "walk", 8 },
+                { "run", 8 },
+                { "jump", 8 }
+                
+            }
+        },
+        {
+            2, new Dictionary<string, int> {
+                { "idle", 6 },
+                { "walk", 8 },
+                { "run", 8 },
+                { "jump", 9 }
+            }
+        },
+        {
+            3, new Dictionary<string, int> {
+                { "idle", 6 },
+                { "walk", 7 },
+                { "run", 8 },
+                { "jump", 11 }
+            }
+        }
+        
+    }; // The tile count of each animation
+
+    private bool _jump; // Whether the player is jumping or not
+    
+    private Texture2D _walkAsset; // The walk asset
+    private Texture2D _idleAsset; // The idle asset
+    private Texture2D _runAsset; // The run asset
+    private Texture2D _jumpAsset; // The jump asset
+
+    private Rectangle _frameRect; // The frame rectangle
+
+    public PlayerRenderer(Player parentPlayer) : base("velocity:player", false) // The constructor
+    { 
+        Player = parentPlayer; // Set the player
+    }
+
+    public void LoadTextures()  // Load the textures
+    {
+        _idleAsset = Loader.AssetManager.GetPlayerTexture(Player.Appearance, "idle"); // Get the idle asset
+        _walkAsset = Loader.AssetManager.GetPlayerTexture(Player.Appearance, "walk"); // Get the walk asset
+        _runAsset =  Loader.AssetManager.GetPlayerTexture(Player.Appearance, "run");  // Get the run asset
+        _jumpAsset = Loader.AssetManager.GetPlayerTexture(Player.Appearance, "jump"); // Get the jump asset
+    }
+
+    public override void Draw() // Draw the player
+    {
+        Texture2D texture; // The texture to draw
+
+        if (_jump) // If the player is jumping
+        {
+            texture = _jumpAsset; // Set the texture to the jump asset
+            _currentFrame = 4 + Convert.ToInt32(4 * (Player.Velocity.Y / 30)); // Set the current frame, Iterate through the jump animation based on the velocity
+
+            if (Player.OnFloor) _jump = false; // If the player is on the floor, stop jumping
+        }
+        else // If the player is not jumping
+        {
+            if (Convert.ToInt32(Player.Velocity.X) == 0) texture = _idleAsset; // If the player is not moving, set the texture to the idle asset
+            else if (Convert.ToInt32(Double.Abs(Player.Velocity.X)) <= 10) texture = _walkAsset; // If the player is moving slowly, set the texture to the walk asset
+            else texture = _runAsset; // If the player is moving fast, set the texture to the run asset
+        }
+        
+        
+
+        _frameCount++; // Increment the frame count
+
+        if (_frameCount >= 60 / _frameSpeed && Loader.Game.IsRunning) // If the frame count is greater than or equal to the frame speed and the game is running
+        {
+            _frameCount = 0; // Reset the frame count
+            _currentFrame++; // Increment the current frame
+            if (_currentFrame >= GetFrameCount(texture)) _currentFrame = 0; // If the current frame is greater than or equal to the frame count, reset the current frame
+            
+            _frameRect = new Rectangle(_currentFrame * texture.width / GetFrameCount(texture), 0, texture.width / GetFrameCount(texture), texture.height); // Set the frame rectangle to the current frame
+            
+            Player.HandleMoveSound(); // Handle the move sound TODO: Move this to a better place
+        }
+
+        if (!Player.OnFloor) _jump = true; // If the player is not on the floor, set jumping to true
+        
+        if (!_jump) _frameSpeed = MinSpeed + Convert.ToInt32((MaxSpeed - MinSpeed) * Double.Abs(Player.Velocity.X) / PhysicsConst.MaxAcceleration); // If the player is not jumping, set the frame speed to the minimum speed plus the maximum speed minus the minimum speed multiplied by the absolute value of the player's velocity divided by the maximum acceleration (frame speed is faster when the player is moving faster)
+        
+        int x = Convert.ToInt32(Player.Position.X) - (Convert.ToInt32(Player.Dimensions.X) / 2); // Get the x position of the player
+        int y = Convert.ToInt32(Player.Position.Y) - (Convert.ToInt32(Player.Dimensions.Y) / 2); // Get the y position of the player
+        
+
+        Rectangle final = new Rectangle(_frameRect.x, _frameRect.y, Player.Velocity.X < 0 ? -_frameRect.width : _frameRect.width, _frameRect.height); // Set the final rectangle to the frame rectangle
+
+        Raylib.DrawTexturePro(texture, final, new Rectangle(x - 105, y - 135, 280, 310), new Vector2(), 0, Color.WHITE); // Draw the player
+    }
+    
+    private int GetFrameCount(Texture2D forTexture) // Get the frame count of a texture
+    {
+        string animation = forTexture.Equals(_idleAsset) ? "idle" : forTexture.Equals(_walkAsset) ? "walk" : forTexture.Equals(_runAsset) ? "run" : "jump"; // Get the animation of the texture
+        _tileCount.TryGetValue(Player.Appearance, out Dictionary<string, int>? dict); // Get the dictionary value of the player's appearance
+        
+        if (dict == null) return 0; // If the dictionary is null, return 0
+        dict.TryGetValue(animation, out int count); // Get the count of the animation
+        
+        return count; // Return the count
+    }
+
+    private Player Player { get; } // The player
+}
+```
+
+## Settings.cs
+**Location:** `Velocity-NEA\Velocity\Settings.cs`
+
+```csharp
+using System.Globalization;
+using System.Numerics;
+using Velocity.Input;
+using Velocity.Utils;
+
+namespace Velocity;
+
+struct DefaultSettings
+{
+    public const int Resolution = 0;
+    public const bool FullScreen = false;
+    public const double CameraLinearity = 0.95;
+    public const double Volume = 1;
+    public const double GameVolume = 1;
+    public const double UiVolume = 1;
+    public const double PlayerVolume = 1;
+    public static readonly Keybind Keybind = new();
+}
+
+public class Settings : IEquatable<Settings>, ICloneable
+{
+    public static IniFile SettingsFile = new(Utils.Path.CurrentDirectory + "settings.ini");
+
+    public static readonly Vector2[] Resolutions =
+    {
+        new(1280, 720),
+        new(1920, 1080),
+        new(2560, 1440),
+        new(3840, 2160)
+    };
+
+    public int Resolution;
+
+    public bool FullScreen;
+
+    public double CameraLinearity;
+
+    public double Volume;
+    public double GameVolume;
+    public double UiVolume;
+    public double PlayerVolume;
+    
+    public Keybind Keybind = new();
+
+    public void Load()
+    {
+        if (!File.Exists(Utils.Path.CurrentDirectory + "settings.ini"))
+        {
+            ToDefault();
+            Save();
+            return;
+        }
+        
+        PopulateSettings();
+    }
+
+    private void PopulateSettings()
+    {
+        Resolution = Convert.ToInt32(SettingsFile.GetSetting("display", "resolution"));
+        FullScreen = Convert.ToBoolean(SettingsFile.GetSetting("display", "fullscreen"));
+        CameraLinearity = Convert.ToDouble(SettingsFile.GetSetting("display", "camera_linearity"));
+        
+        Volume = Convert.ToDouble(SettingsFile.GetSetting("sound", "master_volume"));
+        GameVolume = Convert.ToDouble(SettingsFile.GetSetting("sound", "game_volume"));
+        UiVolume = Convert.ToDouble(SettingsFile.GetSetting("sound", "ui_volume"));
+        PlayerVolume = Convert.ToDouble(SettingsFile.GetSetting("sound", "player_volume"));
+        
+        Keybind.Interact = KeyParser.ToKey(SettingsFile.GetSetting("controls", "interact"));
+        Keybind.Left = KeyParser.ToKey(SettingsFile.GetSetting("controls", "left"));
+        Keybind.Right = KeyParser.ToKey(SettingsFile.GetSetting("controls", "right"));
+        Keybind.Jump = KeyParser.ToKey(SettingsFile.GetSetting("controls", "jump"));
+        Keybind.Down = KeyParser.ToKey(SettingsFile.GetSetting("controls", "down"));
+        Keybind.ZoomIn = KeyParser.ToKey(SettingsFile.GetSetting("controls", "zoom_in"));
+        Keybind.ZoomOut = KeyParser.ToKey(SettingsFile.GetSetting("controls", "zoom_out"));
+    }
+    
+    public void Save()
+    {
+        SettingsFile.AddSetting("Display", "resolution", Convert.ToString(Resolution));
+        SettingsFile.AddSetting("Display", "full_screen", Convert.ToString(FullScreen));
+        SettingsFile.AddSetting("Display", "camera_linearity", Convert.ToString(CameraLinearity, CultureInfo.InvariantCulture));
+        
+        SettingsFile.AddSetting("sound", "master_volume", Convert.ToString(Volume, CultureInfo.InvariantCulture));
+        SettingsFile.AddSetting("sound", "game_volume", Convert.ToString(GameVolume, CultureInfo.InvariantCulture));
+        SettingsFile.AddSetting("sound", "ui_volume", Convert.ToString(UiVolume, CultureInfo.InvariantCulture));
+        SettingsFile.AddSetting("sound", "player_volume", Convert.ToString(PlayerVolume, CultureInfo.InvariantCulture));
+
+        
+        SettingsFile.AddSetting("controls", "interact", Keybind.Interact.ToString().Replace("KEY_", ""));
+        SettingsFile.AddSetting("controls", "left", Keybind.Left.ToString().Replace("KEY_", ""));
+        SettingsFile.AddSetting("controls", "right", Keybind.Right.ToString().Replace("KEY_", ""));
+        SettingsFile.AddSetting("controls", "jump", Keybind.Jump.ToString().Replace("KEY_", ""));
+        SettingsFile.AddSetting("controls", "down", Keybind.Down.ToString().Replace("KEY_", ""));
+        SettingsFile.AddSetting("controls", "zoom_in", Keybind.ZoomIn.ToString().Replace("KEY_", ""));
+        SettingsFile.AddSetting("controls", "zoom_out", Keybind.ZoomOut.ToString().Replace("KEY_", ""));
+
+        SettingsFile.SaveSettings();
+    }
+
+    public void ToDefault()
+    {
+        Resolution = DefaultSettings.Resolution;
+        FullScreen = DefaultSettings.FullScreen;
+        CameraLinearity = DefaultSettings.CameraLinearity;
+        Volume = DefaultSettings.Volume;
+        GameVolume = DefaultSettings.GameVolume;
+        UiVolume = DefaultSettings.UiVolume;
+        PlayerVolume = DefaultSettings.PlayerVolume;
+        Keybind = new Keybind();
+    }
+
+    public static string?[] GetResolutionsArray()
+    {
+        string?[] elements = new string?[Resolutions.Length];
+        for (int i = 0; i < Resolutions.Length; i++)
+        {
+            elements[i] = Resolutions[i].X + " x " + Resolutions[i].Y;
+        }
+
+        return elements;
+    }
+
+    public bool Equals(Settings? other)
+    {
+        if (ReferenceEquals(null, other)) return false;
+        return 
+            CameraLinearity.Equals(other.CameraLinearity) && 
+            Resolution.Equals(other.Resolution) && 
+            FullScreen.Equals(other.FullScreen) &&
+            Volume.Equals(other.Volume) &&
+            GameVolume.Equals(other.GameVolume) &&
+            UiVolume.Equals(other.UiVolume) &&
+            PlayerVolume.Equals(other.PlayerVolume) &&
+            Keybind.Equals(other.Keybind);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((Settings)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(CameraLinearity, Resolution, Keybind, Volume, GameVolume, UiVolume, PlayerVolume, Keybind);
+    }
+
+    public object Clone()
+    {
+        return MemberwiseClone();
+    }
+}
+```
+
+## AudioManager.cs
+**Location:** `Velocity-NEA\Velocity\Sound\AudioManager.cs`
+
+```csharp
+using System.Runtime.CompilerServices;
+using Raylib_cs;
+
+namespace Velocity.Sound;
+
+public class AudioManager
+{
+    private Dictionary<string, Raylib_cs.Sound?> _gameSounds = new();
+    private Dictionary<string, Raylib_cs.Sound?> _uiSounds = new();
+    private Dictionary<string, Raylib_cs.Sound?> _playerSounds = new();
+
+    private string[] _audioFiles =
+    {
+        "game/collect.wav",
+        "game/coin.wav",
+        "ui/click.wav",
+        "ui/interact.wav",
+        "player/jump.wav",
+        "player/walk.wav"
+    };
+    
+    public AudioManager ()
+    {
+        Initialise();
+    }
+
+    private void Initialise()
+    {
+        Raylib.InitAudioDevice();
+        
+        LoadAudioFiles();
+    }
+
+    private void LoadAudioFiles()
+    {
+        foreach (var file in _audioFiles)
+        {
+            string category = file.Split("/")[0];
+            Raylib_cs.Sound sound = Raylib.LoadSound(Utils.Path.SoundLocation + file);
+
+            string name = Path.GetFileName(Utils.Path.SoundLocation + file).Split(".")[0];
+            
+            switch (category)
+            {
+                case "game":
+                    _gameSounds.Add(name, sound);
+                    break;
+                case "ui":
+                    _uiSounds.Add(name, sound);
+                    break;
+                case "player":
+                    _playerSounds.Add(name, sound);
+                    break;
+            }
+        }
+    }
+
+    public void UpdateGameVolume()
+    {
+        foreach (var sound in _gameSounds)
+        {
+            if (sound.Value == null) continue;
+            
+            Raylib.SetSoundVolume((Raylib_cs.Sound)sound.Value, (float)Loader.Settings.GameVolume);
+        } 
+    }
+    
+    public void UpdateUiVolume()
+    {
+        foreach (var sound in _uiSounds)
+        {
+            if (sound.Value == null) continue;
+            
+            Raylib.SetSoundVolume((Raylib_cs.Sound)sound.Value, (float)Loader.Settings.UiVolume);
+        } 
+    }
+    
+    public void UpdatePlayerVolume()
+    {
+        foreach (var sound in _playerSounds)
+        {
+            if (sound.Value == null) continue;
+            
+            Raylib.SetSoundVolume((Raylib_cs.Sound)sound.Value, (float)Loader.Settings.PlayerVolume);
+        } 
+    }
+
+
+    public void UpdateVolume()
+    {
+        Raylib.SetMasterVolume(Convert.ToSingle(Loader.Settings.Volume));
+    }
+
+    public void PlaySound(string name)
+    {
+        string category = name.Split(".")[0];
+        string soundName = name.Split(".")[1];
+        switch (category)
+        {
+            case "game":
+                _gameSounds.TryGetValue(soundName, out Raylib_cs.Sound? sounda);
+                if (sounda != null) Raylib.PlaySound((Raylib_cs.Sound) sounda);
+                break;
+            case "ui":
+                _uiSounds.TryGetValue(soundName, out Raylib_cs.Sound? soundb);
+                if (soundb != null) Raylib.PlaySound((Raylib_cs.Sound) soundb);
+                break;
+            case "player":
+                _playerSounds.TryGetValue(soundName, out Raylib_cs.Sound? soundc);
+                if (soundc != null) Raylib.PlaySound((Raylib_cs.Sound) soundc);
+                break;
+        }
+    }
+}
+```
+
+## MenuManager.cs
+**Location:** `Velocity-NEA\Velocity\Ui\MenuManager.cs`
+
+```csharp
+using Velocity.Ui.Screens;
+
+namespace Velocity.Ui;
+
+public class MenuManager
+{
+    // Currently opened window
+    private int CurrentWindow { get; set; }
+
+    // Dictionary of all the registered window instances. - _windows[windowId] : Window
+    private readonly Dictionary<int, Screens.Window> _windows = new ();
+
+    // Run logic for current frame for currently active window.
+    public void Tick()
+    {
+        if (!IsScreenActive()) return; // Do nothing if no window is active.
+        _windows.TryGetValue(CurrentWindow, out Screens.Window? window); // Get the currently active window
+        window?.Tick(); // Tick the found window if it exists.
+    }
+
+    // Register the default menus
+    public void RegisterMenus()
+    {
+        RegisterMenu(SettingsScreen.UiId, new SettingsScreen());    // Register the pause screen
+        RegisterMenu(MainMenuScreen.UiId, new MainMenuScreen());         // Register the main menu
+        RegisterMenu(LevelScreen.UiId, new LevelScreen());          // Register the level selection screen
+        RegisterMenu(PauseScreen.UiId, new PauseScreen());          // Register the pause screen
+        RegisterMenu(WinScreen.UiId, new WinScreen());              // Register the win screen
+        RegisterMenu(LoadingScreen.UiId, new LoadingScreen());      // Register the loading screen
+    }
+
+    // Register a menu
+    private void RegisterMenu(int id, Screens.Window menu)
+    {
+        _windows.Add(id, menu); // Add the window to the dictionary
+        
+        Loader.WindowManager.Renderer.RegisterUiRenderer(menu.Renderer); // Register the respective window's renderer with the main renderer
+    }
+    
+
+    // Set the active window to the argument provided, provide a calling menu for previous window step (e.g. settings > main menu, or settings > pause)
+    public void SetActiveWindow(int id, int? previous = null)
+    {
+        DisableAll(); // Disable all windows
+        CurrentWindow = id; // Set the current window id
+        _windows.TryGetValue(CurrentWindow, out Screens.Window? window); // Get the newly selected window
+        if (window == null) return; // Return if it doesnt exist (prevent type:null error)
+        window.OnDisplay(previous); // Call the on-display function so the window knows its being opened
+        Loader.WindowManager.Renderer.EnableRenderer(window.Renderer.Identifier); // Enable the respective window's renderer so its visible
+    }
+
+    // Disable all windows
+    public void DisableAll()
+    {
+        foreach (var pair in _windows) // Iterative: step through all the registered windows and disable their renderer.
+        {
+            Loader.WindowManager.Renderer.DisableRenderer(pair.Value.Renderer.Identifier);
+        }
+        
+        CurrentWindow = 0; // Set the current window to 0 (inactive state)
+    }
+
+    public bool IsScreenActive() // Checks to see if a screen is active by comparing current window to inactive state.
+    {
+        return CurrentWindow != 0;
+    }
+}
+```
+
+## Button.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\Button.cs`
+
+```csharp
+using Velocity.Ui.Render.Element;
+using Raylib_cs;
+using Vector2 = Velocity.Math.Vector2;
+
+namespace Velocity.Ui.Misc;
+
+public class Button : UiElement
+{
+    public Color BgColor { get; set; }
+    public Color BorderColor { get; set; }
+    public Text Text { get; set; }
+
+    public Button(Text text, Vector2 position, Vector2 dimensions) : base(position, dimensions)
+    {
+        Text = text;
+        SetRenderer(new ButtonRenderer(Guid.NewGuid(), this));
+    }
+
+    public override bool IsClicked()
+    {
+        if (base.IsClicked()) Loader.AudioManager.PlaySound("ui.click");
+        return base.IsClicked();
+    }
+}
+```
+
+## ControlField.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\ControlField.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Input;
+using Velocity.Math;
+using Velocity.Ui.Render.Element;
+using Velocity.Ui.Screens;
+using Velocity.Utils;
+using Velocity.Window;
+
+namespace Velocity.Ui.Misc;
+public class ControlField : UiElement
+{
+    private KeyboardKey _key;
+
+    public ControlField(KeyboardKey defaultKey) : base(Vector2.Zero(),
+        new Vector2(WindowManager.Width - SettingsScreen.Safezone.X / 2, WindowManager.Height / 32))
+    {
+        _key = defaultKey;
+        
+        SetRenderer(new ControlFieldRenderer(this));
+    }
+
+    public override void RegisterSubElements(Vector2 position)
+    {
+        Display = new ControlValueField(() => { return _key.ToString().Replace("KEY_", ""); }, _key.ToString().Replace("KEY_", ""),
+            new Color(10, 10, 10, 255), new Color(200, 200, 200, 255))
+        {
+            Position = new Vector2(
+                WindowManager.Width - SettingsScreen.Safezone.X -
+                Raylib.MeasureTextEx(Raylib.GetFontDefault(), _key.ToString().Replace("KEY_", ""), 48, 5).X,
+                Position.Y - 25),
+            Dimensions = new Vector2(80, 60)
+        };
+    }
+
+    public override bool IsClicked()
+    {
+        if (base.IsClicked()) Display.IsClicked();
+        return base.IsClicked();
+    }
+
+    public KeyboardKey GetKey()
+    {
+        return KeyParser.ToKey(Display.Value) == KeyboardKey.KEY_NULL ? _key : KeyParser.ToKey(Display.Value);
+    }
+}
+```
+
+## ControlValueField.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\ControlValueField.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Math;
+using Velocity.Ui.Screens;
+using Velocity.Utils;
+using Velocity.Window;
+
+namespace Velocity.Ui.Misc;
+
+public class ControlValueField : ValueField
+{
+    public bool IsListening = false; // Is the control field listening for key presses
+    private int _timer = 0; // Text temp display timer
+
+    private string? _defaultValue; // Original value when canceling
+    public ControlValueField(Func<string?> listener, string? defaultValue, Color bgColor, Color textColor) : base(listener, defaultValue, bgColor, textColor)
+    {
+        _defaultValue = defaultValue;
+    }
+
+    public override bool IsClicked()
+    {
+        if (base.IsClicked()) // If is clicked
+        {
+            IsListening = true; // Start listening
+            Loader.AudioManager.PlaySound("ui.interact"); // Play the ui sound
+        }
+        return base.IsClicked(); // Return isclicked value
+    }
+    
+    // To listen loop and ui handle
+    public override void Update()
+    {
+        if (IsListening) // If listening
+        {
+            if (_timer > 0) _timer--; // Decrement the timer if it is above 0
+            if (_timer == 0) Value = "Press a key..."; // Display press a key if timer is at 0
+            
+            foreach (KeyboardKey key in Enum.GetValues(typeof(KeyboardKey))) // Iterative: For all of keyboard keys 
+            {
+                if (Raylib.IsKeyPressed(key)) // If said key is pressed
+                {
+                    if (key == KeyboardKey.KEY_BACKSPACE ||
+                        (!base.IsMouseOver() && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT))) // If backspace or left mouse button pressed:
+                    {
+                        IsListening = false; // Stop listening for key
+                        break;
+                    }
+                    
+                    if (Loader.Settings.Keybind.IsKeyTaken(key)) // If the key is taken
+                    {
+                        Value = "Key already taken!"; // Display string as value
+                        _timer = 30; // For 30 frames 
+                        break;
+                    }
+                    
+                    if (KeyParser.ToKey(key.ToString().Replace("KEY_", "")) == KeyboardKey.KEY_NULL) // If it is not deemed valid by KeyParser:
+                    {
+                        Value = "Invalid Key"; // Display string as value
+                        _timer = 30; // For 30 frames
+                        break;
+                    }
+
+                    // Otherwise
+                    
+                    Value = key.ToString().Replace("KEY_", ""); // Set the value to the key pressed string
+                    _defaultValue = Value; // Change default value
+                    IsListening = false; // Stop listening
+                }
+            }
+            
+            UpdatePositions(); // Update the positions so it centers correctly
+            return;
+        }
+        
+        // Otherwise
+        
+        Value = _defaultValue; // Set the value back to the default value
+        
+        UpdatePositions(); // Update the positions so it centers correctly
+    }
+    
+    // Function to align element to right
+    private void UpdatePositions ()
+    {
+        Dimensions.X = Vector2.ToCustom(Raylib.MeasureTextEx(FontUtils.ButtonFont, Value, (float)Dimensions.GetY() - 6, 2f)).X + 8;  // Find the offset of the text width and add 8 pix margin
+        Position.X = WindowManager.Width - SettingsScreen.Safezone.X - Dimensions.X - 20;                                                           // Set the position to the right of the screen, inside the safezone, minus its own width and 20 pix margin
+    }
+}
+```
+
+## FontUtils.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\FontUtils.cs`
+
+```csharp
+using Raylib_cs;
+
+namespace Velocity.Ui.Misc;
+
+public class FontUtils
+{
+    public static Font Font = Raylib.LoadFontEx(Directory.GetCurrentDirectory() + "/assets/font/main.otf", 256, null, 250);
+    public static Font ButtonFont = Raylib.LoadFontEx(Directory.GetCurrentDirectory() + "/assets/font/button.otf", 256, null, 250);
+    public static Font TimerFont = Raylib.LoadFontEx(Directory.GetCurrentDirectory() + "/assets/font/timer.otf", 256, null, 250);
+}
+```
+
+## Label.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\Label.cs`
+
+```csharp
+using Velocity.Math;
+using Velocity.Ui.Render.Element;
+
+namespace Velocity.Ui.Misc;
+
+public class Label : UiElement
+{
+    public readonly Text Text;
+    
+    public Label(Text text, Vector2 position) : base(position, new Vector2())
+    {
+        Text = text;
+        Position = position;
+        SetRenderer(new LabelRenderer(this));
+    }
+}
+```
+
+## LevelField.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\LevelField.cs`
+
+```csharp
+using Velocity.Math;
+using Velocity.Ui.Render.Element;
+using Velocity.Window;
+
+namespace Velocity.Ui.Misc;
+
+public class LevelField : UiElement
+{
+    public Level.Level? SelectedLevel; // Currently selected level
+    
+    public LevelPreview LevelPreview = new(); // Level preview element
+    
+    public LevelField () : base(new Vector2(800, 140), new Vector2(WindowManager.Width - 830, WindowManager.Height - 170))
+    {
+        SetRenderer(new LevelFieldRenderer(this));
+    }
+
+    // Select a level to show
+    public void SelectLevel(int id)
+    {
+        SelectedLevel = Loader.Game.LevelManager.GetLevelById(id); // Change the selected level 
+        LevelPreview.RecalculateRectangles(SelectedLevel); // Recalculate the preview
+    }
+}
+```
+
+## LevelPreview.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\LevelPreview.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Math;
+using Velocity.Ui.Render.Element;
+using Velocity.Window;
+using Raylib_cs;
+
+namespace Velocity.Ui.Misc;
+
+public class LevelPreview : UiElement
+{
+    public List<Rectangle> LevelRectangles = new(); // Rectangles to be displayed
+    public List<Color> LevelColors = new(); // Colors of the rectangles
+    
+    public LevelPreview() : base(new Vector2(815, (WindowManager.Height - 170) / 8 + 90),
+        new Vector2(WindowManager.Width - 860, (WindowManager.Height - 170) / 8))
+    {
+        SetRenderer(new LevelPreviewRenderer(this));
+    }
+
+    // Calculate the rectangles to be displayed
+    public void RecalculateRectangles(Level.Level level)
+    {
+        int dx = (int)Dimensions.X / Level.Level.LevelWidth; // Rect width
+        int dy = (int)Dimensions.Y / Level.Level.LevelHeight; // Rect height
+
+        // Sky rectangles
+        for (int y = 0; y < 4; y++) // For 4 layers
+        {
+            for (int x = 0; x < Level.Level.LevelWidth; x++) // and for 60 rows from Level.cs
+            {
+                LevelRectangles.Add(new Rectangle((int)Position.X + (x > 0 ? (x + 1) * dx : dx), (int)Position.Y + (y > 0 ? (y + 1) * dy : dy), dx, dy)); // Add a rectangle from position + the current x and y index
+                LevelColors.Add(level.BackgroundColor); // Add a level background color to the colors
+            }
+        }
+        
+        // Level Rectangles
+        for (int r = 4; r <= Level.Level.LevelHeight + 3; r++) // for level height in cells
+        {
+            string row = level.GetObjectMap()[r - 4]; // Get the row
+            for (int c = 0; c < Level.Level.LevelWidth; c++) // and for level width in cells
+            {
+                LevelRectangles.Add(new Rectangle((int)Position.X + (c > 0 ? (c + 1) * dx : dx), (int)Position.Y + (r > 0 ? (r + 1) * dy : dy), dx, dy)); // Add a rectangle to the rectangles
+                LevelColors.Add(row[c] switch // add the color for:
+                {
+                    '1' => new Color(161, 102, 47, 255), // Wood color for Crate
+                    '2' => new Color(99, 59, 59, 255), // Dark wood color for Barrel
+                    _ => level.BackgroundColor, // Background for nothing
+                });
+            }
+        }
+    }
+}
+```
+
+## PlayerPreview.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\PlayerPreview.cs`
+
+```csharp
+using Velocity.Math;
+using Velocity.Ui.Render.Element;
+using Velocity.Window;
+
+namespace Velocity.Ui.Misc;
+
+public class PlayerPreview : UiElement
+{
+    public PlayerPreview() : base(new Vector2(WindowManager.Width / 1.3 - 280, WindowManager.Height / 2 - 410), // Draw at center screen right
+        new Vector2(560, 620)) // With the dimensions of 560, 620
+    {
+        SetRenderer(new PlayerPreviewRenderer(this));
+    }
+}
+```
+
+## Selector.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\Selector.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Math;
+using Velocity.Ui.Render.Element;
+using static Velocity.Window.WindowManager;
+
+namespace Velocity.Ui.Misc;
+
+public class Selector : UiElement
+{
+    public readonly string?[] Options; // Different options for the selector
+    public int Index; // Currently selected index
+
+    public Selector(string?[] options, int index, Vector2 dimensions) : base(Vector2.Zero(), dimensions)
+    {
+        Options = options; // Set the options
+        Index = index; // Set the index
+        
+        SetRenderer(new SelectorRenderer(this));
+    }
+
+    // Override: Register the display element for the value (from all ui elements)
+    public override void RegisterSubElements(Vector2 position)
+    {
+        Display = new ValueField(() => Options[Index], Options[Index],
+            new Color(10, 10, 10, 255), new Color(200, 200, 200, 255))
+        {
+            Position = position,
+            Dimensions = new Vector2(0, Height / 32 + 10)
+        };
+    }
+
+    // Set the index of the currently selected option
+    public void SetIndex(int index)
+    {
+        Index = index;
+    }
+
+    // Increment the index by a certain amount
+    private void IncrementIndex(int by = 1)
+    {
+        if (Index + by >= Options.Length || Index + by < 0) return;
+
+        Index += by;
+    }
+
+    // Override: If mouse is over the selector, check if the buttons are clicked
+    // If the left is clicked, decrement the index, if the right is clicked, increment the index
+    public override bool IsClicked()
+    {
+        if (!base.IsClicked()) return base.IsClicked();
+        switch (GetButtonClicked())
+        {
+            case 1: IncrementIndex(-1);
+                break;
+            case 2: IncrementIndex();
+                break;
+        }
+
+        return base.IsClicked();
+    }
+
+    // Get the button that is clicked
+    private int GetButtonClicked()
+    {
+        if (!IsMouseOver()) return 0;
+
+        if (Raylib.GetMouseX() * Loader.WindowManager.VirtualRatio <= Position.X + Dimensions.X / 6) return 1; // Left button
+        return Raylib.GetMouseX() * Loader.WindowManager.VirtualRatio >=
+               Position.X + Dimensions.X - Dimensions.X / 6 ? 2 : 0; // Right button
+    }
+
+    // Override: Get the index of the selector
+    public override double GetValue(int args = 0)
+    {
+        return Index;
+    }
+}
+```
+
+## Slider.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\Slider.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Render.Element;
+using Velocity.Window;
+using Vector2 = Velocity.Math.Vector2;
+
+namespace Velocity.Ui.Misc;
+
+public class Slider : UiElement
+{
+    private readonly double _min; // The minimum value of the slider
+    private readonly double _max; // The maximum value of the slider
+    private bool _held; // If the slider is being held
+
+    public double SliderOffset; // The offset of the slider head
+    
+    private double _previousValue; // The previous value of the slider
+    private int _waitFrames; // The amount of frames to wait before playing the sound again
+
+    public Slider(double min, double max, Vector2 dimensions, double? d = null) : base(Vector2.Zero(), dimensions)
+    {
+        _min = min; // Set the minimum value
+        _max = max; // Set the maximum value
+        
+        SliderOffset = Dimensions.GetX() * ((d - _min) / (_max - _min)) ?? 0; // Set the slider offset to the default value
+
+        SetRenderer(new SliderRenderer(this)); // Set the renderer
+    }
+
+    // Override: Register the display element for the value (from all ui elements)
+    public override void RegisterSubElements(Vector2 position)
+    {
+        Display = new ValueField(() => System.Math.Round(GetValue(2) / _max * 100) + "%", GetValue(2) + "%",
+            new Color(10, 10, 10, 255), new Color(200, 200, 200, 255))
+        {
+            Position = position,
+            Dimensions = new Vector2(0, WindowManager.Height / 32 + 10)
+        };
+    }
+
+    // Override: If mouse is over the slider, check if the slider head is clicked
+    // If the slider head is clicked, set the slider offset to the mouse position
+    // Limit slider offset to the slider bounds
+    public override bool IsClicked()
+    {
+        if (_waitFrames != 0) _waitFrames--; // Decrement the wait frames
+        if (IsMouseInHeadBounds() && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT)) _held = true; // If the mouse is in the slider head bounds and the left mouse button is down, set held to true
+        
+        if (base.IsClicked() || (_held && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))) // If the slider is clicked or held
+        {
+            _held = true; // Set held to true
+            
+            SliderOffset = Raylib.GetMouseX() * Loader.WindowManager.VirtualRatio - Position.GetX(); // Set the slider offset to the mouse position
+            
+            if (SliderOffset < 0) SliderOffset = 0; // Limit the slider offset to the slider bounds 
+            if (SliderOffset > Dimensions.GetX()) SliderOffset = Dimensions.GetX(); // Limit the slider offset to the slider bounds
+
+            if (System.Math.Abs(_previousValue - GetValue(2)) == 0) return _held; // If the value hasn't changed return held
+            if (_waitFrames == 0) // If the wait frames is 0
+            {
+                _waitFrames = (int)(Double.Abs(_previousValue - GetValue(2)) * 100) * 3; // Set the wait frames to the difference between the values * 100 * 3 (To stop more clicks the faster its moved)
+                Loader.AudioManager.PlaySound("ui.interact"); // Play the sound
+            }
+
+            _previousValue = GetValue(2); // Set the previous value to the current value
+
+        } else _held = false; // If the slider isn't clicked, set held to false
+
+        return _held; // Return held
+    }
+
+    // If the mouse is over the slider head, change the cursor to a hand
+    private bool IsMouseInHeadBounds ()
+    {
+        var mousePos = System.Numerics.Vector2.Multiply(Raylib.GetMousePosition(),
+            new System.Numerics.Vector2(Loader.WindowManager.VirtualRatio, Loader.WindowManager.VirtualRatio)); // Get the mouse position
+
+        return
+            mousePos.X >= GetSlideHeadBounds().X && 
+            mousePos.X <= GetSlideHeadBounds().Z &&
+            mousePos.Y >= GetSlideHeadBounds().Y &&
+            mousePos.Y <= GetSlideHeadBounds().W; // Return if the mouse is in the slider head bounds
+    }
+    
+    
+    // Get the slider head bounds
+    private Vector4 GetSlideHeadBounds() 
+    {
+        return new Vector4(Convert.ToSingle(Position.GetX() - 5 + SliderOffset), Convert.ToSingle(Position.GetY() - 5), Convert.ToSingle(Position.GetX() + 5 + SliderOffset), Convert.ToSingle(Position.GetY() + 5 + Dimensions.GetY())); // Return the slider head bounds
+    }
+
+    // Override: Get the value of the slider
+    public override double GetValue(int precision = 0)
+    {
+        return System.Math.Round(_min + (_max - _min) * (SliderOffset / Dimensions.GetX()), precision); // Return the value of the slider
+    }
+}
+```
+
+## Text.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\Text.cs`
+
+```csharp
+using Raylib_cs;
+
+namespace Velocity.Ui.Misc;
+
+public class Text
+{
+    public Text(string? data = null, int fontSize = 32, Font? font = null, Color? color = null)
+    {
+        Data = data ?? "";
+        FontSize = fontSize;
+        Font = font ?? Raylib.GetFontDefault();
+        Color = color ?? Color.WHITE;
+    }
+    public string Data { get; set; } // String data
+    public Color Color { get; set; } // Color of the text
+    public int FontSize { get; set; } // Font size
+
+    public Font Font { get; set; } // Font
+
+    public int GetWidth() // Get the width of the text
+    {
+        return (int)Raylib.MeasureTextEx(Font, Data, FontSize, 4f).X; // Return the width of the text
+    }
+}
+```
+
+## Toggle.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\Toggle.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Math;
+using Velocity.Ui.Render.Element;
+using Velocity.Window;
+
+namespace Velocity.Ui.Misc;
+
+public class Toggle : UiElement
+{
+    private bool _value; // The value of the toggle
+    public Toggle(bool d, Vector2 dimensions) : base(Vector2.Zero(), dimensions)
+    {
+        _value = d; // Set the value to the default value
+        
+        SetRenderer(new ToggleRenderer(this)); // Set the renderer
+    }
+
+    // Override: Register the display element for the value (from all ui elements)
+    public override bool IsClicked()
+    {
+        if (!base.IsClicked()) return false; // If the toggle isn't clicked, return false
+        _value = !_value; // Set the value to the opposite of the current value
+        Loader.AudioManager.PlaySound("ui.interact");  // Play the ui interact sound
+        return base.IsClicked(); // Return true
+    }
+
+    // Override: Register the display element for the value (from all ui elements)
+    public override void RegisterSubElements(Vector2 position)
+    {
+        Display = new ValueField(() => _value ? "Enabled" : "Disabled", _value ? "Enabled" : "Disabled",
+            new Color(10, 10, 10, 255), new Color(200, 200, 200, 255))
+        {
+            Position = position,
+            Dimensions = new Vector2(0, WindowManager.Height / 32 + 10)
+        };
+    }
+
+    // Override: Get the value of the toggle
+    public override double GetValue(int args = 0)
+    {
+        return Convert.ToDouble(_value); // Return the value
+    }
+}
+```
+
+## UIElement.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\UIElement.cs`
+
+```csharp
+using Velocity.Math;
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Misc;
+
+public abstract class UiElement
+{
+    public Vector2 Position;
+    public Vector2 Dimensions;
+    public bool Active = true;
+    public ValueField? Display;
+    
+    private bool _isClicked;
+    
+
+    public ConditionalRenderer? Renderer;
+
+    protected UiElement(Vector2 origin, Vector2 dimensions)
+    {
+        Position = origin;
+        Dimensions = dimensions;
+    }
+
+    protected void SetRenderer(ConditionalRenderer renderer)
+    {
+        Renderer = renderer;
+    }
+
+    public virtual bool IsMouseOver()
+    {
+        System.Numerics.Vector2 mousePos = System.Numerics.Vector2.Multiply(Raylib.GetMousePosition(),
+            new System.Numerics.Vector2(Loader.WindowManager.VirtualRatio, Loader.WindowManager.VirtualRatio));
+        return mousePos.X > Position.X && 
+               mousePos.X < Position.X + Dimensions.X &&
+               mousePos.Y > Position.Y &&
+               mousePos.Y < Position.Y + Dimensions.Y;
+    }
+
+    public virtual bool IsClicked()
+    {
+        if (IsMouseOver() && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT)) return true;
+
+        return false;
+    }
+
+    public virtual void RegisterSubElements(Vector2 position)
+    {
+    }
+    
+
+    public virtual double GetValue(int args = 0)
+    {
+        return 0.0;
+    }
+}
+```
+
+## ValueField.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Misc\ValueField.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Math;
+using Velocity.Ui.Overlay.Render;
+using Velocity.Ui.Render.Element;
+
+namespace Velocity.Ui.Misc;
+
+public class ValueField : UiElement
+{
+    private readonly Func<string?> _listener; // Listener for the value
+    public Color BgColor; // Background color
+    public Color TextColor; // Text color
+    public string? Value; // Value of the field
+    private readonly int? _customX = null; // Custom x value
+    
+    
+    public ValueField(Func<string?> listener, string? defaultValue, Color bgColor, Color textColor) : base(Vector2.Zero(), Vector2.Zero())
+    {
+        _listener = listener; // Set the listener
+        Value = defaultValue;   // Set the value
+        BgColor = bgColor; // Set the background color
+        TextColor = textColor; // Set the text color
+
+        SetRenderer(new ValueFieldRenderer(this)); // Set the renderer
+    }
+    
+    // Set the custom x value
+    public virtual void Update()
+    {
+        Value = _listener.Invoke(); // Update the value
+        Dimensions.X = _customX ?? Vector2.ToCustom(Raylib.MeasureTextEx(FontUtils.ButtonFont, Value, (float)Dimensions.GetY() - 6, 2f)).X + 8; // Update the dimensions of the field to fit the text + padding
+    }
+}
+```
+
+## ColoredFlashRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Overlay\Render\ColoredFlashRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Overlay.Render;
+
+public class ColoredFlashRenderer : UiRenderer
+{
+    private int _fade = 30; // The amount of frames it takes to fade out
+    private int _counter = 0; // The current frame
+    private Color _color = Color.WHITE; // The color of the flash
+
+    private int _alpha = 0; // The alpha of the flash
+    
+    public ColoredFlashRenderer() : base("velocity:game.flash", false)
+    {
+    }
+
+    public void Trigger(int fadeout, Color color) // Trigger the flash
+    {
+        _counter = fadeout; // Set the counter to the fadeout amount
+        _fade = fadeout; // Set the fade to the fadeout amount
+        _alpha = 255; // Set the alpha to 255
+        _color = color; // Set the color to the color
+        IsEnabled = true; // Enable the renderer
+    }
+
+
+    public override void Draw() // Draw the flash
+    {
+        if (_counter == 0) // If the counter is 0
+        {
+            IsEnabled = false; // Disable the renderer
+            return; // Return
+        }
+        
+        _alpha = (int)(255d * ((double)_counter / _fade)); // Calculate the alpha
+        _counter--; // Decrement the counter
+ 
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, _color with { a = (byte)_alpha }); // Draw the flash
+    }
+}
+```
+
+## DebugRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Overlay\Render\DebugRenderer.cs`
+
+```csharp
+using Velocity.Window.Render.Renderers;
+using Raylib_cs;
+
+namespace Velocity.Ui.Overlay.Render;
+
+public class DebugRenderer : UiRenderer
+{
+    public DebugRenderer () : base("velocity:overlay.debug") {}
+
+    public override void Draw()
+    {
+        if (!Loader.Game.IsRunning || Loader.Game.Player == null) return;
+        
+        Raylib.DrawText(
+            "Velocity: " + "\n" +
+            " FPS: " + Raylib.GetFPS() + "\n" +
+            " Delta: " + Raylib.GetFrameTime() + "\n" +
+            "\n\n" +
+            "PLAYER: \n Position: " + Loader.Game.Player.Position.X + ", " + Loader.Game.Player.Position.Y + "\n" + 
+            " Velocity: " + (int)Loader.Game.Player.Velocity.X + " " + (int)Loader.Game.Player.Velocity.Y + "\n"
+            , 0, 0, 24, Color.WHITE);
+    }
+}
+```
+
+## DistanceLimitRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Overlay\Render\DistanceLimitRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Overlay.Render;
+
+public class DistanceLimitRenderer : UiRenderer
+{
+    public DistanceLimitRenderer () : base("velocity.ui.distanceLimit", false)
+    {
+    }
+
+    public override void Draw()
+    {
+        int distance = 0; // Distance from the center of the level
+        if (Double.Abs(Loader.Game.Player.Position.X) >= (Level.Level.LevelWidth / 2 + 3) * 200) distance = (int) (Double.Abs(Loader.Game.Player.Position.X) - (Level.Level.LevelWidth / 2 + 3) * 200); // Calculate the distance from the edge of the level to the player
+        
+        int alphaa = 0; // Alpha for the gradient
+        if (distance is > 0 and < 400) alphaa = (int)(255 * (distance / 400d)); // Calculate the alpha for the gradient
+        else if (distance >= 400) alphaa = 255; // Set the alpha to 255 if the distance is greater than 400
+        int alphab = 0; // Alpha for the gradient
+        if (distance is > 0 and < 800) alphab = (int)(255 * (distance / 800d)); // Calculate the alpha for the gradient
+        else if (distance >= 800) alphab = 255; // Set the alpha to 255 if the distance is greater than 800
+        
+        // If the player is to the left or right of the level area
+        if (Loader.Game.Player.Position.X > 0) Raylib.DrawRectangleGradientH(0, 0, WindowManager.Width, WindowManager.Height, new Color(255, 255, 255, alphab), new Color(255, 255, 255, alphaa)); // Draw the white gradient
+        else Raylib.DrawRectangleGradientH(0, 0, WindowManager.Width, WindowManager.Height, new Color(0, 0, 0, alphaa), new Color(0, 0, 0, alphab)); // Draw the black gradient
+    }
+}
+```
+
+## HudRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Overlay\Render\HudRenderer.cs`
+
+```csharp
+using System.Globalization;
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+using Velocity.Game;
+using Velocity.Input;
+using Velocity.Ui.Misc;
+
+namespace Velocity.Ui.Overlay.Render;
+
+public class HudRenderer : UiRenderer
+{
+    private readonly Game.Game _game; // The game instance
+
+    private Texture2D _heartTexture; // The heart texture
+    private Texture2D _powerUpTexture; // The power up texture
+    private Texture2D _coinTexture; // The coin texture
+
+    private readonly Rectangle _heartSource; // The heart source rectangle
+    private readonly Rectangle[] _powerUpSource = new Rectangle[2]; // The power up source rectangle
+
+    public HudRenderer(Game.Game game) : base("velocity.overlay.hud", false)
+    {
+        _game = game; // Set game
+
+        LoadTextures(); // Load textures
+        _heartSource = new Rectangle(0, 0, _heartTexture.width, _heartTexture.height);
+        _powerUpSource[0] = new Rectangle(0, _powerUpTexture.height / 4, _powerUpTexture.width / 3, 
+            _powerUpTexture.height / 4); // Set power up 1 source rectangle
+        _powerUpSource[1] = new Rectangle(_powerUpTexture.width / 3 * 2, _powerUpTexture.height / 4,
+            _powerUpTexture.width / 3,
+            _powerUpTexture.height / 4); // Set power up 2 source rectangle
+    }
+
+    private void LoadTextures() // Load textures
+    {
+        _heartTexture = Loader.AssetManager.GetTexture("ui.heart"); // Get heart texture
+        _powerUpTexture = Loader.AssetManager.GetTexture("item.power_ups"); // Get power up texture
+        _coinTexture = Loader.AssetManager.GetTexture("item.coin"); // Get coin texture
+    }
+
+    private Rectangle ModifyRectangle(Rectangle rectangle, int powerUpId) // Modify rectangle to active power up visually
+    {
+        if (_game.PowerUps[powerUpId] > 0) // If the power up is active
+        {
+            rectangle.y += _powerUpTexture.height / 2; // Set the rectangle y to the second row of the power up texture
+        }
+
+        return rectangle; // Return the rectangle
+    }
+
+    public override void Draw() // Draw the hud
+    {
+        Raylib.DrawRectangleGradientV(0, 0, WindowManager.Width, 180, new Color(0, 0, 0, 45), new Color(0, 0, 0, 0)); // Draw the hud gradient background
+        for (int i = 0; i <= 2; i++) // Draw the heart backgorund
+        {
+            int rx = _heartTexture.width / 2 * i; // Calculate the x position of the heart
+
+            Raylib.DrawTexturePro(_heartTexture, _heartSource,
+                new Rectangle(rx, -10, _heartTexture.width / 2, _heartTexture.height / 2), new Vector2(), 0,
+                new Color(200, 200, 200, 75)); // Draw the heart
+        }
+
+        for (int i = 0; i <= _game.Player.Health - 1; i++) // Draw the bonus hearts
+        {
+            int rx = _heartTexture.width / 2 * i; // Calculate the x position of the heart
+
+            Raylib.DrawTexturePro(_heartTexture, _heartSource,
+                new Rectangle(rx, -10, _heartTexture.width / 2, _heartTexture.height / 2), new Vector2(), 0, i <= 2
+                    ? new Color(255, 0, 0, 255)
+                    : new Color(
+                        255, 215, 0, 255)); // Draw the heart with a different color if it is a bonus heart
+        }
+        
+        Raylib.DrawTexturePro(_coinTexture, new Rectangle(0, 0, _coinTexture.width / 5, _coinTexture.height), new Rectangle(10, 90, 70, 70), new Vector2(), 0, Color.WHITE); // Draw the coin texture
+        Raylib.DrawRectangleRounded(
+            new Rectangle(
+                Convert.ToSingle(_coinTexture.width / 5 + 32),
+                130,
+                Raylib.MeasureText(_game.Coins.ToString(), 28) + 20, 32f), 0.7f, 4,
+            new Color(20, 30, 40, 150)); // Draw the coin count background
+        Raylib.DrawText(_game.Coins.ToString(),
+            _coinTexture.width / 5 + 42,
+            134, 28, Color.WHITE); // Draw the coin count text
+        
+        Raylib.DrawTexturePro(_powerUpTexture, ModifyRectangle(_powerUpSource[0], 0),
+            new Rectangle(WindowManager.Width - _powerUpSource[0].width - 10, 10, _powerUpSource[0].width,
+                _powerUpSource[0].height), new Vector2(), 0, Color.WHITE); // Draw the power up 1 texture
+        Raylib.DrawTexturePro(_powerUpTexture, ModifyRectangle(_powerUpSource[1], 2), 
+            new Rectangle(WindowManager.Width - _powerUpSource[1].width * 2 - 10, 10, _powerUpSource[1].width,
+                _powerUpSource[1].height), new Vector2(), 0, Color.WHITE); // Draw the power up 2 texture
+        
+        if (_game.PowerUps[0] > 0) // If the power up 1 is active
+        {
+            // Calculate the timer text
+            TimeSpan ts = new TimeSpan((long)_game.PowerUps[0] + 1);
+            string text = $"{ts.Minutes}{ts.Seconds:00}";
+            
+            Raylib.DrawRectangleRounded(
+                new Rectangle(
+                    Convert.ToSingle(WindowManager.Width - (_powerUpSource[0].width - _powerUpSource[0].width / 2.4) - Raylib.MeasureText(GetTimeForPowerUp(0), 28) + 20),
+                    _powerUpSource[0].height / 2 + _powerUpSource[0].width / 3 - 2,
+                    Raylib.MeasureText(GetTimeForPowerUp(0), 28) + 20, 32f), 0.7f, 4,
+                new Color(20, 30, 40, 150)); // Draw the power up 1 timer background
+            Raylib.DrawText(GetTimeForPowerUp(0),
+                Convert.ToInt32(WindowManager.Width - (_powerUpSource[0].width - _powerUpSource[0].width / 1.8) - Raylib.MeasureText(GetTimeForPowerUp(0), 28) + 20),
+                Convert.ToInt32(_powerUpSource[0].height / 2 + _powerUpSource[0].width / 3), 28, Color.WHITE); // Draw the power up 1 timer text
+        }
+
+        if (_game.PowerUps[2] > 0) // If the power up 2 is active
+        {
+            Raylib.DrawRectangleRounded(
+                new Rectangle(
+                    Convert.ToSingle(WindowManager.Width - (_powerUpSource[0].width * 2 - _powerUpSource[0].width / 2.4) - Raylib.MeasureText(GetTimeForPowerUp(2), 28) + 20),
+                    _powerUpSource[0].height / 2 + _powerUpSource[0].width / 3 - 2,
+                    Raylib.MeasureText(GetTimeForPowerUp(2), 28) + 20, 32f), 0.7f, 4,
+                new Color(20, 30, 40, 150)); // Draw the power up 2 timer background
+            
+            
+            Raylib.DrawText(GetTimeForPowerUp(2),
+                Convert.ToInt32(WindowManager.Width - (_powerUpSource[0].width * 2 - _powerUpSource[0].width / 1.8) - Raylib.MeasureText(GetTimeForPowerUp(2), 28) + 20),
+                Convert.ToInt32(_powerUpSource[0].height / 2 + _powerUpSource[0].width / 3), 28, Color.WHITE); // Draw the power up 2 timer text
+        }
+
+        // Create a footer at the bottom of the game displaying the controls for the game 
+        
+        Raylib.DrawRectangle(0, WindowManager.Height - 60, WindowManager.Width, 60, new Color(40, 40, 40, 150)); // Draw the footer background
+        
+
+        DrawFooter(); // Draw the footer
+    }
+
+    private void DrawFooter() // Draw the footer
+    {
+        int wx = 15; // The x position of the footer (safezone of 15 pix)
+        
+        // Controls
+        
+        // Register the text for the controls
+        // Calculate the border width
+        // Draw the control border
+        // Give 5 pix margin
+        // Draw the control text
+        // Add the width of the control text to the x position
+        // Draw next control with the same steps
+        Text leftText = new Text(Loader.Settings.Keybind.Left.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.Left));
+        int leftBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.Left.ToString().Replace("KEY_", ""), leftText.FontSize);
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx, WindowManager.Height - 45, leftBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(leftText.Data, wx, WindowManager.Height - 45, leftText.FontSize, leftText.Color);
+        wx += Raylib.MeasureText(leftText.Data, 32) + 20;
+        
+        // Repeat for right, interact and jump
+        Text rightText = new Text(Loader.Settings.Keybind.Right.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.Right));
+        int rightBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.Right.ToString().Replace("KEY_", ""), rightText.FontSize);
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx, WindowManager.Height - 45, rightBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(rightText.Data, wx, WindowManager.Height - 45, rightText.FontSize, rightText.Color);
+        wx += Raylib.MeasureText(rightText.Data, 32) + 20;
+        
+        Text interactText = new Text(Loader.Settings.Keybind.Interact.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.Interact));
+        int interactBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.Interact.ToString().Replace("KEY_", ""), interactText.FontSize);
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx, WindowManager.Height - 45, interactBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(interactText.Data, wx, WindowManager.Height - 45, interactText.FontSize, interactText.Color);
+        wx += Raylib.MeasureText(interactText.Data, 32) + 20;
+        
+        Text jumpText = new Text(Loader.Settings.Keybind.Jump.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.Jump));
+        int jumpBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.Jump.ToString().Replace("KEY_", ""), jumpText.FontSize);
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx, WindowManager.Height - 45, jumpBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(jumpText.Data, wx, WindowManager.Height - 45, jumpText.FontSize, jumpText.Color);
+
+        
+        // Register text for zoom in and zoom out
+        // Calculate the border width
+        Text zoominText = new Text(Loader.Settings.Keybind.ZoomIn.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.ZoomIn));
+        int zoominBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.ZoomIn.ToString().Replace("KEY_", ""), zoominText.FontSize);
+        
+        // Set X value to the right side of the screen
+        wx = WindowManager.Width - 15;
+        
+        // Draw the border
+        // Give 5 pix margin
+        // Draw the text
+        // Subtract the width of the text from the x position
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx - zoominText.GetWidth(), WindowManager.Height - 45, zoominBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(zoominText.Data, wx - zoominText.GetWidth(), WindowManager.Height - 45, zoominText.FontSize, zoominText.Color);
+        wx -= Raylib.MeasureText(zoominText.Data, 32) + 25;
+        
+        // Repeat for zoomout
+        Text zoomoutText = new Text(Loader.Settings.Keybind.ZoomOut.ToString().Replace("KEY_", "") + " " + Keybind.IdToString(Keybind.ActionId.ZoomOut));
+        int zoomoutBorderWidth = Raylib.MeasureText(Loader.Settings.Keybind.ZoomOut.ToString().Replace("KEY_", ""), zoomoutText.FontSize);
+        Raylib.DrawRectangleRoundedLines(new Rectangle(wx - zoomoutText.GetWidth(), WindowManager.Height - 45, zoomoutBorderWidth + 10, 30), 0.3f, 4, 2f, new Color(255, 255, 255, 255));
+        wx += 5;
+        Raylib.DrawText(zoomoutText.Data, wx - zoomoutText.GetWidth(), WindowManager.Height - 45, zoomoutText.FontSize, zoomoutText.Color);
+    }
+
+    private string GetTimeForPowerUp (int id) // Get the time for a power up
+    { 
+        int time = Convert.ToInt32(_game.PowerUps[id] + 1); // Get the time
+        int minutes = time / 60; // Calculate the minutes
+        int seconds = time % 60; // Calculate the seconds 
+        
+        return minutes + ":" + seconds.ToString("00"); // Return the time formatted
+    }
+}
+```
+
+## TextOverlayRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Overlay\Render\TextOverlayRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Overlay.Render;
+
+public class TextOverlayRenderer : UiRenderer
+{
+    private string _text = ""; // The text to display
+    private Color _color = Color.BLACK; // The color of the text
+
+    private int _aStep; // The current frame
+    private int _alpha; // The alpha of the text
+    private int _displaySeconds; // The amount of seconds to display the text for
+    private int _flip = 1; // The flip value for the 
+    
+    public TextOverlayRenderer() : base("velocity:text.overlay", false)
+    { }
+
+    public void TriggerOverlay(string text, Color color, int displaySeconds) // Trigger the overlay
+    {
+        _aStep = 0; // Reset the frame
+        _alpha = 0;  // Reset the alpha
+        _text = text; // Set the text
+        _color = color; // Set the color
+        _displaySeconds = displaySeconds; // Set the display seconds
+        IsEnabled = true; // Enable the renderer
+    }
+
+    public override void Draw()
+    {
+        if (_aStep == 60 * _displaySeconds) // If the text has been displayed for the correct amount of time
+        {
+            IsEnabled = false; // Disable the renderer
+            _aStep = 0; // Reset the frame
+            return; // Return
+        }
+        
+        _aStep++; // Increment the frame
+        
+        if (_aStep % 16 == 0) _flip = _flip == 1 ? 0 : 1; // Flip the animation after 16 steps in the animation
+
+        // Fade in and out
+        if (_aStep < (_displaySeconds * 60) / 4 && _alpha < 255) _alpha += 5; // If he text has been displayed for 1/4th of the display seconds increment the alpha by 5
+        if (_aStep > ((_displaySeconds * 60) / 4) * 3 && _alpha > 0) _alpha -= 5; // If he text has been displayed for 3/4th of the display seconds decrement the alpha by 5
+        
+        Raylib.DrawRectangleRounded(
+            new Rectangle((WindowManager.Width / 2 - Raylib.MeasureText(_text, 34) / 2) - 10,
+                WindowManager.Height / 12 - 10, Raylib.MeasureText(_text, 34) + 22, 34 + 18), 0.2f, 4,
+            new Color(0, 10, 30, _alpha)); // Draw the background border for the text with a rounded rectangle
+        
+        Raylib.DrawRectangleRounded(
+            new Rectangle((WindowManager.Width / 2 - Raylib.MeasureText(_text, 34) / 2) - 5,
+                WindowManager.Height / 12 - 5, Raylib.MeasureText(_text, 34) + 12, 34 + 7), 0.2f, 4,
+            new Color(255, 10, 255, _alpha * (_flip))); // Draw the background for the text with a rounded rectangle
+        Raylib.DrawText(_text, WindowManager.Width / 2 - Raylib.MeasureText(_text, 34) / 2, WindowManager.Height / 12, 34, new Color(_color.r, _color.g, _color.b, _alpha * (_flip))); // Draw the text with the correct color and alpha
+    }
+}
+```
+
+## TimerRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Overlay\Render\TimerRenderer.cs`
+
+```csharp
+using System.Diagnostics;
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Overlay.Render;
+
+public class TimerRenderer : UiRenderer
+{
+    public TimerRenderer () : base("game:overlay.timer", false) {}
+
+    public override void Draw()
+    {
+        if (!Loader.Game.IsRunning) return;
+
+        TimeSpan tspan = Loader.Game.Timer.Elapsed; // Get the elapsed time
+        string text = $"{tspan.Minutes:00}:{tspan.Seconds:00}.{tspan.Milliseconds / 10:00}"; // Format the time
+        
+        Raylib.DrawTextEx(FontUtils.TimerFont, text, new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.TimerFont, text, 32 + (8 * (4 - (2 + Loader.Settings.Resolution))),2).X / 2, 10), 32 + 8 * (4 - (2 + Loader.Settings.Resolution)), 2, Color.WHITE); // Draw the timer text with the correct font size and position
+    }
+}
+```
+
+## ButtonRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\Element\ButtonRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Velocity.Ui.Misc;
+using Velocity.Window.Render.Renderers;
+using Raylib_cs;
+using Velocity.Ui.Screens;
+using Velocity.Window;
+
+namespace Velocity.Ui.Render.Element;
+
+public class ButtonRenderer : ConditionalRenderer
+{
+    private readonly Button _parent;
+
+    public ButtonRenderer(Guid id, Button parent) : base("velocity:menu.button." + id)
+    {
+        _parent = parent;
+    }
+
+    private int _aStep = 0;
+    private double _smoothedAStep = 0;
+    private double _aStepPrev = 0;
+
+    public override void Draw()
+    {
+        if (_parent.Active)
+        {
+            if (_parent.IsMouseOver() && _aStep < 100) _aStep += 8;
+            else if (!_parent.IsMouseOver() && _aStep > 0) _aStep -= 8;
+        }
+        else _aStep = 0;
+        
+        _aStep = _aStep > 100 ? 100 : _aStep;
+        _aStep = _aStep < 0 ? 0 : _aStep;
+
+        _smoothedAStep = (_aStep * 0.2) + (_aStepPrev * 0.8);
+        _aStepPrev = _smoothedAStep;
+        
+        int x = (int)_parent.Position.X;
+        int y = (int)_parent.Position.Y;
+        
+        int dx = (int)_parent.Dimensions.X;
+        int dy = (int)_parent.Dimensions.Y;
+        
+        int aMultiple = Convert.ToInt32(10 * Convert.ToSingle(_smoothedAStep) / 100);
+        int hoverCa = Convert.ToInt32(50 * Convert.ToSingle(_smoothedAStep) / 100);
+        
+        Rectangle bounds = new(x, y, dx, dy);
+        Raylib.DrawRectangleLinesEx(bounds, (Loader.Settings.Resolution + 1) * 2f, _parent.BorderColor);
+        Color bgColor = _parent.BgColor with{r = Convert.ToByte(_parent.IsClicked() ? 200 : _parent.BgColor.r + hoverCa + 50), g = Convert.ToByte(_parent.IsClicked() ? 200 : _parent.BgColor.g), b = Convert.ToByte(_parent.IsClicked() ? 200 : _parent.BgColor.b)};
+        Raylib.DrawRectangle(x, y, dx, dy, bgColor);
+        if (_aStep > 0)
+        {
+            // Raylib.DrawRectangle(x, y, dx, aMultiple, new Color(255, 255, 255, 255));
+            Raylib.DrawRectangle(x, y, aMultiple, dy, _parent.IsClicked() ? new Color(255, 100, 0, 255) : new Color(255, 255, 255, 255));
+            // Raylib.DrawRectangle(x + dx - aMultiple, y, aMultiple, dy, new Color(255, 255, 255, 255));
+            // Raylib.DrawRectangle(x, y + dy - aMultiple, dx, aMultiple, new Color(255, 255, 255, 255));
+        }
+
+        int textX = (int) _parent.Position.X + (WindowManager.Width / 64) + (aMultiple);
+        int textY = (int) _parent.Position.Y + ((dy / 2) - (_parent.Text.FontSize / 2));
+
+        Color hoverColor = _parent.Text.Color with
+        {
+            r = _parent.IsClicked() ? Convert.ToByte(10) : Convert.ToByte(200 + hoverCa),
+            g = _parent.IsClicked() ? Convert.ToByte(10) : Convert.ToByte(200 + hoverCa),
+            b = _parent.IsClicked() ? Convert.ToByte(10) : Convert.ToByte(200 + hoverCa)
+        };
+        
+        Raylib.DrawTextEx(FontUtils.ButtonFont, _parent.Text.Data, new Vector2(textX, textY), _parent.Text.FontSize, 3, (_parent.IsMouseOver() ? hoverColor : _parent.Text.Color));
+        
+        if (!_parent.Active) Raylib.DrawRectangle(x, y, dx, dy, new Color(150, 150, 150, 150));
+    }
+}
+```
+
+## ControlFieldRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\Element\ControlFieldRenderer.cs`
+
+```csharp
+using Velocity.Ui.Misc;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render.Element;
+
+public class ControlFieldRenderer : ConditionalRenderer
+{
+    private ControlField _parent;
+    
+    public ControlFieldRenderer(ControlField parent) : base("velocity.menu.controls." + Guid.NewGuid())
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        _parent.Display.Renderer.Draw();
+    }
+}
+```
+
+## LabelRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\Element\LabelRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render.Element;
+
+public class LabelRenderer : ConditionalRenderer
+{
+    private Label _parent;
+    
+    public LabelRenderer(Label parent) : base("velocity:label." + Guid.NewGuid())
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        Raylib.DrawTextEx(_parent.Text.Font, _parent.Text.Data, new Vector2(Convert.ToSingle(_parent.Position.X), Convert.ToSingle(_parent.Position.Y)), _parent.Text.FontSize, 4, _parent.Text.Color);
+    }
+}
+```
+
+## LevelFieldRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\Element\LevelFieldRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Game.Statistics;
+using Velocity.Ui.Misc;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render.Element;
+
+public class LevelFieldRenderer : ConditionalRenderer
+{
+    private LevelField _parent;
+    
+    public LevelFieldRenderer (LevelField parent) : base("velocity:menu.levelField")
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        if (_parent.SelectedLevel == null) return;
+        Raylib.DrawRectangle((int)_parent.Position.X, (int)_parent.Position.Y, (int)_parent.Dimensions.X, (int)_parent.Dimensions.Y, new Color(30, 30, 30, 240));
+        
+        Raylib.DrawText(_parent.SelectedLevel.Name, (int)_parent.Position.X + 20, (int)_parent.Position.Y + 20, 56, Color.WHITE);
+        
+        _parent.LevelPreview.Renderer.Draw();
+        
+        Raylib.DrawText("Difficulty: " + _parent.SelectedLevel.Difficulty + "\nBest time: " + StatisticManager.SteraliseTime(StatisticManager.GetLevelBestTime(_parent.SelectedLevel.Id)) , (int)_parent.Position.X + 20, (int)_parent.Position.Y + (WindowManager.Height - 170) / 6 + 166, 32, Color.WHITE);
+    }
+}
+```
+
+## LevelPreviewRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\Element\LevelPreviewRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render.Element;
+
+public class LevelPreviewRenderer : ConditionalRenderer
+{
+    private LevelPreview _parent;
+    
+    public LevelPreviewRenderer (LevelPreview parent) : base("velocity:menu.levelPreview")
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        for (int i = 0; i <= _parent.LevelRectangles.Count - 1; i++)
+        {
+            Raylib.DrawRectangleRec(_parent.LevelRectangles[i], _parent.LevelColors[i]);
+        }
+    }
+}
+```
+
+## PlayerPreviewRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\Element\PlayerPreviewRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render.Element;
+
+public class PlayerPreviewRenderer : ConditionalRenderer
+{
+    private PlayerPreview _parent;
+    private Texture2D _idleAsset;
+    private int _apperence;
+    private int _currentFrame;
+    private int _frameCount;
+    private int _frameSpeed = 6;
+    private Rectangle _frameRect;
+    
+    
+    private readonly Dictionary<int, int> _tileCount = new()
+    {
+        {1, 8},
+        {2, 6},
+        {3, 6}
+    };
+
+    public PlayerPreviewRenderer (PlayerPreview parent) : base("velocity:ui.playerPreview")
+    {
+        _parent = parent;
+        LoadTexture();
+    }
+
+    private void LoadTexture()
+    {
+        _idleAsset = Loader.AssetManager.GetPlayerTexture(Loader.Game.Player.Appearance, "idle");
+    }
+
+    public override void Draw()
+    {
+        if (Loader.Game.Player.Appearance != _apperence)
+        {
+            _apperence = Loader.Game.Player.Appearance;
+            LoadTexture();
+            return;
+        }
+        
+        _frameCount++;
+
+        if (_frameCount >= 60 / _frameSpeed)
+        {
+            _frameCount = 0;
+            _currentFrame++;
+            if (_currentFrame >= GetFrameCount()) _currentFrame = 0;
+            
+            _frameRect = new Rectangle(_currentFrame * _idleAsset.width / GetFrameCount(), 0, _idleAsset.width / GetFrameCount(), _idleAsset.height);
+        }
+        
+        Raylib.DrawTexturePro(_idleAsset, _frameRect, new Rectangle((int)_parent.Position.X, (int)_parent.Position.Y, (int)_parent.Dimensions.X, (int)_parent.Dimensions.Y), new Vector2(), 0.0f, Color.WHITE);
+    }
+    
+    private int GetFrameCount()
+    {
+        _tileCount.TryGetValue(_apperence, out int count);
+
+        return count;
+    }
+}
+```
+
+## SelectorRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\Element\SelectorRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render.Element;
+
+public class SelectorRenderer : AnimatableRenderer
+{
+    private readonly Selector _parent;
+
+    public SelectorRenderer(Selector parent) : base(parent, "velocity.selector." + Guid.NewGuid())
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        Raylib.DrawRectangle((int)_parent.Position.X, (int)_parent.Position.Y, (int)_parent.Dimensions.X, (int)_parent.Dimensions.Y, InternalBg);
+        Raylib.DrawRectangleLinesEx(new Rectangle((int)_parent.Position.X, (int)_parent.Position.Y, (int)_parent.Dimensions.X, (int)_parent.Dimensions.Y), (Loader.Settings.Resolution + 1) * 2f, InternalBorder);
+        Raylib.DrawText(_parent.Options[_parent.Index], (int) (_parent.Position.X + (_parent.Dimensions.X / 2 - Raylib.MeasureText(_parent.Options[_parent.Index], Convert.ToInt32(WindowManager.Height / 28)) / 2)), (int) (_parent.Position.Y + (_parent.Dimensions.Y / 2 - Convert.ToInt32(WindowManager.Height / 28) / 2)), Convert.ToInt32(WindowManager.Height / 28), InternalBorder);
+        Raylib.DrawTriangle(new Vector2((int)(_parent.Position.X + (_parent.Dimensions.X / 16) * 2), (int)(_parent.Position.Y + _parent.Dimensions.Y / 4)), new Vector2((int)(_parent.Position.X + _parent.Dimensions.X / 32), (int)(_parent.Position.Y + _parent.Dimensions.Y / 2)), new Vector2((int)(_parent.Position.X + (_parent.Dimensions.X / 16) * 2), (int)(_parent.Position.Y + (_parent.Dimensions.Y / 4) * 3)), _parent.Index == 0 ? Color.DARKGRAY : InternalBorder);
+        Raylib.DrawTriangle(new Vector2((int)(_parent.Position.X + _parent.Dimensions.X - _parent.Dimensions.X / 32), (int)(_parent.Position.Y + _parent.Dimensions.Y / 2)), new Vector2((int)(_parent.Position.X + _parent.Dimensions.X - (_parent.Dimensions.X / 16) * 2), (int)(_parent.Position.Y + _parent.Dimensions.Y / 4)), new Vector2((int)(_parent.Position.X + _parent.Dimensions.X - (_parent.Dimensions.X / 16) * 2), (int)(_parent.Position.Y + (_parent.Dimensions.Y / 4) * 3)), _parent.Index + 1 == _parent.Options.Length ? Color.DARKGRAY : InternalBorder);
+        Raylib.DrawLineEx(new Vector2((int)(_parent.Position.X + (_parent.Dimensions.X / 6)), (int)_parent.Position.Y), new Vector2((int)(_parent.Position.X + (_parent.Dimensions.X / 6)), (int)_parent.Position.Y + (int)_parent.Dimensions.Y), (Loader.Settings.Resolution + 1) * 2f, InternalBorder);
+        Raylib.DrawLineEx(new Vector2((int)(_parent.Position.X + _parent.Dimensions.X - (_parent.Dimensions.X / 6)), (int)_parent.Position.Y), new Vector2((int)(_parent.Position.X + _parent.Dimensions.X - (_parent.Dimensions.X / 6)), (int)_parent.Position.Y + (int)_parent.Dimensions.Y), (Loader.Settings.Resolution + 1) * 2f, InternalBorder);
+        
+        _parent.Display?.Renderer?.Draw();
+    }
+} 
+```
+
+## SliderRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\Element\SliderRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render.Element;
+
+public class SliderRenderer : AnimatableRenderer
+{
+    private readonly Slider _parent;
+
+    public SliderRenderer(Slider parent) : base(parent, "velocity:ui.slider." + Guid.NewGuid())
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+
+        /*Raylib.DrawRectangleLinesEx(new Rectangle(Convert.ToInt32(_parent.Position.X) - 1, Convert.ToInt32(_parent.Position.Y) - 1,
+            Convert.ToInt32(_parent.Dimensions.X) + 2, Convert.ToInt32(_parent.Dimensions.Y) + 2), (Loader.Settings.Resolution + 1) * 3f,
+            new Color(200 + hoverCa, 200 + hoverCa, 200 + hoverCa, 255));*/
+        
+        Raylib.DrawRectangle(Convert.ToInt32(_parent.Position.X), Convert.ToInt32(_parent.Position.Y),
+            Convert.ToInt32(_parent.Dimensions.X), Convert.ToInt32(_parent.Dimensions.Y),
+            InternalBg);
+
+        Raylib.DrawRectangle(
+            Convert.ToInt32(_parent.Position.X - 4 + _parent.SliderOffset - (Loader.Settings.Resolution + 1) * 2f),
+            Convert.ToInt32(_parent.Position.GetY() - 4), 8 + (Loader.Settings.Resolution + 1) * 4,
+            Convert.ToInt32(_parent.Dimensions.GetY()) + 8,
+            _parent.IsClicked() ? BgColor with { a = 255 } : BgColor with { a = 200 });
+        Raylib.DrawRectangleLinesEx(new Rectangle(Convert.ToInt32(_parent.Position.X - 5 + _parent.SliderOffset - (Loader.Settings.Resolution + 1) * 2), Convert.ToInt32(_parent.Position.GetY() - 5), 10 + (Loader.Settings.Resolution + 1) * 4, Convert.ToInt32(_parent.Dimensions.GetY()) + 10), (Loader.Settings.Resolution + 1) * 2f, _parent.IsClicked() ? BorderColor with { a = 255 } : BorderColor with { a = 200 });
+
+        _parent.Display.Renderer.Draw();
+    }
+}
+```
+
+## ToggleRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\Element\ToggleRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render.Element;
+
+public class ToggleRenderer : AnimatableRenderer
+{
+    public ToggleRenderer(Toggle parent) : base(parent, "velocity.ui.toggle." + Guid.NewGuid()) { }
+
+    public override void Draw()
+    {
+        Raylib.DrawRectangle((int)Parent.Position.X, (int)Parent.Position.Y, (int)Parent.Dimensions.X, (int)Parent.Dimensions.X, InternalBg);
+        Raylib.DrawRectangleLinesEx(new Rectangle((int)Parent.Position.X, (int)Parent.Position.Y, (int)Parent.Dimensions.X, (int)Parent.Dimensions.X), (Loader.Settings.Resolution + 1) * 2f, InternalBorder);
+        
+        if (Convert.ToBoolean(Parent.GetValue())) Raylib.DrawRectangle((int)Parent.Position.X + 10, (int)Parent.Position.Y + 10, (int)Parent.Dimensions.X - 20, (int)Parent.Dimensions.X - 20, InternalBorder);
+        Parent.Display?.Renderer?.Draw();
+    }
+}
+```
+
+## ValueFieldRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\Element\ValueFieldRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render.Element;
+
+public class ValueFieldRenderer : ConditionalRenderer
+{
+    private readonly ValueField _parent;
+    
+    public ValueFieldRenderer(ValueField parent) : base("velocity.value-field." + Guid.NewGuid())
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        Raylib.DrawRectangle((int)_parent.Position.X, (int)_parent.Position.Y, (int)_parent.Dimensions.X + 12, (int)_parent.Dimensions.Y, _parent.BgColor);
+        Raylib.DrawRectangleLinesEx(new Rectangle((int)_parent.Position.X, (int)_parent.Position.Y, (int)_parent.Dimensions.X + 12, (int)_parent.Dimensions.Y), (Loader.Settings.Resolution + 1) * 2f, _parent.TextColor);
+        var textX = (_parent.Position.X + _parent.Dimensions.X / 2) - Convert.ToSingle(Math.Vector2.ToCustom(Raylib.MeasureTextEx(FontUtils.ButtonFont, _parent.Value, (float)_parent.Dimensions.GetY() - 8, 4f)).X / 2);
+        var textY = (_parent.Position.Y + _parent.Dimensions.Y / 2) - Convert.ToSingle(Math.Vector2.ToCustom(Raylib.MeasureTextEx(FontUtils.ButtonFont, _parent.Value, (float)_parent.Dimensions.GetY() - 8, 4f)).Y / 2);
+        Raylib.DrawTextEx(FontUtils.ButtonFont, _parent.Value, new Vector2(Convert.ToSingle(textX) + 6, Convert.ToSingle(textY)), (int)_parent.Dimensions.Y - 8, 4f, _parent.TextColor);
+    }
+}
+```
+
+## EndScreenRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\EndScreenRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Screens;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render;
+
+public class EndScreenRenderer : UiRenderer
+{
+    private readonly EndScreen _parent;
+    public int Count = 0;
+    public int Step = 0;
+    private int _stay = 20;
+
+    public EndScreenRenderer(EndScreen parent) : base("velocity:window." + EndScreen.UiId)
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        switch (Step)
+        {
+            case 0:
+                if (Count < 100) Count += 5;
+                if (Count == 100) Step = 1;
+                break;
+            case 1:
+                _stay--;
+                if (_stay == 0)
+                {
+                    _stay = 20;
+                    Step = 2;
+                }
+                break;
+            case 2:
+                if (Count > 0) Count -= 5;
+                if (Count == 0) Step = 3;
+                break;
+        }
+        
+
+        if (Step == 2 || Step == 3)
+        {
+            Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, new Color(10, 10, 30, 200));
+
+            foreach(Button? button in _parent.Buttons.Values)
+            {
+                button?.Renderer?.Draw();
+            }
+        
+            Raylib.DrawTextEx(FontUtils.Font, "Thank you for playing!\nMade by Reuben Yates", new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.Font, "Thank you for playing!\nMade by Reuben Yates", 65, 2).X / 2, 300), 65, 2, Color.WHITE);
+            TimeSpan tspan = Loader.Game.Timer.Elapsed;
+            string text = $"{tspan.Minutes:00}:{tspan.Seconds:00}.{tspan.Milliseconds / 10:00}";
+            Raylib.DrawTextEx(FontUtils.Font, "Time: " + text, new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.Font, "Time: " + text, 55, 2).X / 2, 410), 55, 2, Color.WHITE);
+            Raylib.DrawTextEx(FontUtils.Font, "Coins: " + Loader.Game.Coins, new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.Font, "Coins: " + Loader.Game.Coins, 55, 2).X / 2, 460), 55, 2, Color.WHITE);
+        } 
+
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, new Color(0, 0, 0, (int)(255d * (Count / 100d))));
+    }
+}
+```
+
+## LevelScreenRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\LevelScreenRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Screens;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render;
+
+public class LevelScreenRenderer : UiRenderer
+{
+    private readonly LevelScreen _parent;
+    
+    public LevelScreenRenderer(LevelScreen parent) : base("velocity:window." + LevelScreen.UiId)
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, new Color(10, 10, 30, 200));
+        
+        Raylib.BeginScissorMode(20, 140, 740, WindowManager.Height - 170);
+        
+        Raylib.DrawRectangle(20, 140, 740, WindowManager.Height - 170, Color.BLACK);
+        foreach (var pair in _parent.Buttons)
+        {
+            pair.Value.Renderer.Draw();
+        }
+        
+        Raylib.EndScissorMode();
+        
+        _parent.LevelField.Renderer.Draw();
+        _parent.PlayButton.Renderer.Draw();
+        
+        Raylib.DrawRectangle(0,0, WindowManager.Width, 110, new Color(40, 40, 40, 200));
+        Raylib.DrawLine(0, 110, WindowManager.Width, 110, Color.DARKGRAY);
+        Raylib.DrawTextEx(FontUtils.Font, "Level Select", new Vector2(30, 20), 65, 2, Color.WHITE);
+    }
+}
+```
+
+## LoadingScreenRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\LoadingScreenRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Ui.Screens;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render;
+
+public class LoadingScreenRenderer : UiRenderer
+{
+    private readonly LoadingScreen _parent;
+    
+    public LoadingScreenRenderer (LoadingScreen parent) : base("velocity:screens.loading")
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, Color.BLACK);
+        
+        Raylib.DrawText(LoadingScreen.Text, (int)(WindowManager.Width / 2 - Raylib.MeasureTextEx(Raylib.GetFontDefault(), LoadingScreen.Text, 64, 2).X / 2), (int)(WindowManager.Height / 2 - Raylib.MeasureTextEx(Raylib.GetFontDefault(), LoadingScreen.Text, 64, 2).Y / 2), 64, Color.WHITE with { a = (byte)_parent.Alpha});
+        Raylib.DrawText(LoadingScreen.Subtext, (int)(WindowManager.Width / 2 - Raylib.MeasureTextEx(Raylib.GetFontDefault(), LoadingScreen.Subtext, 34, 2).X / 2), (int)(WindowManager.Height / 2 - Raylib.MeasureTextEx(Raylib.GetFontDefault(), LoadingScreen.Subtext, 34, 2).Y / 2 + Raylib.MeasureTextEx(Raylib.GetFontDefault(), LoadingScreen.Text, 34, 2).Y + 20), 34, Color.WHITE with { a = (byte)_parent.Alpha});
+    }
+}
+```
+
+## MainMenuScreenRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\MainMenuScreenRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Screens;
+using Velocity.Window.Render.Renderers;
+using Raylib_cs;
+using Velocity.Exception;
+using Velocity.Window;
+
+namespace Velocity.Ui.Render;
+
+public class MainMenuScreenRenderer : UiRenderer
+{
+    private readonly MainMenuScreen _parent; // The parent screen
+    private readonly Texture2D _background; // The background texture
+
+    public MainMenuScreenRenderer(MainMenuScreen parent) : base("velocity:window." + MainMenuScreen.UiId)
+    {
+        _parent = parent;
+
+        _background = Loader.AssetManager.GetTexture("background.mainmenu");
+    }
+
+    public override void Draw()
+    {
+        Raylib.DrawTexturePro(_background, new Rectangle(0, 0, _background.width, _background.height), new Rectangle(0, 0, WindowManager.Width, WindowManager.Height), new Vector2(), 0, Color.WHITE);
+        Raylib.DrawRectangleGradientH(0, 0, WindowManager.Width, WindowManager.Height, Color.BLACK with {a = 255}, Color.BLACK with {a = 20});
+        int x = Convert.ToInt32(WindowManager.Width / 18.29);
+        int fontSize = Convert.ToInt32(WindowManager.Height / 10);
+        
+        Raylib.DrawTextEx(FontUtils.Font, GameConst.Name, new Vector2(x, WindowManager.Height / 6 - (fontSize / 2)), fontSize, 2, Color.WHITE);
+
+        foreach (var pair in _parent.Buttons)
+        {
+            if (pair.Value?.Renderer == null) throw new VelocityException("Element renderer undefined");
+            pair.Value.Renderer.Draw();
+        }
+        
+        Raylib.DrawRectangle((int)_parent.PlayerPreview.Position.X + 20, (int)_parent.PlayerPreview.Position.Y + 170, (int)_parent.PlayerPreview.Dimensions.X - 40, (int)_parent.PlayerPreview.Dimensions.Y - 150 + (int)_parent.AppearanceSelector.Dimensions.Y + 40, new Color(30, 30, 30, 150));
+        
+        _parent.PlayerPreview.Renderer?.Draw();
+        
+        if (_parent.AppearanceSelector.Renderer?.GetType().BaseType == typeof(AnimatableRenderer))
+        {
+            AnimatableRenderer renderer = (AnimatableRenderer) _parent.AppearanceSelector.Renderer;
+            renderer.DrawAnimation();
+        }
+        _parent.AppearanceSelector.Renderer?.Draw();
+
+
+        Raylib.DrawRectangle(0, WindowManager.Height - 25, WindowManager.Width, 25, Color.BLACK);
+        Raylib.DrawText(GameConst.Author + ", 2023", 4, WindowManager.Height - 23, 26, Color.WHITE);
+        Raylib.DrawText("v" + GameConst.Version, WindowManager.Width - Raylib.MeasureText("v" + GameConst.Version, 26) - 4, WindowManager.Height - 23, 26, Color.WHITE);
+    }
+}
+```
+
+## PauseScreenRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\PauseScreenRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Screens;
+using Velocity.Window.Render.Renderers;
+using Raylib_cs;
+using Velocity.Exception;
+using Velocity.Window;
+
+namespace Velocity.Ui.Render;
+
+public class PauseScreenRenderer : UiRenderer
+{
+    private readonly PauseScreen _parent;
+
+    public PauseScreenRenderer(PauseScreen parent) : base("velocity:window." + PauseScreen.UiId)
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        Raylib.DrawRectangle(10, 10, WindowManager.Width - 20, WindowManager.Height - 20, new Color(60, 60, 60, 200));
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, (int)SettingsScreen.Safezone.Y, new Color(30, 30, 30, 255));
+        Raylib.DrawTextEx(FontUtils.Font, "Paused", new Vector2(10, 10), (int)SettingsScreen.Safezone.Y - 20, 2, Color.WHITE);
+
+        foreach (var pair in _parent.Buttons)
+        {
+            if (pair.Value?.Renderer == null) throw new VelocityException("Element renderer undefined ");
+            pair.Value.Renderer.Draw();
+        }
+    }
+}
+```
+
+## SettingsScreenRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\SettingsScreenRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Screens;
+using Velocity.Window.Render.Renderers;
+using System.Numerics;
+using Velocity.Exception;
+using Velocity.Window;
+
+namespace Velocity.Ui.Render;
+
+public class SettingsScreenRenderer : UiRenderer
+{
+    private SettingsScreen _parent;
+
+    public SettingsScreenRenderer(SettingsScreen parent) : base("velocity:window." + SettingsScreen.UiId)
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        int fontSize = Convert.ToInt32(WindowManager.Height / 22);
+        
+        Raylib.DrawRectangle(10, 10, WindowManager.Width - 20, WindowManager.Height - 20, new Color(60, 60, 60, 200));
+        
+        _parent.PageElements.TryGetValue(_parent.Page, out Dictionary<string, UiElement>? elements);
+        if (elements == null)
+            throw new VelocityException("No elements on page " + _parent.Page + " on window " + SettingsScreen.UiId);
+        foreach (var elementPair in elements)
+        {
+            if (elementPair.Value.Renderer == null) throw new VelocityException("No renderer for element " + elementPair.Key + " on window " +
+                SettingsScreen.UiId);
+
+            if (elementPair.Value.Renderer.GetType().BaseType == typeof(AnimatableRenderer))
+            {
+                AnimatableRenderer renderer = (AnimatableRenderer) elementPair.Value.Renderer;
+                renderer.DrawAnimation();
+            }
+
+            elementPair.Value.Renderer.Draw();
+            
+            Raylib.DrawLineEx(new Vector2((int)SettingsScreen.Safezone.X, (int)elementPair.Value.Position.Y + (int)elementPair.Value.Dimensions.Y + 25), new Vector2(WindowManager.Width - (int)SettingsScreen.Safezone.X, (int)elementPair.Value.Position.Y + (int)elementPair.Value.Dimensions.Y + 25), (Loader.Settings.Resolution + 1) * 2f, new Color(100, 100, 100, 255));
+        }
+        
+        _parent.PageLabels.TryGetValue(_parent.Page, out List<Label>? labels);
+        if (labels == null)
+            throw new VelocityException("No elements on page " + _parent.Page + " on window " + SettingsScreen.UiId);
+        
+        foreach (var label in labels)
+        {
+            if (label.Renderer == null) throw new VelocityException("No renderer for label " + label.Text + " on window " +
+                SettingsScreen.UiId);
+            
+            label.Renderer.Draw();
+        }
+
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, (int)SettingsScreen.Safezone.Y, new Color(30, 30, 30, 255));
+        Raylib.DrawRectangle(0, (int)WindowManager.Height - (int)SettingsScreen.Safezone.Y, WindowManager.Width, (int)SettingsScreen.Safezone.Y, new Color(30, 30, 30, 255));
+        
+        Vector2 size0 = Raylib.MeasureTextEx(FontUtils.Font, GetPageName(-1), fontSize, 2);
+        Vector2 size1 = Raylib.MeasureTextEx(FontUtils.Font, GetPageName(), fontSize, 2);
+
+        Raylib.DrawTextEx(FontUtils.Font, GetPageName(-1), new Vector2(WindowManager.Width / 2 - size1.X / 2 - size0.X - fontSize, WindowManager.Height / 20 - (fontSize / 2)), fontSize, 2, Color.GRAY);
+        Raylib.DrawTextEx(FontUtils.Font, GetPageName(), new Vector2(WindowManager.Width / 2 - size1.X / 2, WindowManager.Height / 20 - (fontSize / 2)), fontSize, 2, Color.WHITE);
+        Raylib.DrawTextEx(FontUtils.Font, GetPageName(1), new Vector2(WindowManager.Width / 2 + size1.X / 2 + fontSize, WindowManager.Height / 20 - (fontSize / 2)), fontSize, 2, Color.GRAY);
+
+        foreach (var buttonPair in _parent.Buttons)
+        {
+            if (buttonPair.Value.Renderer == null)
+                throw new VelocityException("No renderer for button " + buttonPair.Key + " on window " +
+                                            SettingsScreen.UiId);
+            
+            buttonPair.Value.Renderer.Draw();
+        }
+    }
+    private string GetPageName(int offset = 0)
+    {
+        int page = _parent.Page + offset;
+        if (_parent.Page + offset + 1 > _parent.PageNames.Length) page = 0;
+        if (_parent.Page + offset < 0) page = 2;
+
+        return _parent.PageNames[page] + " Settings";   
+    }
+}
+```
+
+## WinScreenRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Render\WinScreenRenderer.cs`
+
+```csharp
+using System.Numerics;
+using Raylib_cs;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Screens;
+using Velocity.Window;
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Render;
+
+public class WinScreenRenderer : UiRenderer
+{
+    private readonly WinScreen _parent;
+    public int Count;
+    public int Step;
+    private int _stay = 20;
+
+    public WinScreenRenderer(WinScreen parent) : base("velocity:window." + WinScreen.UiId)
+    {
+        _parent = parent;
+    }
+
+    public override void Draw()
+    {
+        switch (Step)
+        {
+            case 0:
+                if (Count < 100) Count += 5;
+                if (Count == 100) Step = 1;
+                break;
+            case 1:
+                _stay--;
+                if (_stay == 0)
+                {
+                    _stay = 20;
+                    Step = 2;
+                }
+                break;
+            case 2:
+                if (Count > 0) Count -= 5;
+                if (Count == 0) Step = 3;
+                break;
+        }
+        
+
+        if (Step is 2 or 3)
+        {
+            Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, new Color(10, 10, 30, 200));
+
+            foreach(Button? button in _parent.Buttons.Values)
+            {
+                button?.Renderer?.Draw();
+            }
+        
+            Raylib.DrawTextEx(FontUtils.Font, "Level Completed!", new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.Font, "Level Completed!", 65, 2).X / 2, 300), 65, 2, Color.WHITE);
+            TimeSpan tspan = Loader.Game.Timer.Elapsed;
+            string text = $"{tspan.Minutes:00}:{tspan.Seconds:00}.{tspan.Milliseconds / 10:00}";
+            Raylib.DrawTextEx(FontUtils.Font, "Time: " + text, new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.Font, "Time: " + text, 55, 2).X / 2, 410), 55, 2, Color.WHITE);
+            Raylib.DrawTextEx(FontUtils.Font, "Coins: " + Loader.Game.Coins, new Vector2(WindowManager.Width / 2 - Raylib.MeasureTextEx(FontUtils.Font, "Coins: " + Loader.Game.Coins, 55, 2).X / 2, 460), 55, 2, Color.WHITE);
+        } 
+
+        Raylib.DrawRectangle(0, 0, WindowManager.Width, WindowManager.Height, new Color(0, 0, 0, (int)(255d * (Count / 100d))));
+    }
+}
+```
+
+## EndScreen.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Screens\EndScreen.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Math;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Render;
+using Velocity.Window;
+
+namespace Velocity.Ui.Screens;
+
+public abstract class EndScreen : Window
+{
+    public new static readonly int UiId = 4; // The ui id
+
+    public readonly Dictionary<int, Button?> Buttons = new(); // The buttons
+
+    private readonly EndScreenRenderer _renderer; // The renderer
+
+
+    protected EndScreen()
+    {
+        _renderer = new EndScreenRenderer(this);
+        base.Renderer = _renderer;
+        
+        RegisterButtons();
+    }
+
+    public override void OnDisplay(int? previous)
+    {
+        _renderer.Count = 0;
+        _renderer.Step = 0;
+    }
+
+    public override void Tick()
+    {
+        foreach (var pair in Buttons.Where(pair => pair.Value == null || pair.Value.IsClicked()))
+        {
+            switch (pair.Key)
+            {
+                case 0:
+                    Loader.Game.Reset();
+                    Loader.Game.MenuManager.DisableAll();
+                    Loader.Game.ColoredFlashRenderer.Trigger(20, Color.BLACK);
+                    break;
+                case 1:
+                    Loader.Game.Stop();
+                    Loader.Game.MenuManager.SetActiveWindow(LoadingScreen.UiId, UiId);
+                    LoadingScreen.Trigger("Returning to Main Menu", 
+                        "Please wait...",
+                        () =>
+                        {
+                            Loader.Game.MenuManager.SetActiveWindow(MainMenuScreen.UiId);
+                            return 0;
+                        }, false, 140);
+                    
+                    break;
+            }
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE)) Loader.Game.MenuManager.SetActiveWindow(MainMenuScreen.UiId);
+    }
+    
+    private void RegisterButtons()
+    {
+        AddButton(0, "Restart");
+        AddButton(1, "Main Menu");
+    }
+
+
+    private void AddButton (int id, string text)
+    {
+        Text buttonText = new Text
+        {
+            Color = Color.WHITE,
+            FontSize = 48,
+            Data = text,
+            Font = FontUtils.ButtonFont
+        };
+        
+        int x = WindowManager.Width / 2 - 275 + (id * (450 + 20));
+        
+        Button button = new Button(buttonText, new Vector2(x, WindowManager.Height - 230), new Vector2(400, 120))
+        {
+            BgColor = new Color(40, 40, 40, 200),
+            BorderColor = Color.WHITE
+        };
+        
+        Buttons.Add(id, button);
+    }
+}
+```
+
+## LevelScreen.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Screens\LevelScreen.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Game.Statistics;
+using Velocity.Ui.Misc;
+using Velocity.Math;
+using Velocity.Ui.Render;
+using Velocity.Utils;
+using Velocity.Window;
+
+namespace Velocity.Ui.Screens;
+
+public class LevelScreen : Window
+{
+    public new static readonly int UiId = 3; // Unique id for this screen
+
+    public readonly Dictionary<int, Button?> Buttons = new(); // Buttons on the screen
+
+    public Button PlayButton; // Play button on the screen
+    
+    public readonly LevelField LevelField = new(); // Level field on the screen
+    
+    public LevelScreen() // Constructor
+    {
+        Renderer = new LevelScreenRenderer(this); // Set the renderer
+        
+        RegisterButtons(); // Register the buttons
+
+        RegisterPlayButton(); // Register the play button
+    }
+
+    public override void OnDisplay(int? previous) // Called when the window is opened
+    {
+        base.OnDisplay(previous); // Call the base function
+        LevelField.SelectedLevel = null; // Set the selected level to null
+        
+        if (previous == MainMenuScreen.UiId) // If the previous window was the main menu
+        {
+            Loader.Game.BackgroundRenderer.LoadTextures(); // Load the background textures
+            Loader.Game.BackgroundRenderer.IsEnabled = true; // Enable the background renderer
+        } 
+    }
+
+    public override void Tick() // Called every frame the window is open for
+    {
+        int lowestY = 0; // Lowest y value of the buttons
+        int highestY = WindowManager.Height; // Highest y value of the buttons
+        
+        foreach (var pair in Buttons) // Loop through the buttons
+        {
+            // For scrolling
+            if (lowestY < pair.Value.Position.Y + pair.Value.Dimensions.Y) lowestY = (int) pair.Value.Position.Y; // Set the lowest y value
+            if (highestY > pair.Value.Position.Y) highestY = (int)pair.Value.Position.Y - 70; // Set the highest y value
+            
+            Color color = pair.Value.BgColor; // Get the button color
+            
+            if (pair.Value.IsMouseOver()) // If the mouse is over the button
+            {
+                color.a = 255; // Set the alpha to 255
+                pair.Value.BgColor = color; // Set the button color
+            }
+            else
+            {
+                color.a = 100; // Set the alpha to 100
+                pair.Value.BgColor = color; // Set the button color
+            }
+
+            if (pair.Value.IsClicked()) // If the button is clicked
+            {
+                Select(pair.Key); // Select the button
+            }
+        }
+
+        bool result = PlayButton.IsClicked(); // Get the result of the play button click
+
+        if (result && LevelField.SelectedLevel != null) // If the play button is clicked and a level is selected
+        {
+            Loader.Game.MenuManager.SetActiveWindow(LoadingScreen.UiId, UiId); // Set the active window to the loading screen
+            LoadingScreen.Trigger(LevelField.SelectedLevel.Name, 
+                "Time to beat: " +
+                StatisticManager.SteraliseTime(StatisticManager.GetLevelBestTime(LevelField.SelectedLevel.Id)),
+                () =>
+                {
+                    Loader.Game.LevelManager.SelectLevel(LevelField.SelectedLevel.Id);
+                    Loader.Game.Run();
+                    Loader.Game.MenuManager.DisableAll();
+                    Loader.Game.ColoredFlashRenderer.Trigger(20, Color.BLACK);
+                    return 0;
+                }); // Trigger the loading screen with the level name and time to beat, and on completion load the level, run the game, and trigger a fadeout effect
+        }
+        else if (LevelField.SelectedLevel == null) // If no level is selected
+        {
+            PlayButton.Active = false; // Disable the play button
+        }
+        else // If a level is selected
+        {
+            PlayButton.Active = true; // Enable the play button
+        }
+
+        // For scrolling
+        if (Raylib.GetMouseWheelMove() != 0)  // If the mouse wheel is moved
+        { 
+            int offset = (int) Raylib.GetMouseWheelMove() * 20; // Get the offset
+
+            if (lowestY + 170 + offset < WindowManager.Height) offset = 0; // If the lowest y value is less than the window height, set the offset to 0
+              
+            if (highestY + offset > 70) offset = 0; // If the highest y value is greater than 70, set the offset to 0
+            
+            foreach (var elementPair in Buttons) // Loop through the buttons
+            {
+                elementPair.Value.Position.Y += offset; // Add the offset to the button's y value
+            }
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE)) Loader.Game.MenuManager.SetActiveWindow(MainMenuScreen.UiId); // If escape is pressed, set the active window to the main menu
+    }
+    
+    private void RegisterButtons() // Register the buttons
+    {
+        foreach (var level in Loader.Game.LevelManager.GetLevels()) // Loop through the levels
+        {
+            if (level == null) continue; // If the level is null, skip it
+             
+            string name = level.Name; // Get the level name
+
+            int id = Buttons.Count; // Get the button id
+            
+            AddButton(id, name); // Add the button
+        }
+    }
+
+    private void Select(int buttonId)  // Select a level
+    {
+        LevelField.SelectLevel(buttonId); // Select the level
+    }
+
+    private void RegisterPlayButton() // Register the play button
+    {
+        Text buttonText = new Text 
+        {
+            Color = Color.WHITE,
+            FontSize = 48, 
+            Data = "Play",
+            Font = FontUtils.ButtonFont
+        }; // Create the button text
+
+        PlayButton = new Button(buttonText, new Vector2(WindowManager.Width - 360, WindowManager.Height - 180), new Vector2(300, 120))
+        {
+            BgColor = new Color(40, 40, 40, 200),
+            BorderColor = Color.WHITE
+        }; // Create the button
+    }
+
+    private void AddButton (int id, string text) // Add a button to the screen
+    {
+        Text buttonText = new Text 
+        {
+            Color = Color.WHITE,
+            FontSize = 48,
+            Data = text,
+            Font = FontUtils.ButtonFont
+        }; // Create the button text
+        
+        int y = (Buttons.Count + 1) * 140 + 20; // Get the y value of the button
+        
+        Button button = new Button(buttonText, new Vector2(40 + (OsVersion.GetOS() == OsVersion.Os.MacOs ? 20 : 0), y), new Vector2(700, 120))
+        {
+            BgColor = new Color(40, 40, 40, 200),
+            BorderColor = Color.WHITE
+        }; // Create the button
+        
+        Buttons.Add(id, button); // Add the button to the list
+    }
+}
+
+```
+
+## LoadingScreen.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Screens\LoadingScreen.cs`
+
+```csharp
+using Velocity.Ui.Render;
+
+namespace Velocity.Ui.Screens;
+
+public class LoadingScreen : Window
+{
+    public new static readonly int UiId = 6; // The ui id
+
+    private const int Fade = 30; // The fade time
+    private static int _hang = 200; // The hang time (how long the screen stays on, frames)
+
+    private int _counter; // The counter for the fade and hang
+    private int _step; // The step of the loading screen (fading in out, hanging, etc)
+
+    public int Alpha; // The alpha of the loading screen
+
+    private static bool _countDown; // Whether to count down or not
+    public static string Text = ""; // The text of the loading screen
+    public static string Subtext = ""; // The subtext of the loading screen
+
+    private static Func<ValueType>? _onFinish; // The callback when the loading screen is finished
+
+    public LoadingScreen() // The constructor
+    {
+        Renderer = new LoadingScreenRenderer(this); // Set the renderer
+    }
+
+    public override void OnDisplay(int? previous) // When the screen is displayed
+    {
+        _step = 0;      // Reset the step
+        _counter = 0;   // Reset the counter
+        Alpha = 0;      // Reset the alpha
+    }
+
+    public static void Trigger(string text, string subtext, Func<ValueType>? callback = null, bool countDown = true, int hang = 200) // Trigger the loading screen
+    {
+        Text = text;            // Set the text
+        Subtext = subtext;      // Set the subtext
+        _onFinish = callback;   // Set the callback
+        _countDown = countDown; // Set the countdown
+        _hang = hang;           // Set the hang time
+    }
+
+    public override void Tick() // Tick the loading screen
+    {
+        switch (_step) // Switch the step
+        {
+            case 0: // Fade in
+                if (_counter >= Fade) // If the counter is greater than the fade time
+                {
+                    _step++; // Increment the step
+                    break; // Break
+                }
+
+                Alpha = (int)(255d * ((double)_counter / Fade)); // Set the alpha to the counter divided by the fade time multiplied by 255 
+                _counter++; // Increment the counter  
+                break;
+            case 1: // Hang
+                if (_counter >= Fade + _hang) // If the counter is greater than the fade time plus the hang time
+                {
+                    _step++; // Increment the step
+                    break; // Break
+                }
+
+                Alpha = 255; // Set the alpha to 255
+
+                _counter++; // Increment the counter
+                break;
+            case 2: // Fade out
+                if (_counter >= Fade * 2 + _hang) // If the counter is greater than the fade time multiplied by 2 plus the hang time
+                {
+                    _step++; // Increment the step
+                    break; // Break
+                }
+                
+                Alpha = (int)(255d * (1 - ((double)_counter - Fade - _hang) / Fade)); // Set the alpha to 255 minus the counter minus the fade time minus the hang time divided by the fade time multiplied by 255
+
+                _counter++; // Increment the counter
+                break;
+            case 3: // Finish
+                _onFinish?.Invoke(); // Invoke the callback
+                Alpha = 0; // Set the alpha to 0
+                break; // Break
+        }
+
+        if (!_countDown) return; // If not counting down, return
+        if (_counter >= Fade * 2 + _hang - 180) Text = "3"; // If the counter is greater than the fade time multiplied by 2 plus the hang time minus 180, set the text to 3
+        if (_counter >= Fade * 2 + _hang - 120) Text = "2"; // If the counter is greater than the fade time multiplied by 2 plus the hang time minus 120, set the text to 2
+        if (_counter >= Fade * 2 + _hang - 60) Text = "1";  // If the counter is greater than the fade time multiplied by 2 plus the hang time minus 60, set the text to 1
+    }
+}
+```
+
+## MainMenuScreen.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Screens\MainMenuScreen.cs`
+
+```csharp
+using Velocity.Math;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Render;
+using Raylib_cs;
+using Velocity.Ui.Render.Element;
+using Velocity.Window;
+
+namespace Velocity.Ui.Screens;
+
+public class MainMenuScreen : Window
+{
+    public new static readonly int UiId = 2; // Unique id for this screen
+
+    public readonly Dictionary<int, Button?> Buttons = new(); // Buttons on the screen
+    
+    public readonly PlayerPreview PlayerPreview = new(); // Player preview on the screen
+    
+    public readonly Selector AppearanceSelector; // Selector for the player appearance
+
+    private bool[] _hasSoundPlayed = new bool[4]; // Whether the sound has played (stop buttons double activating the sound)
+    public MainMenuScreen()
+    {
+        RegisterButtons(); // Register the buttons
+        Renderer = new MainMenuScreenRenderer(this); // Set the renderer
+        string?[] names = new string?[3] {"Swordsman", "Archer", "Wizard"}; // Names for the player appearance selector
+        AppearanceSelector = new Selector(names, Loader.Game.Player.Appearance - 1, new Vector2(400, 80)); // Create the selector
+        AppearanceSelector.Position = new Vector2(WindowManager.Width / 1.3 - 200, WindowManager.Height / 2 + 230); // Set the position
+    }
+
+    private void RegisterButtons()
+    {
+        AddButton(0, "Play"); // Add the play button
+        // AddButton(1, "Statistics"); // TODO
+        AddButton(1, "Options"); // Add the options button
+        AddButton(2, "Exit"); // Add the exit button
+    }
+
+    // Called every frame the window is open for
+    public override void Tick()
+    {
+        foreach (var pair in Buttons) // Loop through the buttons
+        {
+            Button? clicked = pair.Value; // Get the button
+            if (clicked == null) continue; // If the button is null, skip it
+
+            if (clicked.IsClicked()) // If the button is clicked
+            {
+                Select(pair.Key); // Select the button
+            }
+        }
+
+        if (AppearanceSelector.IsClicked()) // If the appearance selector is clicked
+        {
+            Loader.Game.Player.Appearance = AppearanceSelector.Index + 1; // Set the player appearance to the selected appearance
+        }
+    }
+
+    // Called when a button is pressed
+    private void Select(int buttonId)
+    {
+        switch (buttonId)
+        {
+            case 0: // Play
+                Loader.Game.MenuManager.SetActiveWindow(LevelScreen.UiId, UiId); // Set the active window to the level screen
+                break;
+            case -1: // Statistics
+                // TODO OPTIONS
+                break;
+            case 1: // Options
+                Loader.Game.MenuManager.SetActiveWindow(SettingsScreen.UiId, UiId); // Set the active window to the settings screen
+                break;
+            case 2: // Exit
+                Loader.Close(); // Close the game
+                break;
+        }
+    }
+
+    private void AddButton (int id, string text) // Add a button to the screen 
+    {
+        Text buttonText = new Text();
+
+        buttonText.Color = new Color(200, 200, 200, 255);
+        buttonText.FontSize = Convert.ToInt32(WindowManager.Height / 18);
+        buttonText.Data = text;
+        buttonText.Font = FontUtils.ButtonFont;
+
+        int y = Convert.ToInt32(WindowManager.Height / 2 - (Convert.ToInt32(WindowManager.Height / 5.145) - WindowManager.Height / 16) + (Buttons.Count) * (WindowManager.Height / 8));
+
+        Button? button = new Button(
+            buttonText,
+            new Vector2(Convert.ToInt32(WindowManager.Width / 18.29), y),
+            new Vector2(Convert.ToInt32(WindowManager.Width / 4.65), Convert.ToInt32(WindowManager.Height / 10.29)));
+        button.BgColor = new Color(40, 40, 40, 200);
+        button.BorderColor = Color.WHITE;
+        
+        Buttons.Add(id, button);
+    }
+}
+```
+
+## PauseScreen.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Screens\PauseScreen.cs`
+
+```csharp
+using Velocity.Math;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Render;
+using Raylib_cs;
+using Velocity.Window;
+
+namespace Velocity.Ui.Screens;
+
+public class PauseScreen : Window
+{
+    public new static readonly int UiId = 5; // The ui id
+
+    public readonly Dictionary<int, Button?> Buttons = new();  // The buttons
+    
+    public PauseScreen() // The constructor
+    {
+        RegisterButtons(); // Register the buttons
+        Renderer = new PauseScreenRenderer(this); // Set the renderer
+    }
+
+    private void RegisterButtons() // Register the buttons
+    {
+        AddButton(0, "Resume");     // Add the resume button
+        AddButton(1, "Restart");    // Add the restart button
+        AddButton(2, "Options");    // Add the options button
+        AddButton(3, "Main Menu");  // Add the main menu button
+    }
+
+    public override void Tick() // Tick the pause screen
+    {
+        foreach (var pair in Buttons) // For each button
+        {
+            Button? clicked = pair.Value; // Get the button
+            if (clicked == null) continue; // If the button is null, continue
+ 
+            if (clicked.IsClicked()) Select(pair.Key); // If the button is clicked, select it
+        }
+    }
+
+    private void Select(int buttonId) // Select a button
+    {
+        switch (buttonId) // Switch the button id
+        {
+            case 0: // Resume
+                Loader.Game.Resume(); // Resume the game
+                Loader.Game.MenuManager.DisableAll(); // Disable all menus
+                break;
+            case 1: // Restart
+                Loader.Game.Reset(); // Reset the game
+                Loader.Game.MenuManager.DisableAll(); // Disable all menus
+                Loader.Game.ColoredFlashRenderer.Trigger(20, Color.BLACK); // Trigger a black flash
+                break;
+            case 2: // Options
+                Loader.Game.MenuManager.SetActiveWindow(SettingsScreen.UiId, UiId); // Set the settings screen as the active window
+                break; 
+            case 3: // Main Menu
+                Loader.Game.Stop(); // Stop the game 
+                Loader.Game.MenuManager.SetActiveWindow(LoadingScreen.UiId, UiId); // Set the loading screen as the active window
+                LoadingScreen.Trigger("Returning to Main Menu",  
+                    "Please wait...",
+                    () =>
+                    {
+                        Loader.Game.MenuManager.SetActiveWindow(MainMenuScreen.UiId);
+                        return 0;
+                    }, false, 140); // Trigger the loading screen with a callback to set the main menu as the active window 
+                break;
+        }
+    }
+
+    private void AddButton (int id, string text) // Add a button
+    {
+        Text buttonText = new Text
+        {
+            Color = new Color(200, 200, 200, 255), // Set the color
+            FontSize = Convert.ToInt32(WindowManager.Height / 18), // Set the font size
+            Data = text, // Set the data
+            Font = FontUtils.ButtonFont // Set the font
+        }; // The button text
+
+        int y = Convert.ToInt32(WindowManager.Height / 2 - (Convert.ToInt32(WindowManager.Height / 5.145) - WindowManager.Height / 16) + (Buttons.Count) * (WindowManager.Height / 8)); // Calculate the y position of the button based on the number of buttons
+
+        Button button = new Button(
+            buttonText,
+            new Vector2(Convert.ToInt32(WindowManager.Width / 18.29), y),
+            new Vector2(Convert.ToInt32(WindowManager.Width / 4.65), Convert.ToInt32(WindowManager.Height / 10.29)))
+            {
+                BgColor = new Color(40, 40, 40, 200), // Set the background color
+                BorderColor = Color.WHITE // Set the border color
+            }; // Create the button with the text, position, and size
+
+        Buttons.Add(id, button); // Add the button
+    }
+}
+```
+
+## SettingsScreen.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Screens\SettingsScreen.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Exception;
+using Velocity.Math;
+using Velocity.Ui.Misc;
+using Velocity.Ui.Render;
+using Velocity.Window;
+
+namespace Velocity.Ui.Screens;
+
+public class SettingsScreen : Window
+{
+    public new static int UiId = 1; // Unique id for this screen
+
+    public int Page = 0; // The current page
+
+    public static readonly Vector2 Safezone = new (100, 120); // The safezone for the screen
+    
+    public Dictionary<int, Dictionary<string, UiElement>> PageElements = new(4); // The elements on the screen
+    public readonly Dictionary<int, Button> Buttons = new(); // The buttons on the screen
+    public Dictionary<int, List<Label>> PageLabels = new(); // The labels on the screen
+
+    public int Offset = 0; // The offset  for the elements (for scrolling)
+    public int PrevOffset = 0; // The previous offset for the elements (for scrolling)
+    
+    public readonly string[] PageNames = { "Video", "Audio", "Controls" }; // The names of the pages
+
+    private int? _previousWindow; // The previous window to return to on close
+
+    public SettingsScreen() // Constructor
+    {
+        RegisterButtons(); // Register the buttons
+        Renderer = new SettingsScreenRenderer(this); // Set the renderer
+    }
+
+    public override void OnDisplay(int? previous) // Called when the window is opened
+    {
+        PageElements = new Dictionary<int, Dictionary<string, UiElement>>(); // Reset the elements
+        PageLabels = new Dictionary<int, List<Label>>(); // Reset the labels
+        _previousWindow = previous;  // Set the previous window
+
+        if (previous == MainMenuScreen.UiId) // If the previous window was the main menu
+        {
+            Loader.Game.BackgroundRenderer.LoadTextures(); // Load the background textures
+            Loader.Game.BackgroundRenderer.IsEnabled = true;    // Enable the background renderer
+        }
+        
+        RegisterElements(); // Register the elements
+        Page = 0; // Set the page to 0
+    } 
+
+    private void RegisterButtons() // Register the buttons
+    {
+        AddButton(0, "Reset", new Vector2(WindowManager.Width - Convert.ToInt32(WindowManager.Width / 12) - Convert.ToInt32(WindowManager.Height / 15.4) / 2, WindowManager.Height - Safezone.Y / 2 - (WindowManager.Height / 15.4) / 2)); // Add the reset button
+        AddButton(1, "Back", new Vector2(Convert.ToInt32(WindowManager.Height / 15.4) / 2, WindowManager.Height - Safezone.Y / 2 - (WindowManager.Height / 15.4) / 2)); // Add the back button
+        
+        AddButton(2, ">", new Vector2(WindowManager.Width - Safezone.X * 2 - 80, Safezone.Y / 5), 75); // Add the next page button
+        AddButton(3, "<", new Vector2(Safezone.X * 2 - 80, Safezone.Y / 5), 75); // Add the previous page button
+    }
+
+    private void RegisterElements() // Register the elements
+    {
+        RegisterElement(0, "camera_smoothness", "Camera Smoothness",  new Slider(0, 0.95, new Vector2(WindowManager.Width - (WindowManager.Width / 3 + 40) - Safezone.X, WindowManager.Height / 32), Loader.Settings.CameraLinearity)); // Add the camera smoothness slider
+        RegisterElement(0, "resolution", "Resolution", new Selector(Settings.GetResolutionsArray(), Loader.Settings.Resolution, new Vector2(WindowManager.Width / 5, WindowManager.Height / 14))); // Add the resolution selector
+        RegisterElement(0, "fullscreen", "Fullscreen", new Toggle(Loader.Settings.FullScreen, new Vector2(50, 50))); // Add the fullscreen toggle
+        
+        RegisterElement(1, "audio_master", "Master Volume",  new Slider(0, 1, new Vector2(WindowManager.Width - (WindowManager.Width / 3 + 40) - Safezone.X, WindowManager.Height / 32), Loader.Settings.Volume)); // Add the master volume slider
+        RegisterElement(1, "audio_game", "Game Volume",  new Slider(0, 1, new Vector2(WindowManager.Width - (WindowManager.Width / 3 + 40) - Safezone.X, WindowManager.Height / 32), Loader.Settings.GameVolume)); // Add the game volume slider
+        RegisterElement(1, "audio_ui", "UI Volume",  new Slider(0, 1, new Vector2(WindowManager.Width - (WindowManager.Width / 3 + 40) - Safezone.X, WindowManager.Height / 32), Loader.Settings.UiVolume)); // Add the ui volume slider
+        RegisterElement(1, "audio_player", "Player Volume",  new Slider(0, 1, new Vector2(WindowManager.Width - (WindowManager.Width / 3 + 40) - Safezone.X, WindowManager.Height / 32), Loader.Settings.PlayerVolume)); // Add the player volume slider
+
+        RegisterElement(2, "control_interact", "Interact", new ControlField(Loader.Settings.Keybind.Interact)); // Add the interact control field
+        RegisterElement(2, "control_left", "Left", new ControlField(Loader.Settings.Keybind.Left)); // Add the left control field
+        RegisterElement(2, "control_right", "Right", new ControlField(Loader.Settings.Keybind.Right)); // Add the right control field
+        RegisterElement(2, "control_jump", "Jump", new ControlField(Loader.Settings.Keybind.Jump)); // Add the jump control field
+        RegisterElement(2, "control_down", "Down", new ControlField(Loader.Settings.Keybind.Down)); // Add the down control field (unused)
+        RegisterElement(2, "control_zoomin", "Zoom In", new ControlField(Loader.Settings.Keybind.ZoomIn)); // Add the zoom in control field
+        RegisterElement(2, "control_zoomout", "Zoom Out", new ControlField(Loader.Settings.Keybind.ZoomOut)); // Add the zoom out control field
+    }
+
+    private void AddButton (int id, string text, Vector2 position, int? xd = null) // Add a button to the screen
+    {
+        Text buttonText = new Text(); // Create the button text
+
+        buttonText.Color = new Color(200, 200, 200, 255); // Set the button text color
+        buttonText.FontSize = Convert.ToInt32(WindowManager.Height / 28); // Set the button text font size
+        buttonText.Data = text; // Set the button text data
+        buttonText.Font = FontUtils.ButtonFont; // Set the button text font
+        
+        Button? button = new Button(
+            buttonText,
+            position,
+            new Vector2(xd ?? Convert.ToInt32(WindowManager.Width / 12), Convert.ToInt32(WindowManager.Height / 15.4)))
+            {
+                BgColor = new Color(0, 0, 0, 200), // Set the button background color
+                BorderColor = Color.WHITE // Set the button border color
+            }; // Create the button
+
+        Buttons.Add(id, button); // Add the button to the screen
+    }
+    
+    private void RegisterElement(int page, string id, string displayName, UiElement element) // Register an element
+    {
+        CheckPageNumber(page); // Check if the page exists
+        
+        PageElements.TryGetValue(page, out Dictionary<string, UiElement>? elements); // Get the elements on the page
+        if (elements == null) return; // If the elements are null, return
+
+        element.Position = GetNextElementPosition(element, page);   // Set the element position
+        element.RegisterSubElements(new Vector2(Safezone.X, element.Position.Y - 3)); // Register the sub elements
+        element.Display?.Update(); // Update the element display
+        elements.Add(id, element); // Add the element to the page
+        
+        Text labelText = new Text(); // Create the label text
+ 
+        labelText.Color = new Color(200, 200, 200, 255); // Set the label text color
+        labelText.FontSize = Convert.ToInt32(WindowManager.Height / 24);    // Set the label text font size
+        labelText.Data = displayName;  // Set the label text data
+        labelText.Font = FontUtils.ButtonFont; // Set the label text font
+
+        PageLabels.TryGetValue(page, out List<Label>? pageLabels); // Get the labels on the page
+        if (pageLabels == null) return; // If the labels are null, return
+
+        Vector2 position = new Vector2(Safezone.X, element.Position.Y - WindowManager.Height / 24 - 5); // Set the label position
+        pageLabels.Add(new Label(labelText, position)); // Add the label to the page
+    }
+
+    private Vector2 GetNextElementPosition(UiElement element, int page) // Get the next element position
+    {
+        int x = WindowManager.Width - (int)Safezone.X - (int)element.Dimensions.X; // Set the x position
+        
+        PageElements.TryGetValue(page, out Dictionary<string, UiElement>? elements); // Get the elements on the page
+        if (elements == null) return Safezone; // If the elements are null, return the safezone
+        
+        int yOffset; // The y offset
+        if (elements.Count != 0) // If there are elements on the page
+        { 
+            UiElement? lastElement = elements.Values.Last(); // Get the last element
+            yOffset = (int)(lastElement.Position.Y + lastElement.Dimensions.Y / 2); // Set the y offset
+        }
+        else yOffset = 70; // If there are no elements, set the y offset to 70
+        int y = (int)Safezone.Y + yOffset; // Set the y position
+
+        return new Vector2(x, y); // Return the position
+    }
+
+    private void CheckPageNumber(int page) // Check if the page exists
+    {
+        PageElements.TryGetValue(page, out Dictionary<string, UiElement>? elements); // Get the elements on the page
+        if (elements == null) 
+        {
+            PageElements.Add(page, new Dictionary<string, UiElement>()); // If the elements are null, add the page
+        }
+        
+        PageLabels.TryGetValue(page, out List<Label>? labels); // Get the labels on the page
+        if (labels == null)
+        {
+            PageLabels.Add(page, new List<Label>()); // If the labels are null, add the page
+        }
+    }
+
+    public override void Tick()     // Called every frame the window is open for
+    {
+        PageElements.TryGetValue(Page, out Dictionary<string, UiElement>? elements); // Get the elements on the page
+        PageLabels.TryGetValue(Page, out List<Label>? labels); // Get the labels on the page
+        if (elements == null && labels == null) throw new VelocityException("No page to apply logic to."); // If the elements and labels are null, throw an exception
+        
+        int lowestY = 0; // The lowest y position
+        int highestY = WindowManager.Height; // The highest y position
+        
+        foreach (var elementPair in elements) // Loop through the elements
+        {
+            elementPair.Value.Display.Update(); // Update the element display
+            
+            if (lowestY < elementPair.Value.Position.Y + elementPair.Value.Dimensions.Y) lowestY = (int) elementPair.Value.Position.Y; // Set the lowest y position
+            if (highestY > elementPair.Value.Position.Y) highestY = (int)elementPair.Value.Position.Y - 70; // Set the highest y position
+
+            
+            // Stupid nested if statements TODO: change
+            if (Page == 2) // If the page is the controls page
+            {
+                if (elementPair.Value.IsClicked()) // If the element is clicked
+                {
+                    foreach (var element in elements.Values) // Loop through the elements
+                    {
+                        if (element is ControlField controlField) // If the element is a control field
+                        {
+                            if (controlField.Display is ControlValueField controlValueField) // If the element display is a control value field
+                            {
+                                controlValueField.IsListening = false; // Stop listening for keybinds
+                                controlValueField.Value = controlField.GetKey().ToString().Replace("KEY_", ""); // Set the value to the keybind
+                            }
+                        }
+                    }
+                     
+                    if (elementPair.Value is ControlField selected) // If the element is a control field
+                    {
+                        if (selected.Display is ControlValueField controlValueField) // If the element display is a control value field
+                        {
+                            controlValueField.IsListening = true; // Start listening for keybinds
+                        }
+                    }
+                }
+            }
+            
+            switch (elementPair.Key) // Switch the element id
+            {
+                case "camera_smoothness":  // If the element is the camera smoothness slider
+                    if (!elementPair.Value.IsClicked()) continue; // If the element is not clicked, continue
+                    Loader.Settings.CameraLinearity = elementPair.Value.GetValue(2); // Set the camera linearity to the slider value
+                    continue;
+                case "resolution": // .. Etc.
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.Resolution = (int)elementPair.Value.GetValue();
+                    Loader.WindowManager.ApplySettingsChange();
+                    continue;
+                case "fullscreen":
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.FullScreen = Convert.ToBoolean(elementPair.Value.GetValue());
+                    Loader.WindowManager.ApplySettingsChange();
+                    break;
+                case "audio_master":
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.Volume = elementPair.Value.GetValue(2);
+                    Loader.AudioManager.UpdateVolume();
+                    break;
+                case "audio_game":
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.GameVolume = elementPair.Value.GetValue(2);
+                    Loader.AudioManager.UpdateGameVolume();
+                    break;
+                case "audio_ui":
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.UiVolume = elementPair.Value.GetValue(2);
+                    Loader.AudioManager.UpdateUiVolume();
+                    break;
+                case "audio_player":
+                    if (!elementPair.Value.IsClicked()) continue;
+                    Loader.Settings.PlayerVolume = elementPair.Value.GetValue(2);
+                    Loader.AudioManager.UpdatePlayerVolume();
+                    break;
+                case "control_interact":
+                    Loader.Settings.Keybind.Interact = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_left":
+                    Loader.Settings.Keybind.Left = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_right":
+                    Loader.Settings.Keybind.Right = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_jump":
+                    Loader.Settings.Keybind.Jump = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_down":
+                    Loader.Settings.Keybind.Down = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_zoomin":
+                    Loader.Settings.Keybind.ZoomIn = ((ControlField)elementPair.Value).GetKey();
+                    break;
+                case "control_zoomout":
+                    Loader.Settings.Keybind.ZoomOut = ((ControlField)elementPair.Value).GetKey();
+                    break;
+            }
+        }
+
+        if (Raylib.GetMouseWheelMove() != 0) // If the mouse wheel is moved
+        {
+            int offset = (int) Raylib.GetMouseWheelMove() * 20; // Set the offset
+
+            if (lowestY + 200 + offset < WindowManager.Height) offset = 0; // If the lowest y position + 200 + the offset is less than the window height, set the offset to 0
+            if (highestY + offset > 130) offset = 0; // If the highest y position + the offset is greater than 130, set the offset to 0
+            
+            foreach (var elementPair in elements) // Loop through the elements
+            {
+                elementPair.Value.Position.Y += offset; // Add the offset to the element position
+                elementPair.Value.Display.Position.Y += offset; // Add the offset to the element display position
+            } 
+
+            foreach (var label in labels) label.Position.Y += offset; // Loop through the labels and add the offset to the position
+            
+        }
+
+        foreach (var button in Buttons) // Loop through the buttons
+        {
+            if (!button.Value.IsClicked()) continue; // If the button is not clicked, continue
+
+            switch (button.Key) // Switch the button id
+            {
+                case 0:
+                    ToDefaults(); // Reset the settings to default
+                    break;
+                case 1:
+                    Loader.Game.MenuManager.SetActiveWindow(_previousWindow ?? MainMenuScreen.UiId); // Set the active window to the previous window
+                    Loader.Settings.Save(); // Save the settings
+                    if (_previousWindow != null && _previousWindow != PauseScreen.UiId) Loader.Game.BackgroundRenderer.IsEnabled = false; // If the previous window was not the pause screen, disable the background renderer
+                    break;
+                case 2:
+                    if (Page >= 2) Page = 0; // If the page is greater than or equal to 2, set the page to 0
+                    else Page++; // Else, increment the page
+                    break;
+                case 3:
+                    if (Page <= 0) Page = 2; // If the page is less than or equal to 0, set the page to 2
+                    else Page--; // Else, decrement the page
+                    break;
+            }
+
+        }
+    }
+    
+    private void ToDefaults () // Reset the settings to default
+    {
+        Loader.Settings.ToDefault(); // Reset the settings
+        Loader.WindowManager.ApplySettingsChange(); // Apply the settings
+        Loader.AudioManager.UpdateVolume(); // Update the volume
+        PageElements.Clear(); // Clear the elements
+        PageLabels.Clear(); // Clear the labels
+        RegisterElements(); // Re-register the elements
+    }
+}
+
+```
+
+## WinScreen.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Screens\WinScreen.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Game.Statistics;
+using Velocity.Ui.Misc;
+using Velocity.Math;
+using Velocity.Ui.Render;
+using Velocity.Window;
+
+namespace Velocity.Ui.Screens;
+
+public class WinScreen : Window
+{
+    public new static readonly int UiId = 4; // The ui id 
+
+    public readonly Dictionary<int, Button?> Buttons = new(); // The buttons
+
+    private readonly WinScreenRenderer _renderer; // The renderer
+
+    public WinScreen() // The constructor
+    {
+        _renderer = new WinScreenRenderer(this); // Set the renderer
+        Renderer = _renderer; // Set the renderer
+        
+        RegisterButtons(); // Register the buttons
+    }
+
+    public override void OnDisplay(int? previous)
+    {
+        _renderer.Count = 0; // Reset the count
+        _renderer.Step = 0; // Reset the step
+
+        if (Loader.Game.Level == null || Loader.Game.LevelManager.GetLevels().Count != Loader.Game.Level.Id - 1) return; // If the level is null or the level id is not the last level, return
+        Loader.Game.MenuManager.SetActiveWindow(EndScreen.UiId);  // Set the end screen as the active window
+    }
+
+    public override void Tick() // Tick the win screen
+    { 
+        foreach (var pair in Buttons.Where(pair => pair.Value == null || pair.Value.IsClicked())) // For each button and if the button is clicked 
+        {
+            switch (pair.Key) // Switch the button id
+            {
+                case 0: // Restart
+                    Loader.Game.Reset(); // Reset the game
+                    Loader.Game.MenuManager.DisableAll(); // Disable all menus
+                    Loader.Game.ColoredFlashRenderer.Trigger(20, Color.BLACK); // Trigger a black flash
+                    break;
+                case 1: // Main Menu
+                    Loader.Game.Stop(); // Stop the game
+                    Loader.Game.MenuManager.SetActiveWindow(LoadingScreen.UiId, UiId); // Set the loading screen as the active window
+                    LoadingScreen.Trigger("Returning to Main Menu", 
+                        "Please wait...",
+                        () =>
+                        {
+                            Loader.Game.MenuManager.SetActiveWindow(MainMenuScreen.UiId);
+                            return 0;
+                        }, false, 140); // Trigger the loading screen with the text "Returning to Main Menu" and the subtext "Please wait..." and the callback to set the main menu as the active window
+                    
+                    break;
+                case 2: // Next Level
+                    Loader.Game.Stop(); // Stop the game
+                    Loader.Game.MenuManager.SetActiveWindow(LoadingScreen.UiId, UiId); // Set the loading screen as the active window
+
+                    if (Loader.Game.Level != null) // If the level is not null
+                    {
+                        Level.Level next = Loader.Game.LevelManager.GetLevelById(Loader.Game.Level.Id + 1); // Get the next level
+                    
+                        LoadingScreen.Trigger(next.Name,
+                            "Time to beat: " + StatisticManager.SteraliseTime(StatisticManager.GetLevelBestTime(next.Id)),
+                            () =>
+                            {
+                                Loader.Game.LevelManager.LoadNextLevel();
+                                Loader.Game.Run();
+                                Loader.Game.MenuManager.DisableAll();
+                                Loader.Game.ColoredFlashRenderer.Trigger(20, Color.BLACK);
+                                return 0;
+                            }); // Trigger the loading screen with the text of the next level and the subtext of the time to beat
+                    }
+
+                    break;
+            }
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE)) Loader.Game.MenuManager.SetActiveWindow(MainMenuScreen.UiId); // If the escape key is pressed, set the main menu as the active window
+    }
+    
+    private void RegisterButtons()
+    {
+        AddButton(0, "Restart"); // Add the restart button
+        AddButton(1, "Main Menu"); // Add the main menu button
+        AddButton(2, "Next Level"); // Add the next level button
+    }
+
+
+    private void AddButton (int id, string text) // Add a button
+    {
+        Text buttonText = new Text
+        {
+            Color = Color.WHITE,
+            FontSize = 48,
+            Data = text,
+            Font = FontUtils.ButtonFont
+        }; // The button text
+        
+        int x = WindowManager.Width / 2 - 675 + (id * (450 + 20)); // The x position of the button
+        
+        Button button = new Button(buttonText, new Vector2(x, WindowManager.Height - 230), new Vector2(400, 120))
+        {
+            BgColor = new Color(40, 40, 40, 200),
+            BorderColor = Color.WHITE
+        }; // Create the button with the text, position, and size
+        
+        Buttons.Add(id, button); // Add the button
+    }
+}
+
+```
+
+## Window.cs
+**Location:** `Velocity-NEA\Velocity\Ui\Screens\Window.cs`
+
+```csharp
+using Velocity.Window.Render.Renderers;
+
+namespace Velocity.Ui.Screens;
+
+public class Window
+{
+    public static int UiId; // Unique id for this screen (to be overwriten by child classses) 
+    public UiRenderer Renderer; // The renderer object for child class
+
+    public virtual void OnDisplay (int? previous) // Called when the window is opened
+    { }
+    public virtual void Tick() // Called every frame the window is open for
+    { }
+}
+```
+
+## ColorFormatter.cs
+**Location:** `Velocity-NEA\Velocity\Utils\ColorFormatter.cs`
+
+```csharp
+using Raylib_cs;
+
+namespace Velocity.Utils;
+
+public class ColorFormatter
+{
+    private static int H2d(char c) // Convert hex to decimal
+    {
+        return c switch
+        {
+            >= '0' and <= '9' => c - '0',
+            >= 'A' and <= 'F' => c - 'A' + 10,
+            >= 'a' and <= 'f' => c - 'a' + 10,
+            _ => 0
+        };
+    }
+    
+    public static Color from_string(string s) // Convert hex-code to color instance
+    {
+        var c = new Color((H2d(s[0])<<4)+H2d(s[1]), (H2d(s[2])<<4)+(byte)H2d(s[3]), (H2d(s[4])<<4)+(byte)H2d(s[5]), s.Length == 8 ? (H2d(s[6])<<4)+H2d(s[7]) : 255);
+        return c;
+    }
+}
+```
+
+## IniFile.cs
+**Location:** `Velocity-NEA\Velocity\Utils\IniFile.cs`
+
+```csharp
+using System.Collections;
+
+namespace Velocity.Utils;
+
+/**
+ * @ref https://gist.github.com/Sn0wCrack/5891612
+ */
+public class IniFile 
+{
+    private readonly Hashtable _keyPairs = new Hashtable();
+    private readonly String _iniFilePath;
+ 
+    private struct SectionPair
+    {
+        public string? Section;
+        public string? Key;
+    }
+ 
+    /// <summary>
+    /// Opens the INI file at the given path and enumerates the values in the IniParser.
+    /// </summary>
+    /// <param name="iniPath">Full path to INI file.</param>
+    public IniFile(String iniPath)
+    {
+        TextReader? iniFile = null;
+        string? currentRoot = null;
+
+        _iniFilePath = iniPath;
+
+        if (!File.Exists(iniPath))
+        {
+            TextWriter tw = new StreamWriter(iniPath);
+            tw.Write("Velocity Settings");
+            tw.Close();
+        }
+        
+        try
+        {
+            iniFile = new StreamReader(iniPath);
+
+            var strLine = iniFile.ReadLine();
+
+            while (strLine != null)
+            {
+                strLine = strLine.Trim().ToUpper();
+
+                if (strLine != "")
+                {
+                    if (strLine.StartsWith("[") && strLine.EndsWith("]"))
+                    {
+                        currentRoot = strLine.Substring(1, strLine.Length - 2);
+                    }
+                    else
+                    {
+                        string?[] keyPair = strLine.Split(new[] { '=' }, 2);
+
+                        SectionPair sectionPair;
+                        string? value = null;
+
+                        if (currentRoot == null)
+                            currentRoot = "ROOT";
+
+                        sectionPair.Section = currentRoot;
+                        sectionPair.Key = keyPair[0];
+
+                        if (keyPair.Length > 1)
+                            value = keyPair[1];
+
+                        _keyPairs.Add(sectionPair, value);
+                    }
+                }
+
+                strLine = iniFile.ReadLine();
+            }
+
+        }
+        catch (System.Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            iniFile?.Close();
+        }
+    }
+ 
+    /// <summary>
+    /// Returns the value for the given section, key pair.
+    /// </summary>
+    /// <param name="sectionName">Section name.</param>
+    /// <param name="settingName">Key name.</param>
+    public string GetSetting(String sectionName, String settingName)
+    {
+        SectionPair sectionPair;
+        sectionPair.Section = sectionName.ToUpper();
+        sectionPair.Key = settingName.ToUpper();
+ 
+        return (String)_keyPairs[sectionPair]!;
+    }
+ 
+    /// <summary>
+    /// Enumerates all lines for given section.
+    /// </summary>
+    /// <param name="sectionName">Section to enum.</param>
+    public String[] EnumSection(String sectionName)
+    {
+        ArrayList tmpArray = new ArrayList();
+ 
+        foreach (SectionPair pair in _keyPairs.Keys)
+        {
+            if (pair.Section == sectionName.ToUpper())
+                tmpArray.Add(pair.Key);
+        }
+ 
+        return (String[])tmpArray.ToArray(typeof(String));
+    }
+ 
+    /// <summary>
+    /// Adds or replaces a setting to the table to be saved.
+    /// </summary>
+    /// <param name="sectionName">Section to add under.</param>
+    /// <param name="settingName">Key name to add.</param>
+    /// <param name="settingValue">Value of key.</param>
+    public void AddSetting(String sectionName, String settingName, string? settingValue = null)
+    {
+        SectionPair sectionPair;
+        sectionPair.Section = sectionName.ToUpper();
+        sectionPair.Key = settingName.ToUpper();
+ 
+        if (_keyPairs.ContainsKey(sectionPair))
+            _keyPairs.Remove(sectionPair);
+ 
+        _keyPairs.Add(sectionPair, settingValue);
+    }
+
+    /// <summary>
+    /// Remove a setting.
+    /// </summary>
+    /// <param name="sectionName">Section to add under.</param>
+    /// <param name="settingName">Key name to add.</param>
+    public void DeleteSetting(String sectionName, String settingName)
+    {
+        SectionPair sectionPair;
+        sectionPair.Section = sectionName.ToUpper();
+        sectionPair.Key = settingName.ToUpper();
+ 
+        if (_keyPairs.ContainsKey(sectionPair))
+            _keyPairs.Remove(sectionPair);
+    }
+ 
+    /// <summary>
+    /// Save settings to new file.
+    /// </summary>
+    /// <param name="newFilePath">New file path.</param>
+    private void SaveSettings(String newFilePath)
+    {
+        ArrayList sections = new ArrayList();
+        string tmpValue = "";
+        String strToSave = "";
+ 
+        foreach (SectionPair sectionPair in _keyPairs.Keys)
+        {
+            if (!sections.Contains(sectionPair.Section))
+                sections.Add(sectionPair.Section);
+        }
+ 
+        foreach (String section in sections)
+        {
+            strToSave += ("[" + section + "]\r\n");
+ 
+            foreach (SectionPair sectionPair in _keyPairs.Keys)
+            {
+                if (sectionPair.Section == section)
+                {
+                    tmpValue = (String)_keyPairs[sectionPair]!;
+ 
+                    tmpValue = "=" + tmpValue;
+ 
+                    strToSave += (sectionPair.Key + tmpValue + "\r\n");
+                }
+            }
+ 
+            strToSave += "\r\n";
+        }
+ 
+        try
+        {
+            TextWriter tw = new StreamWriter(newFilePath);
+            tw.Write(strToSave);
+            tw.Close();
+        }
+        catch (System.Exception ex)
+        {
+            throw ex;
+        }
+    }
+ 
+    /// <summary>
+    /// Save settings back to ini file.
+    /// </summary>
+    public void SaveSettings()
+    {
+        SaveSettings(_iniFilePath);
+    }
+}
+
+```
+
+## KeyParser.cs
+**Location:** `Velocity-NEA\Velocity\Utils\KeyParser.cs`
+
+```csharp
+using Raylib_cs;
+
+namespace Velocity.Utils;
+
+public class KeyParser
+{
+    public static KeyboardKey ToKey(string? key) // Convert string to KeyboardKey
+    {
+        string find = key.Replace("KEY_", "").ToLower();
+        return find switch
+        {
+            "a" => KeyboardKey.KEY_A,
+            "b" => KeyboardKey.KEY_B,
+            "c" => KeyboardKey.KEY_C,
+            "d" => KeyboardKey.KEY_D,
+            "e" => KeyboardKey.KEY_E,
+            "f" => KeyboardKey.KEY_F,
+            "g" => KeyboardKey.KEY_G,
+            "h" => KeyboardKey.KEY_H,
+            "i" => KeyboardKey.KEY_I,
+            "j" => KeyboardKey.KEY_J,
+            "k" => KeyboardKey.KEY_K,
+            "l" => KeyboardKey.KEY_L,
+            "m" => KeyboardKey.KEY_M,
+            "n" => KeyboardKey.KEY_N,
+            "o" => KeyboardKey.KEY_O,
+            "p" => KeyboardKey.KEY_P,
+            "q" => KeyboardKey.KEY_Q,
+            "r" => KeyboardKey.KEY_R,
+            "s" => KeyboardKey.KEY_S,
+            "t" => KeyboardKey.KEY_T,
+            "u" => KeyboardKey.KEY_U,
+            "v" => KeyboardKey.KEY_V,
+            "w" => KeyboardKey.KEY_W,
+            "x" => KeyboardKey.KEY_X,
+            "y" => KeyboardKey.KEY_Y,
+            "z" => KeyboardKey.KEY_Z,
+            "1" => KeyboardKey.KEY_ONE,
+            "2" => KeyboardKey.KEY_TWO,
+            "3" => KeyboardKey.KEY_THREE,
+            "4" => KeyboardKey.KEY_FOUR,
+            "5" => KeyboardKey.KEY_FIVE,
+            "6" => KeyboardKey.KEY_SIX,
+            "7" => KeyboardKey.KEY_SEVEN,
+            "8" => KeyboardKey.KEY_EIGHT,
+            "9" => KeyboardKey.KEY_NINE,
+            "0" => KeyboardKey.KEY_ZERO,
+            "up" => KeyboardKey.KEY_UP,
+            "down" => KeyboardKey.KEY_DOWN,
+            "left" => KeyboardKey.KEY_LEFT,
+            "right" => KeyboardKey.KEY_RIGHT,
+            "minus" => KeyboardKey.KEY_MINUS,
+            "equal" => KeyboardKey.KEY_EQUAL,
+            "left_shift" => KeyboardKey.KEY_LEFT_SHIFT,
+            "right_shift" => KeyboardKey.KEY_RIGHT_SHIFT,
+            "tab" => KeyboardKey.KEY_TAB,
+            "space" => KeyboardKey.KEY_SPACE,
+            _ => KeyboardKey.KEY_NULL
+        };
+    }
+}
+```
+
+## OsVersion.cs
+**Location:** `Velocity-NEA\Velocity\Utils\OsVersion.cs`
+
+```csharp
+namespace Velocity.Utils;
+
+public class OsVersion
+{
+    public static Os GetOS() // Get the current OS
+    {
+        switch (Environment.OSVersion.Platform)
+        {
+            case PlatformID.Win32Windows: return Os.Windows;
+            case PlatformID.MacOSX: return Os.MacOs;
+            case PlatformID.Unix: return Os.Linux;
+            default: return Os.Other;
+        }
+    }
+    
+    public static string GetDirSeperator () // Get the directory seperator for the current OS
+    {
+        switch (GetOS())
+        {
+            case Os.MacOs:
+            case Os.Linux:
+                return "/";
+            case Os.Windows: return "\\";
+            default: return "/";
+        }
+    }
+
+    public enum Os // Enum for the OS
+    {
+        Windows = 0,
+        MacOs = 1,
+        Linux = 2,
+        Other = 3
+    }
+}
+```
+
+## Path.cs
+**Location:** `Velocity-NEA\Velocity\Utils\Path.cs`
+
+```csharp
+namespace Velocity.Utils;
+
+public abstract class Path
+{
+    public static string CurrentDirectory = Directory.GetCurrentDirectory() + OsVersion.GetDirSeperator();
+    public static string AssetLocation = CurrentDirectory + "assets" + OsVersion.GetDirSeperator();
+    public static string SoundLocation = AssetLocation + "sounds" + OsVersion.GetDirSeperator();
+}
+```
+
+## Renderer.cs
+**Location:** `Velocity-NEA\Velocity\Window\Render\Renderer.cs`
+
+```csharp
+using Velocity.Window.Render.Renderers;
+using Raylib_cs;
+
+namespace Velocity.Window.Render;
+
+public class Renderer
+{
+    private Dictionary<string, ElementRenderer?> _elementRenderers = new (); 
+    private Dictionary<string, UiRenderer> _uiRenderers = new ();
+    private Dictionary<string, BackgroundRenderer> _backgroundRenderers = new();
+
+    // Register an in-game element's renderer
+    public void RegisterElementRenderer(ElementRenderer? element)
+    {
+        _elementRenderers.Add(element.Identifier, element);
+    }
+    
+    // Register a screen-space element's renderer
+    public void RegisterUiRenderer(UiRenderer element)
+    {
+        _uiRenderers.Add(element.Identifier, element);
+    }
+
+    // Register an background element's renderer
+    public void RegisterBackgroundRenderer(BackgroundRenderer renderer)
+    {
+        _backgroundRenderers.Add(renderer.Identifier, renderer);
+    }
+
+    // Unregister a renderer
+    public void UnregisterRenderer(string id)
+    {
+        _elementRenderers.TryGetValue(id, out ElementRenderer? elementRenderer);
+        _uiRenderers.TryGetValue(id, out UiRenderer? uiRenderer);
+
+        if (elementRenderer != null)
+        {
+            _elementRenderers.Remove(id);
+            return;
+        }
+
+        if (uiRenderer != null)
+        {
+            _uiRenderers.Remove(id);
+            return;
+        }
+    }
+
+    // Enable a renderer
+    public void EnableRenderer(string id)
+    {
+        _elementRenderers.TryGetValue(id, out ElementRenderer? elementRenderer);
+
+        _uiRenderers.TryGetValue(id, out UiRenderer? uiRenderer);
+
+        elementRenderer?.Enable();
+        uiRenderer?.Enable();
+    }
+
+    // Disable a renderer
+    public void DisableRenderer (string id)
+    {
+        _elementRenderers.TryGetValue(id, out ElementRenderer? elementRenderer);
+
+        _uiRenderers.TryGetValue(id, out UiRenderer? uiRenderer);
+
+        elementRenderer?.Disable();
+        uiRenderer?.Disable();
+    }
+
+    // Draw the screen-space elements
+    public void DrawUi()
+    {
+        foreach (KeyValuePair<string, UiRenderer> renderer in _uiRenderers)
+        {
+            if (renderer.Value.IsEnabled)
+            {
+                renderer.Value.Draw();
+            }
+        }
+    }
+
+    // Draw the game on the canvas
+    public void DrawGame()
+    {
+        foreach (var renderer in _backgroundRenderers)
+        {
+            if (renderer.Value.IsEnabled) renderer.Value.Draw();
+        }
+
+        foreach (KeyValuePair<string, ElementRenderer?> renderer in _elementRenderers)
+        {
+            if (renderer.Value.IsEnabled) renderer.Value.Draw();
+        }
+    }
+
+    public void Dump()
+    {
+        foreach (var renderer in _elementRenderers.Values) Console.WriteLine(renderer?.Identifier);
+        foreach (var renderer in _backgroundRenderers.Values) Console.WriteLine(renderer?.Identifier);
+        foreach (var renderer in _uiRenderers.Values) Console.WriteLine(renderer?.Identifier);
+    }
+}
+```
+
+## AnimatableRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Window\Render\Renderers\AnimatableRenderer.cs`
+
+```csharp
+using Raylib_cs;
+using Velocity.Ui.Misc;
+
+namespace Velocity.Window.Render.Renderers;
+
+public class AnimatableRenderer : ConditionalRenderer
+{
+    public UiElement Parent;
+    public Color BgColor { get; set; }
+    public Color InternalBg;
+    public Color BorderColor { get; set; }
+    public Color InternalBorder;
+
+    private int _aStep = 0;
+    private const int MaxStep = 10;
+    private const int GlowRadius = 8;
+
+    protected AnimatableRenderer (UiElement parent, string identifier, Color? bgColor = null, Color? borderColor = null) : base(identifier)
+    {
+        Parent = parent;
+        
+        BgColor = bgColor ?? new Color(40, 40, 40, 255);
+        BorderColor = borderColor ?? Color.WHITE;
+        UpdateColors();
+    }
+
+    // Function responsible for drawing the animation
+    public void DrawAnimation()
+    {
+        if (Parent.IsMouseOver() && _aStep < MaxStep) _aStep++;
+        else if (!(Parent.IsMouseOver()) && _aStep > 0) _aStep--;
+
+        double a = Convert.ToDouble(_aStep) / MaxStep;
+        
+        Raylib.DrawRectangleGradientH((int)Parent.Position.X- GlowRadius, (int)Parent.Position.Y, 8, (int)Parent.Dimensions.Y, new Color(200, 200, 200, 0), new Color(200, 200, 200, Convert.ToInt16(255 * a)));
+        Raylib.DrawRectangleGradientH((int)Parent.Position.X + (int)Parent.Dimensions.X, (int)Parent.Position.Y, 8, (int)Parent.Dimensions.Y, new Color(200, 200, 200, Convert.ToInt16(255 * a)), new Color(200, 200, 200, 0));
+        Raylib.DrawRectangleGradientV((int)Parent.Position.X, (int)Parent.Position.Y- GlowRadius, (int)Parent.Dimensions.X, 8, new Color(200, 200, 200, 0), new Color(200, 200, 200, Convert.ToInt16(255 * a)));
+        Raylib.DrawRectangleGradientV((int)Parent.Position.X, (int)Parent.Position.Y + (int)Parent.Dimensions.Y, (int)Parent.Dimensions.X, 8, new Color(200, 200, 200, Convert.ToInt16(255 * a)), new Color(200, 200, 200, 0));
+        Raylib.DrawRectangleGradientEx(new Rectangle((int)Parent.Position.X- GlowRadius, (int)Parent.Position.Y- GlowRadius, GlowRadius, GlowRadius), new Color(200, 200, 200, 0), new Color(200, 200, 200, 0), new Color(200, 200, 200, Convert.ToInt16(255 * a)), new Color(255, 255, 255, 0));
+        Raylib.DrawRectangleGradientEx(new Rectangle((int)Parent.Position.X + (int)Parent.Dimensions.X, (int)Parent.Position.Y- GlowRadius, GlowRadius, GlowRadius), new Color(200, 200, 200, 0), new Color(200, 200, 200, Convert.ToInt16(255 * a)), new Color(200, 200, 200, 0), new Color(255, 255, 255, 0));
+        Raylib.DrawRectangleGradientEx(new Rectangle((int)Parent.Position.X- GlowRadius, (int)Parent.Position.Y + (int)Parent.Dimensions.Y, GlowRadius, GlowRadius), new Color(200, 200, 200, 0), new Color(200, 200, 200, 0), new Color(200, 200, 200, 0), new Color(255, 255, 255, Convert.ToInt16(255 * a)));
+        Raylib.DrawRectangleGradientEx(new Rectangle((int)Parent.Position.X + (int)Parent.Dimensions.X, (int)Parent.Position.Y + (int)Parent.Dimensions.Y, GlowRadius, GlowRadius), new Color(200, 200, 200, Convert.ToInt16(255 * a)), new Color(200, 200, 200, 0), new Color(200, 200, 200, 0), new Color(255, 255, 255, 0));
+        
+        UpdateColors(a);
+    }
+
+    // Function responsible for updating the colors of the element
+    private void UpdateColors(double multiplier = 0)
+    {
+        InternalBg = BgColor with { a = Convert.ToByte(200 + 50 * multiplier) };
+        InternalBorder = BorderColor with { a = Convert.ToByte(200 + 50 * multiplier) };
+    }
+}
+```
+
+## BackgroundRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Window\Render\Renderers\BackgroundRenderer.cs`
+
+```csharp
+namespace Velocity.Window.Render.Renderers;
+
+public class BackgroundRenderer : UiRenderer
+{
+    public BackgroundRenderer(string id, bool isEnabled = true) : base(id)
+    {
+        IsEnabled = isEnabled;
+    }
+}
+```
+
+## ConditionalRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Window\Render\Renderers\ConditionalRenderer.cs`
+
+```csharp
+namespace Velocity.Window.Render.Renderers;
+
+// Renderer that only draws when the logic calls it
+public abstract class ConditionalRenderer : UiRenderer
+{
+    public ConditionalRenderer(string id) : base(id) {}
+    
+    public new virtual void Draw()
+    { }
+}
+```
+
+## ElementRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Window\Render\Renderers\ElementRenderer.cs`
+
+```csharp
+namespace Velocity.Window.Render.Renderers;
+
+// Main renderer for rendering game elements (elements & player)
+public class ElementRenderer : SimpleRenderer
+{
+    public ElementRenderer(string identifier, bool isEnabled = true) : base(identifier)
+    {
+        IsEnabled = isEnabled;
+    }
+}
+```
+
+## SimpleRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Window\Render\Renderers\SimpleRenderer.cs`
+
+```csharp
+namespace Velocity.Window.Render.Renderers;
+
+// Parent of all the renderers
+public class SimpleRenderer
+{
+    public bool IsEnabled;
+    
+    public string Identifier { get; set; }
+
+    public SimpleRenderer(string identifier)
+    {
+        Identifier = identifier;
+    }
+    
+    public void Enable()
+    {
+        IsEnabled = true;
+    }
+
+    public void Disable()
+    {
+        IsEnabled = false;
+    }
+    public virtual void Draw () {}
+}
+```
+
+## UiRenderer.cs
+**Location:** `Velocity-NEA\Velocity\Window\Render\Renderers\UiRenderer.cs`
+
+```csharp
+namespace Velocity.Window.Render.Renderers;
+
+// Renderer that renders all ui layer elements, (always drawn last)
+public class UiRenderer : SimpleRenderer
+{
+    public UiRenderer(string identifier, bool isEnabled = true) : base(identifier)
+    {
+        IsEnabled = isEnabled;
+    } 
+}
+```
+
+## WindowManager.cs
+**Location:** `Velocity-NEA\Velocity\Window\WindowManager.cs`
+
+```csharp
+using System.Numerics;
+using Velocity.Window.Render;
+using Raylib_cs;
+
+namespace Velocity.Window;
+
+public class WindowManager
+{
+    public const int Width = 1920;
+    public const int Height = 1080;
+    
+    public Camera2D Camera;
+    private Camera2D _screenSpaceCamera;
+    public float VirtualRatio;
+    
+    public Color BackgroundColor = Color.SKYBLUE;
+
+    private RenderTexture2D _target;
+    private Rectangle _sourceRectangle;
+    private Rectangle _destRectangle;
+
+    // This is the procedure of creating a window and registering it in the operating system
+    // It also creates a virtual canvas to draw to, so that we can scale the game to any resolution
+    // It also creates a camera so that we can move the camera around the game world
+    public void CreateWindow()
+    {
+        VirtualRatio = Width / Settings.Resolutions[Loader.Settings.Resolution].X;
+        _sourceRectangle = new Rectangle(0, 0, Width, -Height);
+        _destRectangle = new Rectangle(-VirtualRatio, -VirtualRatio, Settings.Resolutions[Loader.Settings.Resolution].X + VirtualRatio * 2, Settings.Resolutions[Loader.Settings.Resolution].Y + VirtualRatio * 2);
+ 
+        Raylib.InitWindow(
+            (int)Settings.Resolutions[Loader.Settings.Resolution].X,
+            (int)Settings.Resolutions[Loader.Settings.Resolution].Y,
+            GameConst.Name
+        ); 
+
+
+        _target = Raylib.LoadRenderTexture(Width, Height);
+        Raylib.SetTargetFPS(60);
+        Raylib.SetExitKey(KeyboardKey.KEY_NULL);
+        if (!Raylib.IsWindowFullscreen() && Loader.Settings.FullScreen) Raylib.ToggleFullscreen();
+        Renderer = new Renderer();
+        Camera = new Camera2D
+        {
+            target = new Vector2(0, 0),
+            offset = new Vector2(0, 0),
+            rotation = 0.0f,
+            zoom = 1.0f
+        };
+
+        _screenSpaceCamera = Camera;
+    }
+
+    // This is the procedure of applying any settings changes to the window
+    // This includes resolution, fullscreen, and any other settings
+    public void ApplySettingsChange()
+    {
+        if (!Raylib.IsWindowFullscreen() && Loader.Settings.FullScreen) Raylib.ToggleFullscreen();
+        else if (Raylib.IsWindowFullscreen() && !Loader.Settings.FullScreen) Raylib.ToggleFullscreen();
+        
+        VirtualRatio = Width / Settings.Resolutions[Loader.Settings.Resolution].X;
+        _destRectangle = new Rectangle(-VirtualRatio, -VirtualRatio, Settings.Resolutions[Loader.Settings.Resolution].X + VirtualRatio * 2, Settings.Resolutions[Loader.Settings.Resolution].Y + VirtualRatio * 2);
+
+        Raylib.SetWindowSize((int)Settings.Resolutions[Loader.Settings.Resolution].X, (int)Settings.Resolutions[Loader.Settings.Resolution].Y);
+        
+        int x = Raylib.GetScreenWidth() >= Raylib.GetMonitorWidth(0) ? 0 : (Raylib.GetMonitorWidth(0) / 2 - Raylib.GetScreenWidth() / 2);
+        int y = Raylib.GetScreenHeight() >= Raylib.GetMonitorHeight(0) ? 0 : (Raylib.GetMonitorHeight(0) / 2 - Raylib.GetScreenHeight() / 2);
+        Raylib.SetWindowPosition(x, y);
+    }
+
+    
+    public void DrawLoop()
+    {
+        while (!Raylib.WindowShouldClose())
+        {
+            Loader.ControlManager.Tick();
+            Loader.Game.Tick();
+            
+            _screenSpaceCamera.target = Camera.target;
+
+            Camera.target = _screenSpaceCamera.target;
+            _screenSpaceCamera.target = Vector2.Subtract(Camera.target, Camera.target);
+            _screenSpaceCamera.target.X *= VirtualRatio;
+            _screenSpaceCamera.target.Y *= VirtualRatio;
+            if (Loader.Game.Closed) break;
+
+            Raylib.BeginTextureMode(_target);
+
+            Raylib.DrawRectangle(0, 0, Width, Height, BackgroundColor);
+
+                Raylib.BeginMode2D(Camera);
+                
+                    Renderer.DrawGame();
+                
+                Raylib.EndMode2D();
+
+                Renderer.DrawUi();
+                
+            Raylib.EndTextureMode();
+
+            Raylib.BeginDrawing();
+
+                Raylib.ClearBackground(Color.BLACK);
+                Raylib.BeginMode2D(_screenSpaceCamera);
+                
+                Raylib.DrawTexturePro(_target.texture, _sourceRectangle, _destRectangle, new Vector2(), 0, Color.WHITE);
+                Raylib.EndMode2D(); 
+            Raylib.EndDrawing();
+        }
+        
+        Raylib.CloseWindow();
+    }
+    
+    public Renderer Renderer { get; set; }
+}
+```
